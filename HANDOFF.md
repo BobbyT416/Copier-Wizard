@@ -227,3 +227,13 @@ For error `59.00.03`:
 - Compare from the Build 264 release commit `aacf1a208bc551ab8a3863050bff149aabaa75ae` to the Build 265 version commit confirms only `test/index.html` and `test/version.json` changed on `main`. Production root files were not modified.
 - Live Pages deployment/serving status is not yet independently confirmed. Test URL remains https://bobbyt416.github.io/Copier-Wizard/test/ .
 - **Next action:** confirm the Pages deployment and visible Build 265 label; then have the user test M776dn (`T3U55A`) continuation. Separately confirm that M527 (`F2A76A`) remains clearly identified but gated from guided troubleshooting pending exact workflow validation.
+
+
+### 2026-10-19 — Build 266: contextual diagnostic decision wording
+
+- User requested that troubleshooting use HP-document-derived questions and readable answers rather than generic “Yes — condition is true / No — condition is not true” controls.
+- The decision question continues to be derived from the source condition. Common question forms now get answer labels that state the observed result (for example, “Does error 31.03.20 still return?” → “Yes — error 31.03.20 still returns” / “No — error 31.03.20 does not return”). State questions use concise pronoun answers (“Yes — it is” / “No — it is not”) immediately below the specific question.
+- Unsupported question forms use “Yes — this matches the documented check” / “No — this does not match the documented check”. The change only affects display labels; it does not change the decision condition, source action, or branch behavior.
+- Added browser tests for contextual label generation and to prevent the old generic true/false wording from reappearing. Updated the M776zs guided-flow test selector to work with the new No label.
+- Development build marker/version set to 266. Changes are committed but automated validation, manual testing, and test-site publishing remain pending.
+- **Next action:** inspect the workflow run for Build 266, fix any failures, then publish only `main/test/index.html` and `main/test/version.json` under the user's standing authorization for test-only releases. Keep production root files unchanged.
