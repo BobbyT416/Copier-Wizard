@@ -120,3 +120,9 @@ Automated tests should verify behavior, not merely check that the page loads:
 - Development/production separation is intended: `development` for work and testing; `main` for production.
 - Previous session reported Build 258 and passing automated/browser tests; see Section 3 verification caveat.
 - Next focus: verify current branch state, strengthen M776zs tests, and establish a separate development preview.
+### 2026-10-19 — M776zs automated test expansion
+- Confirmed the development branch head was `33c127fca0c237bf41b19d6d6adcb65714128c4b` before this change; the handoff-document workflow run succeeded at that commit.
+- Expanded `tests/smoke-test.cjs` to exercise the complete M776zs/T3U56A UI path: verify machine, enter `59.00.03`, assert M776zs delivery assembly `RM2-1786-000CN`, duplex controller `RM3-7380-000CN`, M13 guidance, open the M776zs-specific repair procedure, and return to diagnosis. It also asserts that M776dn/M776z parts and procedure are not used.
+- Test change committed to `development`: `74aec3ce2db9750c6658807b5045feed0425567b`.
+- **Pending at handoff update:** wait for and inspect the GitHub Actions run triggered by this commit. Do not treat the new M776zs end-to-end test as passing until that run succeeds. If it fails, inspect logs and fix the test or app behavior on `development` only.
+- Next after test confirmation: inspect repository hosting settings/current live URL and configure a separate preview for `development` without changing `main` or production.
