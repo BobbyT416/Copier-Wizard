@@ -674,6 +674,11 @@ function recordServiceReportSnapshot(){
   const h2=r.querySelector("h2");
   const status=r.querySelector(".status, .doc-verification");
   const parts=[...r.querySelectorAll(".part-card, .part")].map(x=>x.innerText.replace(/\s+/g," ").trim()).filter(Boolean);
+  // Also capture explicit HP part numbers displayed in verified repair procedures,
+  // where the part is sometimes stated in a status block rather than a .part card.
+  const visibleText=(r.innerText||"").replace(/\s+/g," ");
+  const visiblePartNumbers=visibleText.match(/\b[A-Z0-9]{2,6}-[A-Z0-9]{3,8}(?:-[A-Z0-9]{2,6})?\b/g)||[];
+  visiblePartNumbers.forEach(p=>{if(!parts.some(existing=>existing.includes(p))) parts.push(p);});
   const steps=[...r.querySelectorAll("ol.tech-steps li, ol li, .step")].map(x=>x.innerText.replace(/\s+/g," ").trim()).filter(Boolean);
   const title=(h2?.innerText||"").replace(/\s+/g," ").trim();
   const detail=(status?.innerText||"").replace(/\s+/g," ").trim();
