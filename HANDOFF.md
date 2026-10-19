@@ -120,9 +120,9 @@ Automated tests should verify behavior, not merely check that the page loads:
 - Development/production separation is intended: `development` for work and testing; `main` for production.
 - Previous session reported Build 258 and passing automated/browser tests; see Section 3 verification caveat.
 - Next focus: verify current branch state, strengthen M776zs tests, and establish a separate development preview.
-### 2026-10-19 — M776zs automated test expansion
-- Confirmed the development branch head was `33c127fca0c237bf41b19d6d6adcb65714128c4b` before this change; the handoff-document workflow run succeeded at that commit.
-- Expanded `tests/smoke-test.cjs` to exercise the complete M776zs/T3U56A UI path: verify machine, enter `59.00.03`, assert M776zs delivery assembly `RM2-1786-000CN`, duplex controller `RM3-7380-000CN`, M13 guidance, open the M776zs-specific repair procedure, and return to diagnosis. It also asserts that M776dn/M776z parts and procedure are not used.
-- Test change committed to `development`: `74aec3ce2db9750c6658807b5045feed0425567b`.
-- **Pending at handoff update:** wait for and inspect the GitHub Actions run triggered by this commit. Do not treat the new M776zs end-to-end test as passing until that run succeeds. If it fails, inspect logs and fix the test or app behavior on `development` only.
-- Next after test confirmation: inspect repository hosting settings/current live URL and configure a separate preview for `development` without changing `main` or production.
+### 2026-10-19 — M776zs automated test expansion and correction
+- The first expanded browser run executed the M776dn path, navigation tests, and M13 help test successfully, then failed because the new M776zs assertion expected `M13` in the diagnosis before the technician advanced through the guided steps. The app intentionally shows the diagnostic instruction at step 4, so this was a test sequencing error, not yet evidence of an app defect.
+- Updated `tests/smoke-test.cjs` to click “Step Completed — Continue” three times before asserting that step 4 shows M13.
+- Correction committed to `development`: `2d211b014709c6eb990d8f2525cfd8966118a751`.
+- GitHub Actions run `39251934205` was still **in progress** at the last check. Do not mark the expanded M776zs end-to-end test as passing until this run completes successfully. If it fails, inspect the run logs and fix on `development` only.
+- Next after test confirmation: inspect hosting configuration/current live URL and configure a separate preview for `development` without changing `main` or production.
