@@ -107,6 +107,23 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 diagnostics must remain locked until its workflow is validated');
     console.log('✓ Exact-model readiness gate: E52645 enabled; M527 identity verified but diagnostics locked');
 
+    // Clearing the product number or changing manual machine selectors must
+    // invalidate any previously verified machine and hide its diagnostic path.
+    await page.locator('#product').fill('T3U55A');
+    await page.locator('#product').press('Tab');
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    await page.locator('#product').fill('');
+    await page.locator('#product').press('Tab');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'clearing product number must hide the prior diagnostic path');
+    assert.match(await page.locator('#verify').innerText(), /Machine Not Verified/i, 'clearing product number must clear prior verification status');
+    await page.locator('#product').fill('T3U55A');
+    await page.locator('#product').press('Tab');
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    await page.locator('#machineType').selectOption('mono');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'changing machine type must hide diagnostics for the prior machine');
+    assert.match(await page.locator('#verify').innerText(), /Machine Not Verified/i, 'changing machine type must clear prior verification status');
+    console.log('✓ Changing or clearing machine identity invalidates prior verification and diagnostics');
+
     // Switching from a verified machine to an unknown product must clear all
     // previous verification/diagnostic state rather than leave stale guidance visible.
     await page.locator('#product').fill('T3U55A');
