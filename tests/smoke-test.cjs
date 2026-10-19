@@ -94,6 +94,19 @@ const server = http.createServer((req, res) => {
     }
     console.log('✓ M776dn/z and M776zs open different verified delivery procedures and both return to diagnosis');
 
+    // Service reports must open from a repair/part screen before the technician
+    // marks the job resolved, and retain the recommended part in the report.
+    await page.evaluate(() => {
+      document.getElementById('result').innerHTML = '<h2>PART RECOMMENDATION TEST</h2><div class="part">RM3-7475-010CN</div><p>DC controller PCA</p>';
+      window.showRepair('dccontroller');
+    });
+    await page.getByRole('button', { name: /Generate Service Report/i }).click();
+    await page.locator('#serviceReportCard').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#serviceReportCard').innerText(), /RM3-7475-010CN/, 'service report should include the recommended part before resolution');
+    await page.getByRole('button', { name: /Back to Diagnosis/i }).last().click();
+    await page.locator('#serviceReportCard').waitFor({ state: 'hidden' });
+    console.log('✓ Service report opens before resolution and includes the recommended part');
+
     await page.evaluate(() => window.showDiagnosticNavigation('M13'));
     const diagnosticHelp = page.locator('.diagnostic-nav-modal');
     await diagnosticHelp.waitFor({ state: 'visible' });
