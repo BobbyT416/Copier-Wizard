@@ -54,6 +54,19 @@ const server = http.createServer((req, res) => {
     assert.ok(/T3U55A|M776dn/i.test(await page.locator('#verify').innerText()), 'Verification should acknowledge the selected machine');
     console.log('✓ M776dn/T3U55A can be selected and verified');
 
+    await page.locator('#lookupChoiceGrid button.lookup-choice').first().click();
+    await page.locator('#errorCodeLookup').fill('59.00.03');
+    await page.getByRole('button', { name: /Enter Error Code/i }).click();
+    await page.getByText(/Documented Error — 59\\.00\\.03/i).waitFor({ state: 'visible' });
+    const diagnosisText = await page.locator('#result').innerText();
+    assert.ok(diagnosisText.includes('Paper delivery assembly — RM2-3910-000CN'), 'M776dn branch should identify the documented delivery assembly');
+    assert.ok(diagnosisText.includes('RM2-9921-000CN'), 'M776dn branch should identify the applicable duplex controller');
+    await page.getByRole('button', { name: /View Removal \/ Replacement Procedure/i }).click();
+    await page.getByText(/RM2-3910-000CN/).waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: /Back to Diagnosis/i }).click();
+    await page.getByText(/Documented Error — 59\\.00\\.03/i).waitFor({ state: 'visible' });
+    console.log('✓ Real UI flow: M776dn error 59.00.03 shows correct parts, opens the matching procedure, and returns');
+
     await page.evaluate(() => {
       document.getElementById('result').innerHTML = '<h2>DIAGNOSTIC NAVIGATION TEST SENTINEL</h2>';
       window.showRepair('dccontroller');
