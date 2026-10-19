@@ -143,7 +143,13 @@ const server = http.createServer((req, res) => {
     await page.locator('#productCatalogResults button').filter({hasText:'F2A76A'}).click();
     assert.equal(await page.locator('#product').inputValue(), 'F2A76A', 'selecting a scoped M527 product should set its product number');
     assert.match(await page.locator('#verify').innerText(), /M527|Guided Troubleshooting Not Yet Enabled/i, 'scoped M527 selection should retain the correct machine identity');
-    console.log('✓ Product-number browser and datalist stay scoped to the selected model; mismatched search returns no other-family entries');
+    // A directly typed product from another model must be rejected rather than silently changing identity.
+    await page.locator('#product').fill('T3U55A');
+    await page.locator('#product').press('Tab');
+    assert.match(await page.locator('#verify').innerText(), /Product Number Mismatch/i, 'a product number from another model should show a mismatch');
+    assert.equal(await page.locator('#model').inputValue(), 'M527', 'mismatched product entry must not silently switch the selected model');
+    await page.getByRole('button', { name: 'Change Machine' }).click();
+    console.log('✓ Product-number browser and datalist stay scoped to the selected model; mismatches do not silently switch identity');
 
 
     // Clearing the product number or changing manual machine selectors must
