@@ -79,6 +79,16 @@ const server = http.createServer((req, res) => {
     }
     console.log('✓ M776dn/z and M776zs open different verified delivery procedures and both return to diagnosis');
 
+    await page.evaluate(() => window.showDiagnosticNavigation('M13'));
+    const diagnosticHelp = page.locator('.diagnostic-nav-modal');
+    await diagnosticHelp.waitFor({ state: 'visible' });
+    const helpText = await diagnosticHelp.innerText();
+    assert.match(helpText, /M776zs/i, 'M13 guidance should identify the applicable variant');
+    assert.match(helpText, /59\\.00\\.03/, 'M13 guidance should identify its CPMD branch');
+    assert.match(helpText, /Support Tools.*Diagnostic Tests/s, 'Diagnostic guidance should include the FutureSmart 4+ menu path');
+    await diagnosticHelp.getByRole('button', { name: /Close/i }).last().click();
+    console.log('✓ M13 diagnostic navigation identifies the M776zs branch and menu path');
+
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
     console.log('✓ No uncaught browser JavaScript errors');
   } finally {
