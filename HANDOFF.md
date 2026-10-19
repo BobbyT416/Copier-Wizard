@@ -4,7 +4,7 @@
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **265** (`index.html` and `version.json` both set to 265; automated test result and test-site deployment still need confirmation)  
+**Current development build:** **265** (`index.html` and `version.json` both set to 265; automated test result and live Pages deployment still need confirmation)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -221,6 +221,9 @@ For error `59.00.03`:
 - Build 265 updates the successful verification status to include **Continue to Troubleshooting**, which scrolls the next section into view. Successful verification also automatically scrolls to the troubleshooting section after layout settles.
 - The existing safety gate remains: M527 (product `F2A76A`) is identity-verified but guided troubleshooting remains locked because the current normalized manual-data package has only validated the E52645 workflow in that shared monochrome family. Do not unlock M527 by merely changing navigation. Unsupported-model screen retains Change Machine and Browse Product Numbers options.
 - Added a browser regression assertion to `tests/smoke-test.cjs` that the supported M776dn product-number flow exposes the continue action and brings the troubleshooting card into the viewport.
-- Development files updated: `index.html` build marker 265; `version.json` build/version 265; `tests/smoke-test.cjs` navigation regression test. Latest known development commit after these edits: `046420b8b28d43fbee1374fb43f94cbd8e3a256b` (verify branch head and workflow status before declaring validation complete).
-- **Automated test status:** pending independent confirmation for Build 265. The regression test waits for the troubleshooting card to enter the viewport after the Continue action; do not yet publish to `main/test/` or claim the test suite passed.
-- **Next action:** check the latest Actions run for the development head; fix any test failures. If the suite passes, publish Build 265 to `main/test/index.html` and `main/test/version.json` only (user already authorized test-only releases), verify the Pages deployment, then ask the user to test the supported M776 path and confirm the M527 gated state is clearly explained.
+- Development files updated: `index.html` build marker 265; `version.json` build/version 265; `tests/smoke-test.cjs` navigation regression test. Relevant commits: app `5a555e5fb3a6af50dc29822d2d2df37f82cde283`, version `7b01d3d6009b46b6b2c7280cf77959902f18ede6`, smoke-test `e9d7f255d4ad558f312973f6ba647a97375372f5`. Handoff snapshot commit: `775bdb75740da49be89d78e2e4fc1485d42af292`.
+- **Automated test status:** pending independent confirmation for Build 265. The regression test waits for the troubleshooting card to enter the viewport after the Continue action. Do not claim the suite passed until a matching run is inspected.
+- Published Build 265 to `main/test/index.html` and `main/test/version.json` under the user's standing authorization for test-only releases. Release commits: `34f7bb76fb916e9be31b1ca31e03253a4560ec03` (test app) and `469762ec6a40af05d1cb1434fcffa94f60aee73c` (version marker).
+- Compare from the Build 264 release commit `aacf1a208bc551ab8a3863050bff149aabaa75ae` to the Build 265 version commit confirms only `test/index.html` and `test/version.json` changed on `main`. Production root files were not modified.
+- Live Pages deployment/serving status is not yet independently confirmed. Test URL remains https://bobbyt416.github.io/Copier-Wizard/test/ .
+- **Next action:** confirm the Pages deployment and visible Build 265 label; then have the user test M776dn (`T3U55A`) continuation. Separately confirm that M527 (`F2A76A`) remains clearly identified but gated from guided troubleshooting pending exact workflow validation.
