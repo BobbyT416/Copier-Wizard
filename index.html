@@ -2100,6 +2100,7 @@ function productNumberSelectionChanged(value){
   const verify=document.getElementById("verify");
   if(!match){
     if(hint)hint.textContent="That product number is not in the current product-number catalog. You can still identify the machine using the fields below.";
+    if(verify)verify.innerHTML='<div class="status danger"><strong>Machine Not Verified</strong><br>Product number '+escapeHtml(product)+' is not in the current catalog. No diagnostics or part recommendations are available until the exact machine is identified.</div>';
     return;
   }
   let selected=null;
@@ -2118,6 +2119,7 @@ function productNumberSelectionChanged(value){
   const modelEl=document.getElementById("model");
   if(!selected){
     if(hint)hint.textContent="Product number "+product+" is cataloged as "+match.model+", but its machine family is not mapped yet. Please select the machine fields manually.";
+    if(verify)verify.innerHTML='<div class="status danger"><strong>Machine Not Verified</strong><br>Product number '+escapeHtml(product)+' is cataloged as '+escapeHtml(match.model)+', but it is not mapped to a selectable family. No diagnostics or parts are available until that mapping is corrected.</div>';
     return;
   }
   if(typeEl){typeEl.value=selected.type;machineTypeChanged(selected.type);}
