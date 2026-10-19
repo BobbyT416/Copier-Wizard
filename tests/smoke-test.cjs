@@ -142,13 +142,19 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => returnToMachineSelection());
     await page.locator('#product').fill('F2A76A');
     await page.locator('#product').press('Tab');
-    assert.match(await page.locator('#verify').innerText(), /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, 'M527 must not inherit E52645 workflow without exact validation');
-    assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 diagnostics must remain locked until its workflow is validated');
-    console.log('✓ Exact-model readiness gate: E52645 enabled; M527 identity verified but diagnostics locked');
-    // Unsupported-but-identified machines must have a clear exit path.
-    assert.equal(await page.locator('#problemCard').isVisible(), false, 'unsupported M527 must not unlock diagnostics');
-    assert.ok(await page.getByRole('button', { name: 'Change Machine' }).isVisible(), 'unsupported M527 should offer Change Machine');
-    assert.ok(await page.locator('#verify').getByRole('button', { name: 'Browse Product Numbers' }).isVisible(), 'unsupported M527 should offer Browse Product Numbers');
+    assert.match(await page.locator('#verify').innerText(), /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, 'M527 must not inherit E52645 branching workflow without exact validation');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 must not unlock E52645 guided diagnostics');
+    console.log('✓ Exact-model readiness gate: E52645 guided workflow remains separate from M527');
+    // The verified M527 must have a useful source-backed next step without
+    // reopening product selection or claiming the E52645 workflow is valid.
+    assert.ok(await page.getByRole('button', { name: 'Change Machine' }).isVisible(), 'verified M527 should offer Change Machine');
+    assert.equal(await page.locator('#verify').getByRole('button', { name: 'Browse Product Numbers' }).count(), 0, 'verified M527 should not offer product browsing');
+    assert.ok(await page.getByRole('button', { name: 'Search HP Manual' }).isVisible(), 'verified M527 should offer source-reference search');
+    await page.locator('#m527ManualLookup').fill('30.01.44');
+    await page.getByRole('button', { name: 'Search HP Manual' }).click();
+    await page.locator('#m527ManualResults').getByText(/30\.01\.44/).first().waitFor({ state: 'visible' });
+    assert.match(await page.locator('#m527ManualResults').innerText(), /Scanner error/i, 'M527 manual search should show the matching HP source entry');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'manual reference search must not unlock an unvalidated guided branch');
     await page.getByRole('button', { name: 'Change Machine' }).click();
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'Change Machine should leave diagnostics locked');
     assert.equal(await page.locator('#product').inputValue(), '', 'Change Machine should clear the previous product number');
