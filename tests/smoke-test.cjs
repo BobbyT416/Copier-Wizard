@@ -94,12 +94,16 @@ const server = http.createServer((req, res) => {
     }
     console.log('✓ Family-wide contract: product-number-only verification passed for ' + catalogProducts.length + ' catalog entries');
 
-    // An unknown product number must not verify a machine or unlock diagnosis.
-    await page.reload({ waitUntil: 'networkidle' });
+    // Switching from a verified machine to an unknown product must clear all
+    // previous verification/diagnostic state rather than leave stale guidance visible.
+    await page.locator('#product').fill('T3U55A');
+    await page.locator('#product').press('Tab');
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
     await page.locator('#product').fill('ZZZZZ');
     await page.locator('#product').press('Tab');
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'unknown product number must not unlock diagnosis');
     assert.match(await page.locator('#productHint').innerText(), /not in the current product-number catalog/i, 'unknown product number should explain why it was not verified');
+    assert.match(await page.locator('#verify').innerText(), /Machine Not Verified/i, 'unknown product must clear the prior machine-verified status');
     console.log('✓ Unknown product number is not falsely verified and manual identification remains available');
 
     await page.reload({ waitUntil: 'networkidle' });
