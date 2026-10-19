@@ -68,14 +68,29 @@ const server = http.createServer((req, res) => {
       const familyValue = await page.locator('#machineFamily').inputValue();
       const modelValue = await page.locator('#model').inputValue();
       const verifyText = await page.locator('#verify').innerText();
+      const guidedEnabled = await page.evaluate(() => {
+        const type = document.getElementById('machineType').value;
+        const familyId = document.getElementById('machineFamily').value;
+        const model = document.getElementById('model').value;
+        const family = machineSelectionFamilies?.[type]?.[familyId];
+        return !!family && family.supported === true &&
+          (!Array.isArray(family.supportedModels) || family.supportedModels.includes(model));
+      });
       assert.equal(productValue, item.product, item.product + ' should remain the selected product number');
       assert.ok(typeValue, item.product + ' should infer machine type');
       assert.ok(familyValue, item.product + ' should infer machine family');
       assert.ok(modelValue, item.product + ' should infer machine model');
       assert.ok(
         verifyText.toUpperCase().includes(item.product),
-        item.product + ' should reach Machine Verified using the product number alone; verification text was: ' + verifyText
+        item.product + ' should be identified using the product number alone; verification text was: ' + verifyText
       );
+      if (guidedEnabled) {
+        assert.match(verifyText, /Machine Verified — App Ready/i, item.product + ' should unlock the validated guided workflow');
+        assert.equal(await page.locator('#problemCard').isVisible(), true, item.product + ' should open diagnostics for an enabled family');
+      } else {
+        assert.match(verifyText, /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, item.product + ' should confirm identity without claiming unsupported diagnostics');
+        assert.equal(await page.locator('#problemCard').isVisible(), false, item.product + ' must not unlock diagnostics for a family that is not enabled');
+      }
     }
     console.log('✓ Family-wide contract: product-number-only verification passed for ' + catalogProducts.length + ' catalog entries');
 
