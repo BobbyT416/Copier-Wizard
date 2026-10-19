@@ -143,12 +143,23 @@ const server = http.createServer((req, res) => {
     assert.ok(zsParts.some(part => part.includes('RM3-7380-000CN')), 'M776zs must resolve duplex controller RM3-7380-000CN');
     assert.ok(!zsParts.some(part => part.includes('RM2-3910-000CN')), 'M776zs must not resolve M776dn/z delivery assembly');
     assert.ok(!zsParts.some(part => part.includes('RM2-9921-000CN')), 'M776zs must not resolve M776dn/z duplex controller');
-    // The diagnosis is intentionally guided step-by-step. Advance to step 4,
-    // where the CPMD documents the M13 diagnostic test for M776zs.
-    for (let step = 0; step < 3; step++) {
-      await page.getByRole('button', { name: /Step Completed — Continue/i }).click();
+    // Advance through the guided steps. Some documented steps are decision
+    // points, so choose "No" to move to the next documented branch; ordinary
+    // steps use the explicit completion button. Stop when the M13 step appears.
+    for (let step = 0; step < 10; step++) {
+      const resultText = await page.locator('#result').innerText();
+      if (/M13/.test(resultText)) break;
+      const complete = page.getByRole('button', { name: /Step Completed — Continue/i });
+      const noCondition = page.getByRole('button', { name: /No — condition is not true/i });
+      if (await complete.count()) {
+        await complete.click();
+      } else if (await noCondition.count()) {
+        await noCondition.click();
+      } else {
+        throw new Error('M776zs guided flow did not expose a documented next-step control. Current screen: ' + resultText.slice(0, 500));
+      }
     }
-    assert.match(await page.locator('#result').innerText(), /M13/, 'M776zs step 4 should point to M13');
+    assert.match(await page.locator('#result').innerText(), /M13/, 'M776zs guided path should reach the documented M13 diagnostic test');
     await page.getByRole('button', { name: /View Removal \/ Replacement Procedure/i }).click();
     const zsRepairText = await page.locator('#result').innerText();
     assert.ok(zsRepairText.includes('RM2-1786-000CN'), 'M776zs should open its own verified delivery procedure');
