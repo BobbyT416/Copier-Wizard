@@ -4,7 +4,7 @@
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current build marker observed on development:** **260** (`version.json` reports build/version 260)  
+**Current build marker observed on development:** **261** (`version.json` reports build/version 261)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -39,9 +39,11 @@ Target workflow: **Identify/verify machine → enter error/message → guided tr
 - A separate development preview URL and its deployment wiring must be verified; do not assume GitHub Pages deploys the `development` branch.
 - A local/automated browser test passing does not prove the live test website is serving that build.
 - Prefer direct commits on `development` and automated tests over ZIP handoffs unless a ZIP is needed for a specific deployment or offline test.
-- Verified development head after the latest test change: `57f2d294af6b03bd5b4b7e38263f68705e37f14a`. `version.json` on `development` contains `{"build":"260","version":"260"}`.
-- Latest automated run at this checkpoint: **PASS**, run #35, [GitHub Actions run 39289198350](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39289198350), commit `57f2d294af6b03bd5b4b7e38263f68705e37f14a`.
-- Separate preview status: repository `main/test/version.json` still reports Build 259; `main/version.json` reports Build 257. Development is Build 260. The GitHub Pages configuration/live URL could not be independently verified in this session. Do not update `main` or its `test/` folder without explicit approval; production must remain untouched.
+- Verified development head: `5975d53f6b1852325300b25d00491b4c989817dc`. `version.json` on `development` reports Build 261.
+- Latest complete automated browser suite: **PASS**, [GitHub Actions run 39290567895](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39290567895), commit `5975d53f6b1852325300b25d00491b4c989817dc`.
+- Test-only release authorized by user on 2026-10-19. The `main/test/index.html` and `main/test/version.json` files have been updated to Build 261. `main/test/cw-manual-data.js` already matches the development data file and was not changed.
+- The only files changed on `main` for this test release are `test/index.html` and `test/version.json`. Verified `main/version.json` remains Build 257; the production root app was not changed.
+- GitHub Pages deployment for the Build 261 test release is still pending at the last check: [deployment run 39290714550](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39290714550). Verify the deployment completes and the live test URL serves Build 261 before asking the user to test it.
 
 ## 4. Latest work and evidence (2026-10-19)
 
@@ -55,7 +57,7 @@ Prior session reported these changes committed to `development` and a full autom
 - Build 259 was reported copied/published to test-site files, but the prior conversation explicitly said GitHub Pages deployment was pending. Confirm the live test site and build before asking the user to test it.
 - The prior conversation's statement that a service-report test passed included report generation before resolution and recommended part number in the report. Treat this as prior-session evidence, not a substitute for checking current Actions/deployment.
 
-### Build 260 — product-number-only verification (latest work)
+### Build 260 — initial product-number-only implementation
 
 Prior conversation reported that the change was committed on `development`; automated checks were still queued at the time, so do not assume they passed.
 
@@ -70,6 +72,17 @@ Current `tests/smoke-test.cjs` includes:
 
 **Latest result: PASS** — run #35, [39289198350](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39289198350), commit `57f2d294af6b03bd5b4b7e38263f68705e37f14a`. The immediately prior run #34 also passed product-number-only M776zs verification and the full M776/service-report suite. An earlier failed run was caused by an obsolete test trying to use `selectOption()` on the product-number text input; that test was corrected.
 
+### Build 261 — identity/readiness separation and family-wide contract testing
+
+- App build marker and `version.json` are both Build 261.
+- Product-number-only identity is now tested across **all 75 catalog entries**. Each entry must infer type, family, and model and show a product-number-specific verification state.
+- The family-wide test distinguishes identity from diagnostic readiness: enabled families open the guided workflow; families not yet enabled confirm identity but keep diagnostics locked.
+- When the product number changes, verification and diagnostic history are cleared. Unknown or unmapped product numbers explicitly show **Machine Not Verified**, hide the diagnostic card, and do not retain stale guidance.
+- Automated suite passed on commit `5975d53f6b1852325300b25d00491b4c989817dc`, including the 75-product contract, stale-state transition from a known product to `ZZZZZ`, existing M776dn/M776zs variant tests, service report before resolution, and no uncaught browser errors.
+- Added [`FAMILY-ONBOARDING.md`](https://github.com/BobbyT416/Copier-Wizard/blob/development/FAMILY-ONBOARDING.md), which defines the required identity/source/data/capability gates and acceptance tests for adding future families.
+- The family-specific diagnostic engine has **not** yet been fully refactored into data-driven family packages. The current document is the onboarding standard; migration should be gradual, starting from a small known-good family and preserving existing tests.
+- The Build 261 test-site files have been committed under `main/test/`; the Pages deployment run is pending, so the live site has not yet been confirmed.
+
 Useful file references:
 - `index.html` on development: https://github.com/BobbyT416/Copier-Wizard/blob/development/index.html
 - `version.json` on development: https://github.com/BobbyT416/Copier-Wizard/blob/development/version.json
@@ -78,16 +91,15 @@ Useful file references:
 
 ## 5. Immediate next actions — in order
 
-1. The current `development` Build 260 browser suite passed on commit `57f2d294af6b03bd5b4b7e38263f68705e37f14a`; keep this as the validated development baseline unless later code changes.
-2. The next deployment task is unresolved: `main/test/version.json` is Build 259 and `main/version.json` is Build 257. Verify the intended live preview URL and deployment setup. Do not change `main` or `main/test/` without explicit approval, and do not modify the production root.
-3. Once a safe Build 260 preview is available, ask the user to test product-number-only verification and service report generation. Prioritize:
-   - Product number `T3U55A` entered with type/family/model blank; should jump straight to Machine Verified.
-   - Known product number with no manual selections; ensure correct type/family/model are inferred.
-   - Unknown/unmapped product number; must not falsely verify and must permit manual selection.
-   - M776dn and M776zs neighboring-variant checks for error `59.00.03`.
-   - Generate service report from final part-recommendation screen before clicking Resolved; confirm recommended part number is included and unfinished repair isn't mislabeled resolved.
-5. Continue broadening automated coverage across machine families, exact product mappings, source conflicts, missing procedures, and R&R applicability.
-6. Update this handoff after each meaningful milestone and before a session ends when possible.
+1. Confirm GitHub Pages deployment run [39290714550](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39290714550) succeeds and verify the live test URL reports Build 261. Production root remains Build 257 and must remain untouched.
+2. Once the live Build 261 preview is confirmed, ask the user to test:
+   - Enter `T3U55A` with Type/Family/Model blank; it should identify M776dn and open the supported workflow.
+   - Enter another known catalog product number with all other fields blank; identity should populate automatically.
+   - Enter an unknown number after a known machine; old verification/results must clear, and diagnosis must stay locked.
+   - Confirm the service report works before marking the repair resolved.
+3. Begin the family architecture migration gradually. First map current family capabilities and exact source coverage; do not assume every model listed under a shared family is equally supported.
+4. Use `FAMILY-ONBOARDING.md` as the acceptance contract. Next code step should make diagnostic readiness and model/product applicability explicit in family data, then test one bounded non-M776 family against its exact CPMD/Repair Manual before enabling it.
+5. Keep the current Build 261 test as the validated baseline. Do not start the broad family refactor until the test-site build has been confirmed and the user has had a chance to validate the product-number workflow.
 
 ## 6. Important M776 facts
 
@@ -145,3 +157,13 @@ For error `59.00.03`:
 - Build 260 product-number-first workflow was committed according to the previous conversation. Current `version.json` confirms build/version 260. Latest workflow status not yet checked in this chat.
 - User clarified product-number-first requirement: known product number alone should identify the machine and jump directly to Machine Verified; all other identification fields optional.
 - **Next action:** check current branch head and Build 260 Actions result, then verify safe test-site deployment. Production remains untouched.
+### 2026-10-19 — Build 261 and family-wide verification contract
+- Build 261 changes machine identity verification so cataloged products in families not yet enabled for guided troubleshooting can be identified without falsely unlocking diagnostics.
+- Product-number changes clear prior verification, diagnostic result, and history; unknown product numbers explicitly show Machine Not Verified.
+- Expanded `tests/smoke-test.cjs` to run the product-number-only flow for all 75 catalog entries and distinguish enabled-family readiness from identity-only verification.
+- Latest complete suite passed: [run 39290567895](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39290567895), commit `5975d53f6b1852325300b25d00491b4c989817dc`.
+- Added `FAMILY-ONBOARDING.md` as the standard for future family imports and release gates.
+- Published Build 261 app and version files to `main/test/` with user authorization. Confirmed only `test/index.html` and `test/version.json` changed on `main`; root `version.json` remains Build 257.
+- Pages deployment run `39290714550` was pending at the last check. Verify live test site before asking for manual testing.
+- **Next action:** confirm Pages deployment; then test Build 261 and start gradual data-driven family onboarding work.
+
