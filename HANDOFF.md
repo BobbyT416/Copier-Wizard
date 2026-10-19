@@ -198,3 +198,5 @@ For error `59.00.03`:
 - Updated `tests/smoke-test.cjs` to cover unsupported-machine navigation and choosing M776zs/T3U56A from the browser. The selectors were tightened to avoid ambiguity between the always-present browser toggle and the unsupported-state action.
 - Build 263 automated run: [GitHub Actions run 39299019340](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39299019340), initially in progress; confirm its final result after the follow-up test-selector correction.
 - If validation passes, update only `main/test/index.html` and `main/test/version.json`; do not touch production root files.
+
+- Follow-up refinement: **Change Machine** now clears the previous product number and machine-type selection before returning to the selection card, preventing stale identity from confusing the next selection. Added explicit assertions for those reset behaviors. Automated validation is being rerun.

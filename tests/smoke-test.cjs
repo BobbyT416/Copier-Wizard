@@ -112,6 +112,8 @@ const server = http.createServer((req, res) => {
     assert.ok(await page.locator('#verify').getByRole('button', { name: 'Browse Product Numbers' }).isVisible(), 'unsupported M527 should offer Browse Product Numbers');
     await page.getByRole('button', { name: 'Change Machine' }).click();
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'Change Machine should leave diagnostics locked');
+    assert.equal(await page.locator('#product').inputValue(), '', 'Change Machine should clear the previous product number');
+    assert.equal(await page.locator('#machineType').inputValue(), '', 'Change Machine should clear the previous machine type');
     await page.locator('.product-browser-toggle').click();
     await page.locator('#productCatalogSearch').fill('M776zs');
     const zsChoice = page.locator('#productCatalogResults button').filter({ hasText: 'T3U56A' });

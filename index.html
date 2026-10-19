@@ -2076,8 +2076,10 @@ function selectCatalogProduct(product){
 }
 function returnToMachineSelection(){
   cwClearMachineVerificationState();
+  const product=document.getElementById('product');if(product){product.value='';productNumberInputChanged('');}
+  const typeEl=document.getElementById('machineType');if(typeEl){typeEl.value='';machineTypeChanged('');}
   const card=document.getElementById('selectCard');if(card)card.scrollIntoView({behavior:'smooth',block:'start'});
-  const product=document.getElementById('product');if(product)product.focus({preventScroll:true});
+  if(product)product.focus({preventScroll:true});
 }
 function populateProductNumberOptions(){
   const list=document.getElementById("productNumberOptions");
