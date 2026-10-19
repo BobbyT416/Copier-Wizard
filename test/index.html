@@ -673,8 +673,13 @@ function recordServiceReportSnapshot(){
   if(!r) return;
   const h2=r.querySelector("h2");
   const status=r.querySelector(".status, .doc-verification");
-  const parts=[...r.querySelectorAll(".part-card")].map(x=>x.innerText.replace(/\s+/g," ").trim());
-  const steps=[...r.querySelectorAll("ol.tech-steps li, .step")].map(x=>x.innerText.replace(/\s+/g," ").trim()).filter(Boolean);
+  const parts=[...r.querySelectorAll(".part-card, .part")].map(x=>x.innerText.replace(/\s+/g," ").trim()).filter(Boolean);
+  // Also capture explicit HP part numbers displayed in verified repair procedures,
+  // where the part is sometimes stated in a status block rather than a .part card.
+  const visibleText=(r.innerText||"").replace(/\s+/g," ");
+  const visiblePartNumbers=visibleText.match(/\b[A-Z0-9]{2,6}-[A-Z0-9]{3,8}(?:-[A-Z0-9]{2,6})?\b/g)||[];
+  visiblePartNumbers.forEach(p=>{if(!parts.some(existing=>existing.includes(p))) parts.push(p);});
+  const steps=[...r.querySelectorAll("ol.tech-steps li, ol li, .step")].map(x=>x.innerText.replace(/\s+/g," ").trim()).filter(Boolean);
   const title=(h2?.innerText||"").replace(/\s+/g," ").trim();
   const detail=(status?.innerText||"").replace(/\s+/g," ").trim();
   const key=[title,detail,parts.join("|"),steps.join("|")].join("||");
@@ -689,14 +694,27 @@ function setServiceReportProblem(text){
 }
 function addServiceReportButton(disposition){
   const r=document.getElementById("result");
-  if(!r || r.querySelector('[data-service-report-button="1"]')) return;
-  serviceReportContext.disposition=disposition||"Problem resolved";
-  const b=document.createElement("button");
-  b.type="button";
-  b.setAttribute("data-service-report-button","1");
-  b.textContent="Generate Service Report";
-  b.onclick=function(){openServiceReport(serviceReportContext.disposition);};
-  r.appendChild(b);
+  if(!r) return;
+  // Make reports available before resolution without falsely marking the repair resolved.
+  if(disposition) serviceReportContext.disposition=disposition;
+  else if(!serviceReportContext.disposition) serviceReportContext.disposition="Diagnosis completed — outcome not recorded";
+  let b=r.querySelector('[data-service-report-button="1"]');
+  if(!b){
+    b=document.createElement("button");
+    b.type="button";
+    b.setAttribute("data-service-report-button","1");
+    b.textContent="Generate Service Report";
+    b.className="primary";
+    r.appendChild(b);
+  }
+  b.onclick=function(){
+    try {
+      openServiceReport(serviceReportContext.disposition || "Diagnosis completed — outcome not recorded");
+    } catch(error) {
+      console.error("Unable to open service report:",error);
+      alert("The service report could not be opened. The diagnostic screen has been preserved.");
+    }
+  };
 }
 function openServiceReport(disposition){
   serviceReportContext.disposition=disposition||serviceReportContext.disposition||"Problem resolved";
@@ -5470,7 +5488,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='258';
+  const CURRENT='259';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
