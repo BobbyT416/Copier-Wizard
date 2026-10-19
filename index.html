@@ -2190,7 +2190,7 @@ function productNumberSelectionChanged(value){
   );
   if(mismatch){
     if(hint)hint.textContent="Product number does not match the selected machine. Choose a product number listed for "+(currentModel||currentFamily?.label||"the selected machine")+", or change the machine selection.";
-    if(verify)verify.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine: <strong>'+escapeHtml(currentModel||currentFamily?.label||currentType)+'</strong><br>Entered product number: <strong>'+escapeHtml(product)+'</strong><br>The machine selection was not changed. Verify the model and product number before continuing.</div>';
+    if(verify)verify.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine: <strong>'+escapeHtml(currentModel||currentFamily?.label||currentType)+'</strong><br>Entered product number: <strong>'+escapeHtml(product)+'</strong><br>The machine selection was not changed. Choose a product number for the selected model or change the machine.<br><button type="button" class="secondary" onclick="returnToMachineSelection()">Change Machine</button></div>';
     return;
   }
   if(!selected){
