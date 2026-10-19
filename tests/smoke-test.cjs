@@ -31,6 +31,23 @@ const server = http.createServer((req, res) => {
     assert.match(await page.title(), /Copier Wizard/i);
     assert.equal(await page.locator('#machineType').count(), 1);
     console.log('✓ App loads in Chromium');
+    // Decision answers should be derived from the observed condition, not generic true/false wording.
+    const decisionLabels = await page.evaluate(() => ({
+      returningError: documentedDecisionAnswerLabels('Does error 31.03.20 still return?'),
+      seatedConnector: documentedDecisionAnswerLabels('Is the connector seated correctly?')
+    }));
+    assert.deepEqual(decisionLabels.returningError, {
+      yes: 'Yes — error 31.03.20 still returns',
+      no: 'No — error 31.03.20 does not return'
+    }, 'error-code decision answers should describe the observed result');
+    assert.deepEqual(decisionLabels.seatedConnector, {
+      yes: 'Yes — it is',
+      no: 'No — it is not'
+    }, 'state decision answers should be clear and concise');
+    assert.doesNotMatch(await page.locator('body').innerText(), /condition is true|condition is not true/i,
+      'generic true/false wording must not appear in the UI');
+    console.log('✓ Documented decision answers use contextual wording instead of generic true/false labels');
+
 
     // A known product number alone must populate the machine identity and
     // proceed to the verified/app-ready state without requiring other fields.
@@ -310,7 +327,7 @@ const server = http.createServer((req, res) => {
       const resultText = await page.locator('#result').innerText();
       if (/M13/.test(resultText)) break;
       const complete = page.getByRole('button', { name: /Step Completed — Continue/i });
-      const noCondition = page.getByRole('button', { name: /No — condition is not true/i });
+      const noCondition = page.getByRole('button', { name: /No — (?:error .*does not return|.*does not match the documented check|it is not|they are not)/i });
       if (await complete.count()) {
         await complete.click();
       } else if (await noCondition.count()) {
