@@ -2084,7 +2084,7 @@ function cwClearMachineVerificationState(){
   if(resultCard)resultCard.classList.add('hidden');
   const result=document.getElementById('result');
   if(result)result.innerHTML='';
-  if(Array.isArray(window.diagnosticHistory))window.diagnosticHistory.length=0;
+  if(Array.isArray(diagnosticHistory))diagnosticHistory.length=0;
   if(typeof setServiceReportProblem==='function')setServiceReportProblem('');
 }
 function productNumberSelectionChanged(value){
