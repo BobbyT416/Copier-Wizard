@@ -1874,7 +1874,8 @@ const machineSelectionFamilies = {
       label: "M501 / M506 / M507 / M527 / M528 / E50045 / E50145 / E52545 / E52645 family",
       models: ["M501","M506","M507","M527","M528","E50045","E50145","E52545","E52645"],
       supported: true,
-      docs: "Service Manual + CPMD"
+      supportedModels: ["E52645"],
+      docs: "E52645 Service Manual + CPMD — E52645 workflow enabled; other models gated pending exact validation"
     },
     "m607-family": {
       label: "M607 / M608 / M609 / M610 / M611 / M612 family",
@@ -5551,7 +5552,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='261';
+  const CURRENT='262';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
