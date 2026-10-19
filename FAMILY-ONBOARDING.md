@@ -85,6 +85,7 @@ For each CPMD, Repair/Service Manual, and other approved HP document:
 - The M776 workflow includes family-specific logic in the shared app code.
 - `cw-manual-data.js` contains the existing E52645-oriented manual data and normalized knowledge layer.
 - The existing UI has a `supported` flag per selectable family, but family-specific behavior is not yet fully driven by a common family package.
-- Build 261 introduces a separation between identity verification and guided-workflow readiness and adds a catalog-wide browser-test loop. Its latest test result must be checked before this build is published.
+- Build 261 separated identity verification from guided-workflow readiness and added a catalog-wide browser-test loop. Its full suite passed across all 75 product-number entries.
+- Build 262 narrows the shared M501/M506/M507/M527/M528/E50045/E50145/E52545/E52645 selection family to `supportedModels: ["E52645"]`, because the normalized manual package explicitly identifies E52645. Other models can be identity-verified but stay locked until exact applicability and their workflows are validated. The Build 262 test result must pass before publishing.
 - The next architecture step after the contract test is stable: gradually move family-specific troubleshooting/variant data into validated family packages and adapters, beginning with a small known-good family; do not rewrite all families at once.
 
