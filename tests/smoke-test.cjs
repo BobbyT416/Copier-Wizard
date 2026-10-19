@@ -124,6 +124,27 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#productBrowser').isVisible(), false, 'selecting a product should close the browser');
     console.log('✓ Unsupported-machine navigation and searchable product-number browser');
 
+    // Model-specific product choices must not leak entries from other families.
+    await page.locator('#product').fill('');
+    await page.locator('#product').press('Tab');
+    await page.locator('#machineType').selectOption('mono');
+    await page.locator('#machineFamily').selectOption('m501-family');
+    await page.locator('#model').selectOption('M527');
+    const m527Options = await page.locator('#productNumberOptions option').evaluateAll(options => options.map(o => o.value));
+    assert.deepEqual(m527Options.sort(), ['F2A76A','F2A77A','F2A78A','F2A79A','F2A80A','F2A81A'].sort(), 'M527 datalist must contain only M527 product numbers');
+    await page.locator('.product-browser-toggle').click();
+    const m527BrowserItems = await page.locator('#productCatalogResults button').evaluateAll(buttons => buttons.map(b => ({text:b.innerText,product:b.querySelector('strong')?.textContent})));
+    assert.equal(m527BrowserItems.length, 6, 'M527 browser should show only its six cataloged product numbers');
+    assert.ok(m527BrowserItems.every(item => /^M527/.test(item.text)), 'M527 browser must not show E50xxx or other-model entries');
+    await page.locator('#productCatalogSearch').fill('E50045');
+    assert.equal(await page.locator('#productCatalogResults button').count(), 0, 'search for another model must not escape the selected M527 scope');
+    assert.match(await page.locator('#productCatalogResults').innerText(), /No matching product numbers for M527/i);
+    await page.locator('#productCatalogSearch').fill('');
+    await page.locator('#productCatalogResults button').filter({hasText:'F2A76A'}).click();
+    assert.equal(await page.locator('#product').inputValue(), 'F2A76A', 'selecting a scoped M527 product should set its product number');
+    assert.match(await page.locator('#verify').innerText(), /M527|Guided Troubleshooting Not Yet Enabled/i, 'scoped M527 selection should retain the correct machine identity');
+    console.log('✓ Product-number browser and datalist stay scoped to the selected model; mismatched search returns no other-family entries');
+
 
     // Clearing the product number or changing manual machine selectors must
     // invalidate any previously verified machine and hide its diagnostic path.
