@@ -58,10 +58,10 @@ const server = http.createServer((req, res) => {
     assert.ok(modelValue, 'M776 model entry should be available in the M776 family');
     await model.selectOption(modelValue);
     const product = page.locator('#product');
-    const productOption = product.locator('option').filter({ hasText: /T3U55A/ }).first();
-    assert.ok(await productOption.count(), 'M776dn product number T3U55A should be offered');
-    await product.selectOption(await productOption.getAttribute('value'));
-    await page.getByRole('button', { name: /Verify Machine/i }).click();
+    // Product number is a text input with datalist suggestions, not a select.
+    // Enter the known number and let the app's product-number workflow verify it.
+    await product.fill('T3U55A');
+    await product.press('Tab');
     await page.locator('#problemCard').waitFor({ state: 'visible' });
     assert.ok(/T3U55A|M776dn/i.test(await page.locator('#verify').innerText()), 'Verification should acknowledge the selected machine');
     console.log('✓ M776dn/T3U55A can be selected and verified');
