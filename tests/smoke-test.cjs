@@ -32,10 +32,16 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#machineType').count(), 1);
     console.log('✓ App loads in Chromium');
     // Decision answers should be derived from the observed condition, not generic true/false wording.
-    const decisionLabels = await page.evaluate(() => ({
-      returningError: documentedDecisionAnswerLabels('Does error 31.03.20 still return?'),
-      seatedConnector: documentedDecisionAnswerLabels('Is the connector seated correctly?')
-    }));
+    const decisionLabels = await page.evaluate(() => {
+      const sourceCondition = 'error 31.03.20 still returns';
+      const question = documentedDecisionQuestion(sourceCondition);
+      return {
+        question,
+        returningError: documentedDecisionAnswerLabels(question),
+        seatedConnector: documentedDecisionAnswerLabels('Is the connector seated correctly?')
+      };
+    });
+    assert.equal(decisionLabels.question, 'Does error 31.03.20 still return?', 'source condition should become a grammatical technician question');
     assert.deepEqual(decisionLabels.returningError, {
       yes: 'Yes — error 31.03.20 still returns',
       no: 'No — error 31.03.20 does not return'
