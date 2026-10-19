@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-19 (Build 263 product browser and navigation fix)  
+**Updated:** 2026-10-19 (Build 264 product-number filtering fix)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -200,3 +200,15 @@ For error `59.00.03`:
 - Build 263 is committed to `main/test/index.html` and `main/test/version.json` at main commit `0a4c00a0977e028c13fe34ec8d7e6a0a0433759e`. A GitHub compare confirmed those are the only changed paths on `main`; production root `index.html` and `version.json` remain Build 257. Live Pages serving status could not be independently confirmed from this environment; ask the user to verify the visible build number before functional testing.
 
 - Follow-up refinement: **Change Machine** now clears the previous product number and machine-type selection before returning to the selection card, preventing stale identity from confusing the next selection. Added explicit assertions for those reset behaviors. Automated validation passed in run [39299315189](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39299315189).
+
+
+### 2026-10-19 — Build 264: model-scoped product-number choices
+- User reported that after selecting M527, Browse Product Numbers displayed E50xxx/E52645-family entries. Root cause was confirmed: the browser flattened and searched the entire product-number catalog, regardless of the selected model. The native datalist also listed the entire catalog.
+- Build 264 scopes both the browser and native product-number suggestions to the selected model's catalog key. With no model selected, browsing the full catalog remains available.
+- Changing the selected model clears a stale search term so results from a previously browsed model cannot leave the new model's list looking empty.
+- When manual machine selectors are already populated, a conflicting directly entered product number now produces an explicit Product Number Mismatch and does not silently replace the selected machine. The mismatch state offers Change Machine.
+- Added regression tests for the M527 scope: only its six product numbers are listed; searching E50045 while M527 is selected returns no results; choosing F2A76A preserves the M527 identity; entering T3U55A while M527 is selected produces a mismatch rather than switching machines.
+- Automated run passed: https://github.com/BobbyT416/Copier-Wizard/actions/runs/39304868336 (head commit `fff8549d1a0c38898fe0d8a21cb7888471e74578`; 75 product numbers also passed the existing product-only verification test).
+- Published Build 264 to `main/test/index.html` and `main/test/version.json` only. Verified each release commit touched only its intended `test/...` file. Production root app was not changed.
+- Live Pages rendering could not be independently confirmed from the available browser access; user should confirm the test site displays Build 264 before functional testing.
+- Next action: user tests M527's filtered browser and mismatch behavior. If correct, continue standardizing the family-onboarding and regression-test process.
