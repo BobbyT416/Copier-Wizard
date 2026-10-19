@@ -3520,7 +3520,7 @@ function documentedDecisionAnswerLabels(question){
   };
   // Recognize common HP troubleshooting observations and state both outcomes
   // in the language of the actual question. The decision logic remains yes/no.
-  let m=q.match(/^Does\\s+(.+?)\\s+(still\\s+)?(not\\s+)?(return|returns|occur|occurs|persist|persists|fail|fails|display|displays|move|moves|turn|turns|rotate|rotates|operate|operates|work|works|pass|passes|show|shows|appear|appears|reappear|reappears|reoccur|reoccurs|start|starts|stop|stops|feed|feeds|jam|jams|print|prints|scan|scans|connect|connects|communicate|communicates|light|lights|change|changes|open|opens|close|closes|respond|responds|run|runs|complete|completes|meet|meets|match|matches|reach|reaches|detect|detects|spin|spins|function|functions)\\b(.*)$/i);
+  let m=q.match(/^Does\s+(.+?)\s+(still\s+)?(not\s+)?(return|returns|occur|occurs|persist|persists|fail|fails|display|displays|move|moves|turn|turns|rotate|rotates|operate|operates|work|works|pass|passes|show|shows|appear|appears|reappear|reappears|reoccur|reoccurs|start|starts|stop|stops|feed|feeds|jam|jams|print|prints|scan|scans|connect|connects|communicate|communicates|light|lights|change|changes|open|opens|close|closes|respond|responds|run|runs|complete|completes|meet|meets|match|matches|reach|reaches|detect|detects|spin|spins|function|functions)\b(.*)$/i);
   if(m){
     const subject=m[1].trim();
     const modifier=m[2] ? "still " : "";
@@ -3532,7 +3532,7 @@ function documentedDecisionAnswerLabels(question){
     }
     return {yes:`Yes — ${subject} ${modifier}${conjugate(verb)}${rest}`,no:`No — ${subject} does not ${verb}${rest}`};
   }
-  m=q.match(/^(Is|Are|Was|Were|Has|Have|Did|Do)\\s+(.+)$/i);
+  m=q.match(/^(Is|Are|Was|Were|Has|Have|Did|Do)\s+(.+)$/i);
   if(m){
     const aux=m[1].toLowerCase();
     const yesForm={is:"it is",are:"they are",was:"it was",were:"they were",has:"it has",have:"they have",did:"it did",do:"they do"}[aux];
