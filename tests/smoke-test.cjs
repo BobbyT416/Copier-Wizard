@@ -32,6 +32,18 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#machineType').count(), 1);
     console.log('✓ App loads in Chromium');
 
+    // A known product number alone must populate the machine identity and
+    // proceed to the verified/app-ready state without requiring other fields.
+    await page.locator('#product').fill('T3U55A');
+    await page.locator('#product').press('Tab');
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#machineType').inputValue(), 'color', 'product number should infer Color type');
+    assert.ok(await page.locator('#machineFamily').inputValue(), 'product number should infer machine family');
+    assert.ok(await page.locator('#model').inputValue(), 'product number should infer machine model');
+    assert.match(await page.locator('#verify').innerText(), /T3U55A|M776dn/i, 'verification should identify the product-number variant');
+    console.log('✓ Product number alone identifies the machine and reaches Machine Verified');
+
+    await page.reload({ waitUntil: 'networkidle' });
     await page.locator('#machineType').selectOption('color');
     const family = page.locator('#machineFamily');
     await family.waitFor({ state: 'visible' });
