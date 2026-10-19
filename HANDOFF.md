@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-19 (Build 265 verified-machine navigation fix)  
+**Updated:** 2026-10-19 (Build 266 contextual diagnostic decision wording)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **265** (`index.html` and `version.json` both set to 265; automated test result and live Pages deployment still need confirmation)  
+**Current development build:** **266** (`index.html` and `version.json` both set to 266; automated validation passed; test-site deployment pending confirmation)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -237,3 +237,16 @@ For error `59.00.03`:
 - Added browser tests for contextual label generation and to prevent the old generic true/false wording from reappearing. Updated the M776zs guided-flow test selector to work with the new No label.
 - Development build marker/version set to 266. Changes are committed but automated validation, manual testing, and test-site publishing remain pending.
 - **Next action:** inspect the workflow run for Build 266, fix any failures, then publish only `main/test/index.html` and `main/test/version.json` under the user's standing authorization for test-only releases. Keep production root files unchanged.
+
+
+## 12. Build 266 — contextual diagnostic decision wording (2026-10-19)
+
+- User preferred wording that follows the actual HP-documented condition instead of generic button labels “Yes — condition is true” / “No — condition is not true”.
+- Updated the shared documented-decision renderer used by both the guided documented path and the alphabetical message path. The displayed question is still derived from the extracted HP source condition; common question forms now get answer buttons that state the observed result. Example: “Does error 31.03.20 still return?” → “Yes — error 31.03.20 still returns” / “No — error 31.03.20 does not return”. State questions use concise answers such as “Yes — it is” / “No — it is not” below the specific question.
+- Corrected a grammatical issue in question conversion so conditions ending “still returns/occurs/persists/fails” become questions using the base verb (“Does … still return/occur/persist/fail?”).
+- For unrecognized question forms, fallback labels are “Yes — this matches the documented check” / “No — this does not match the documented check”. This is a display-only change: it does not change the parsed condition, documented action, or yes/no branch behavior.
+- Added smoke tests for source-condition-to-question grammar, contextual answer labels, and absence of the old generic true/false labels in rendered UI. Existing M776zs guided-flow test now selects a “No —” answer without depending on the old exact wording.
+- Development commit validated: `1e65b144c9b85e438640a7ca93b10d1ece0e6120`. Full browser/syntax/safety suite passed: [GitHub Actions run 39310472182](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39310472182).
+- Published Build 266 to the test site under the user's standing authorization for test-only releases. Test app commit `f7320bf5c6b84932e03ec61fb3c76e21176e36a1` changed only `test/index.html`; test version commit `1ff01897f8c73c8c61bda5946d95d4c9fb0ecf5e` changed only `test/version.json`. Production root `index.html` and `version.json` were not changed; root version remains Build 257.
+- GitHub Pages deployment for the app commit was still in progress at the time of this update: [run 39310673141](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39310673141). A second deployment run for the version marker was pending: [run 39310685674](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39310685674). Confirm deployment completion and the visible Build 266 label before asking the user to test.
+- **Next action:** confirm Pages has finished deploying Build 266; then ask the user to review the contextual Yes/No wording during a real troubleshooting flow. If anything sounds unnatural or does not match the HP branch, adjust the presentation without changing diagnostic logic. Production remains untouched.
