@@ -63,6 +63,22 @@ const server = http.createServer((req, res) => {
     await page.getByText('DIAGNOSTIC NAVIGATION TEST SENTINEL').waitFor({ state: 'visible' });
     console.log('✓ Back to Diagnosis restores the previous screen from a repair procedure');
 
+    for (const [key, expectedPart, forbiddenPart] of [
+      ['delivery-m776', 'RM2-3910-000CN', 'RM2-1786-000CN'],
+      ['delivery-m776zs', 'RM2-1786-000CN', 'RM2-3910-000CN']
+    ]) {
+      await page.evaluate((repairKey) => {
+        document.getElementById('result').innerHTML = '<h2>VARIANT PROCEDURE TEST SENTINEL</h2>';
+        window.showRepair(repairKey);
+      }, key);
+      const repairText = await page.locator('#result').innerText();
+      assert.ok(repairText.includes(expectedPart), key + ' should show its exact delivery assembly part');
+      assert.ok(!repairText.includes(forbiddenPart), key + ' must not show the other variant’s delivery assembly part');
+      await page.getByRole('button', { name: /Back to Diagnosis/i }).click();
+      await page.getByText('VARIANT PROCEDURE TEST SENTINEL').waitFor({ state: 'visible' });
+    }
+    console.log('✓ M776dn/z and M776zs open different verified delivery procedures and both return to diagnosis');
+
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
     console.log('✓ No uncaught browser JavaScript errors');
   } finally {
