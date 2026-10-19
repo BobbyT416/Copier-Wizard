@@ -104,6 +104,41 @@ const server = http.createServer((req, res) => {
     await diagnosticHelp.getByRole('button', { name: /Close/i }).last().click();
     console.log('✓ M13 diagnostic navigation identifies the M776zs branch and menu path');
 
+    // Full end-to-end M776zs variant path: product verification must drive parts and repair procedure selection.
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('#machineType').selectOption('color');
+    await page.locator('#machineFamily').waitFor({ state: 'visible' });
+    const zsFamilyValue = await page.locator('#machineFamily option').filter({ hasText: /M776/i }).first().getAttribute('value');
+    assert.ok(zsFamilyValue, 'M776 family should be available for M776zs test');
+    await page.locator('#machineFamily').selectOption(zsFamilyValue);
+    await page.locator('#model').waitFor({ state: 'visible' });
+    const zsModelValue = await page.locator('#model option').filter({ hasText: /M776/i }).first().getAttribute('value');
+    assert.ok(zsModelValue, 'M776 model should be available for M776zs test');
+    await page.locator('#model').selectOption(zsModelValue);
+    const zsProductOption = page.locator('#product option').filter({ hasText: /T3U56A/ }).first();
+    assert.ok(await zsProductOption.count(), 'M776zs product number T3U56A should be offered');
+    await page.locator('#product').selectOption(await zsProductOption.getAttribute('value'));
+    await page.getByRole('button', { name: /Verify Machine/i }).click();
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#verify').innerText(), /T3U56A|M776zs/i, 'Verification should acknowledge M776zs');
+    await page.locator('#lookupChoiceGrid button.lookup-choice').first().click();
+    await page.locator('#errorCodeLookup').fill('59.00.03');
+    await page.getByRole('button', { name: /Enter Error Code/i }).click();
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
+    const zsParts = await page.evaluate(() => cwM776PartsForError({ code: '59.00.03' }));
+    assert.ok(zsParts.some(part => part.includes('RM2-1786-000CN')), 'M776zs must resolve delivery assembly RM2-1786-000CN');
+    assert.ok(zsParts.some(part => part.includes('RM3-7380-000CN')), 'M776zs must resolve duplex controller RM3-7380-000CN');
+    assert.ok(!zsParts.some(part => part.includes('RM2-3910-000CN')), 'M776zs must not resolve M776dn/z delivery assembly');
+    assert.ok(!zsParts.some(part => part.includes('RM2-9921-000CN')), 'M776zs must not resolve M776dn/z duplex controller');
+    assert.match(await page.locator('#result').innerText(), /M13/, 'M776zs diagnosis should point to M13');
+    await page.getByRole('button', { name: /View Removal \/ Replacement Procedure/i }).click();
+    const zsRepairText = await page.locator('#result').innerText();
+    assert.ok(zsRepairText.includes('RM2-1786-000CN'), 'M776zs should open its own verified delivery procedure');
+    assert.ok(!zsRepairText.includes('RM2-3910-000CN'), 'M776zs repair screen must not show M776dn/z procedure');
+    await page.getByRole('button', { name: /Back to Diagnosis/i }).click();
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
+    console.log('✓ Full UI flow: M776zs/T3U56A selects 59.00.03, correct parts, M13, correct repair procedure, and returns');
+
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
     console.log('✓ No uncaught browser JavaScript errors');
   } finally {
