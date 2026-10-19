@@ -186,7 +186,7 @@ For error `59.00.03`:
 - Latest complete automated suite passed: [run 39291163344](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291163344), commit `e845b8888edb0df93df011ccfd93d557dbd0b3be`.
 - Build 262 app and version files published to `main/test/` with explicit user authorization; only `test/index.html` and `test/version.json` changed on `main`. Root `version.json` remains Build 257.
 - Build 262 Pages deployment run `39291308543` completed successfully. Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ . Ask the user to confirm the visible build label and manually test the workflow.
-- **Next action:** confirm the live Build 262 preview, then have the user test identity/readiness behavior and service reports. After that, begin a gradual data-driven family-package migration.
+- **Next action:** have the user confirm the test page shows Build 263, then test direct product entry, product-number browsing, and Change Machine navigation. After that, begin a gradual data-driven family-package migration.
 
 
 
@@ -196,7 +196,7 @@ For error `59.00.03`:
 - Added an explicit searchable **Browse Product Numbers** panel alongside direct product-number typing and native datalist suggestions. It searches product number, model label, and catalog key; selecting a result uses the existing verification path.
 - Identified-but-unsupported models remain blocked from guided diagnostics, but now show **Change Machine** and **Browse Product Numbers** actions instead of leaving the technician stranded.
 - Updated `tests/smoke-test.cjs` to cover unsupported-machine navigation and choosing M776zs/T3U56A from the browser. The selectors were tightened to avoid ambiguity between the always-present browser toggle and the unsupported-state action.
-- Build 263 automated run: [GitHub Actions run 39299019340](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39299019340), initially in progress; confirm its final result after the follow-up test-selector correction.
-- If validation passes, update only `main/test/index.html` and `main/test/version.json`; do not touch production root files.
+- Build 263 automated browser suite passed after the follow-up test-selector correction: [GitHub Actions run 39299315189](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39299315189), commit `e8e66e2312afbc38fc7eee2e09f16a1a7a523710`.
+- Build 263 is committed to `main/test/index.html` and `main/test/version.json` at main commit `0a4c00a0977e028c13fe34ec8d7e6a0a0433759e`. A GitHub compare confirmed those are the only changed paths on `main`; production root `index.html` and `version.json` remain Build 257. Live Pages serving status could not be independently confirmed from this environment; ask the user to verify the visible build number before functional testing.
 
-- Follow-up refinement: **Change Machine** now clears the previous product number and machine-type selection before returning to the selection card, preventing stale identity from confusing the next selection. Added explicit assertions for those reset behaviors. Automated validation is being rerun.
+- Follow-up refinement: **Change Machine** now clears the previous product number and machine-type selection before returning to the selection card, preventing stale identity from confusing the next selection. Added explicit assertions for those reset behaviors. Automated validation passed in run [39299315189](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39299315189).
