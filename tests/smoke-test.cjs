@@ -94,6 +94,19 @@ const server = http.createServer((req, res) => {
     }
     console.log('✓ Family-wide contract: product-number-only verification passed for ' + catalogProducts.length + ' catalog entries');
 
+    // The normalized manual package is E52645-specific. E52645 remains enabled,
+    // while an adjacent model in the shared selection family must stay gated
+    // until its exact workflow has been validated.
+    await page.locator('#product').fill('1PS54A');
+    await page.locator('#product').press('Tab');
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#verify').innerText(), /Machine Verified — App Ready/i, 'E52645 should remain enabled for its validated manual data');
+    await page.locator('#product').fill('F2A76A');
+    await page.locator('#product').press('Tab');
+    assert.match(await page.locator('#verify').innerText(), /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, 'M527 must not inherit E52645 workflow without exact validation');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 diagnostics must remain locked until its workflow is validated');
+    console.log('✓ Exact-model readiness gate: E52645 enabled; M527 identity verified but diagnostics locked');
+
     // Switching from a verified machine to an unknown product must clear all
     // previous verification/diagnostic state rather than leave stale guidance visible.
     await page.locator('#product').fill('T3U55A');
