@@ -39,7 +39,9 @@ Target workflow: **Identify/verify machine → enter error/message → guided tr
 - A separate development preview URL and its deployment wiring must be verified; do not assume GitHub Pages deploys the `development` branch.
 - A local/automated browser test passing does not prove the live test website is serving that build.
 - Prefer direct commits on `development` and automated tests over ZIP handoffs unless a ZIP is needed for a specific deployment or offline test.
-- Last verified file-level observation in this session: `version.json` on `development` contains `{"build":"260","version":"260"}`. The current branch head SHA and latest Actions run were **not independently confirmed in this new chat**; check them before relying on any prior run result.
+- Verified development head after the latest test change: `57f2d294af6b03bd5b4b7e38263f68705e37f14a`. `version.json` on `development` contains `{"build":"260","version":"260"}`.
+- Latest automated run at this checkpoint: **PASS**, run #35, [GitHub Actions run 39289198350](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39289198350), commit `57f2d294af6b03bd5b4b7e38263f68705e37f14a`.
+- Separate preview status: repository `main/test/version.json` still reports Build 259; `main/version.json` reports Build 257. Development is Build 260. The GitHub Pages configuration/live URL could not be independently verified in this session. Do not update `main` or its `test/` folder without explicit approval; production must remain untouched.
 
 ## 4. Latest work and evidence (2026-10-19)
 
@@ -57,14 +59,16 @@ Prior session reported these changes committed to `development` and a full autom
 
 Prior conversation reported that the change was committed on `development`; automated checks were still queued at the time, so do not assume they passed.
 
-Current `tests/smoke-test.cjs` content has a browser test that:
-1. Opens Copier Wizard in Chromium.
-2. Enters product number `T3U55A` alone and tabs away.
-3. Waits for `#problemCard` to appear.
-4. Asserts type becomes `color`, family and model are populated, and verification text identifies `T3U55A` or `M776dn`.
-5. Continues with the manual selection path and M776dn error `59.00.03` checks.
+Current `tests/smoke-test.cjs` includes:
+1. Product-number-only verification using `T3U55A` with type/family/model blank.
+2. A negative test using unknown product number `ZZZZZ`, confirming it does not unlock diagnosis and displays the catalog limitation.
+3. M776dn error `59.00.03` path, correct parts, matching repair procedure, and Back to Diagnosis.
+4. Distinct M776dn/M776zs repair procedure checks to prevent variant cross-use.
+5. Service report generation before resolution with the recommended part number included.
+6. M13 diagnostic navigation and a full M776zs `T3U56A` path confirming the correct parts, M13 branch, correct repair procedure, and return navigation.
+7. No uncaught browser JavaScript errors.
 
-Current test source therefore contains a product-number-only test. **Its latest run result has not been checked in this chat.** Confirm the current branch head, inspect the relevant commit and workflow run, then check whether Build 260 passes. If the test fails, inspect logs and fix on `development` only.
+**Latest result: PASS** — run #35, [39289198350](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39289198350), commit `57f2d294af6b03bd5b4b7e38263f68705e37f14a`. The immediately prior run #34 also passed product-number-only M776zs verification and the full M776/service-report suite. An earlier failed run was caused by an obsolete test trying to use `selectOption()` on the product-number text input; that test was corrected.
 
 Useful file references:
 - `index.html` on development: https://github.com/BobbyT416/Copier-Wizard/blob/development/index.html
@@ -74,10 +78,9 @@ Useful file references:
 
 ## 5. Immediate next actions — in order
 
-1. Inspect current `development` branch head and latest commit SHA. Confirm `version.json`, app build marker, and the latest relevant GitHub Actions run.
-2. Check Build 260 automated test results, including product-number-only verification. Fix failures on `development`; do not publish a failing build.
-3. Verify whether Build 259/260 is actually deployed to the separate test site. Establish/confirm a safe development preview URL if still missing. Do not touch production.
-4. After tests pass and the test site serves the expected build, give the user a short, exact manual test checklist. Prioritize:
+1. The current `development` Build 260 browser suite passed on commit `57f2d294af6b03bd5b4b7e38263f68705e37f14a`; keep this as the validated development baseline unless later code changes.
+2. The next deployment task is unresolved: `main/test/version.json` is Build 259 and `main/version.json` is Build 257. Verify the intended live preview URL and deployment setup. Do not change `main` or `main/test/` without explicit approval, and do not modify the production root.
+3. Once a safe Build 260 preview is available, ask the user to test product-number-only verification and service report generation. Prioritize:
    - Product number `T3U55A` entered with type/family/model blank; should jump straight to Machine Verified.
    - Known product number with no manual selections; ensure correct type/family/model are inferred.
    - Unknown/unmapped product number; must not falsely verify and must permit manual selection.
