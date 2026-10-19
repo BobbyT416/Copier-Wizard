@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#lookupChoiceGrid button.lookup-choice').first().click();
     await page.locator('#errorCodeLookup').fill('59.00.03');
     await page.getByRole('button', { name: /Enter Error Code/i }).click();
-    await page.getByText(/Documented Error — 59\\.00\\.03/i).waitFor({ state: 'visible' });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
     const diagnosisText = await page.locator('#result').innerText();
     assert.ok(diagnosisText.includes('Paper delivery assembly — RM2-3910-000CN'), 'M776dn branch should identify the documented delivery assembly');
     assert.ok(diagnosisText.includes('RM2-9921-000CN'), 'M776dn branch should identify the applicable duplex controller');
