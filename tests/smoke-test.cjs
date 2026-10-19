@@ -41,7 +41,13 @@ const server = http.createServer((req, res) => {
     assert.ok(await page.locator('#machineFamily').inputValue(), 'product number should infer machine family');
     assert.ok(await page.locator('#model').inputValue(), 'product number should infer machine model');
     assert.match(await page.locator('#verify').innerText(), /T3U55A|M776dn/i, 'verification should identify the product-number variant');
-    console.log('✓ Product number alone identifies the machine and reaches Machine Verified');
+    const continueButton = page.getByRole('button', { name: /Continue to Troubleshooting/i });
+    assert.ok(await continueButton.isVisible(), 'verified supported machine should show an explicit Continue to Troubleshooting action');
+    await continueButton.click();
+    await page.waitForTimeout(350);
+    const problemCardRect = await page.locator('#problemCard').evaluate(el => ({top:el.getBoundingClientRect().top,bottom:el.getBoundingClientRect().bottom,height:window.innerHeight}));
+    assert.ok(problemCardRect.top < problemCardRect.height && problemCardRect.bottom > 0, 'Continue to Troubleshooting should bring the next section into the viewport');
+    console.log('✓ Product number alone identifies the machine and provides a clear continuation into troubleshooting');
 
     // Family-wide contract: every cataloged product number must work through
     // the same product-number-only identification path. This automatically
