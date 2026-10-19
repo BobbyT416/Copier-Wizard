@@ -1,0 +1,77 @@
+name: Copier Wizard checks
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out development branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate HTML, JavaScript, build number, and safety invariants
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const version = JSON.parse(fs.readFileSync('version.json', 'utf8'));
+          const current = html.match(/const CURRENT\s*=\s*['"]([^'"]+)['"]/);
+          if (!current) throw new Error('Could not find the app build number in index.html.');
+          const build = String(version.build ?? version.version ?? '');
+          if (!build || build !== current[1]) {
+            throw new Error(`Build mismatch: index.html says ${current[1]}, version.json says ${build || '(missing)'}.`);
+          }
+          console.log(`✓ Build number agrees: ${build}`);
+
+          const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+          let checked = 0;
+          for (let i = 0; i < scripts.length; i++) {
+            const attrs = scripts[i][1];
+            const body = scripts[i][2];
+            if (/\bsrc\s*=/.test(attrs) || !body.trim()) continue;
+            if (/\btype\s*=\s*["'](?:application\/json|application\/ld\+json|importmap)["']/i.test(attrs)) continue;
+            try {
+              new Function(body);
+              checked++;
+            } catch (e) {
+              throw new Error(`Inline script #${i + 1} failed JavaScript parsing: ${e.message}`);
+            }
+          }
+          console.log(`✓ Parsed ${checked} inline JavaScript blocks`);
+
+          const required = [
+            ['back-to-diagnosis handler', /function\s+goBackDiagnostic\s*\(/],
+            ['start-new-diagnosis handler', /function\s+startOverDiagnostic\s*\(/],
+            ['diagnostic test navigation', /function\s+showDiagnosticNavigation\s*\(/],
+            ['verified repair procedure registry', /CW_VERIFIED_REPAIR_PROCEDURES/],
+            ['machine product-number verification', /T3U55A/],
+            ['M776z product number', /3WT91A/],
+            ['M776zs product number', /T3U56A/],
+            ['M776zs delivery part', /RM2-1786-000CN/],
+            ['M776dn/z delivery part', /RM2-3910-000CN/],
+            ['M776zs duplex controller', /RM3-7380-000CN/],
+            ['M776dn/z duplex controller', /RM2-9921-000CN/],
+            ['refuse unverified repair procedure', /Repair Procedure Not Verified/]
+          ];
+          for (const [label, regex] of required) {
+            if (!regex.test(html)) throw new Error(`Missing required safety/navigation feature: ${label}`);
+            console.log(`✓ ${label}`);
+          }
+          if (!fs.existsSync('cw-manual-data.js')) {
+            throw new Error('Required manual data file cw-manual-data.js is missing.');
+          }
+          console.log('✓ Manual data file exists');
+          NODE
