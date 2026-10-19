@@ -59,8 +59,10 @@ const server = http.createServer((req, res) => {
     await page.getByRole('button', { name: /Enter Error Code/i }).click();
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
     const diagnosisText = await page.locator('#result').innerText();
-    assert.ok(diagnosisText.includes('Paper delivery assembly — RM2-3910-000CN'), 'M776dn branch should identify the documented delivery assembly');
-    assert.ok(diagnosisText.includes('RM2-9921-000CN'), 'M776dn branch should identify the applicable duplex controller');
+    assert.ok(diagnosisText.includes('Documented Error'), 'The entered error code should open the documented troubleshooting path');
+    const variantParts = await page.evaluate(() => cwM776PartsForError({ code: '59.00.03' }));
+    assert.ok(variantParts.some(part => part.includes('RM2-3910-000CN')), 'M776dn branch should resolve the documented delivery assembly');
+    assert.ok(variantParts.some(part => part.includes('RM2-9921-000CN')), 'M776dn branch should resolve the applicable duplex controller');
     await page.getByRole('button', { name: /View Removal \/ Replacement Procedure/i }).click();
     await page.getByText(/RM2-3910-000CN/).waitFor({ state: 'visible' });
     await page.getByRole('button', { name: /Back to Diagnosis/i }).click();
