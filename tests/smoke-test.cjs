@@ -327,7 +327,7 @@ const server = http.createServer((req, res) => {
       const resultText = await page.locator('#result').innerText();
       if (/M13/.test(resultText)) break;
       const complete = page.getByRole('button', { name: /Step Completed — Continue/i });
-      const noCondition = page.getByRole('button', { name: /No — (?:error .*does not return|.*does not match the documented check|it is not|they are not)/i });
+      const noCondition = page.getByRole('button', { name: /No —/i });
       if (await complete.count()) {
         await complete.click();
       } else if (await noCondition.count()) {
