@@ -2123,6 +2123,11 @@ function configureProductNumberForModel(model){
   if(hint)hint.textContent=model
     ?"Product number is optional. Entering a known product number will identify the exact machine automatically."
     :"Enter a known HP product number to identify and verify the machine automatically, or select the machine type, family, and model below.";
+  // A search from a previous model must not make the new model look like it has no products.
+  const search=document.getElementById("productCatalogSearch");
+  const panel=document.getElementById("productBrowser");
+  if(search)search.value="";
+  if(panel&&!panel.classList.contains("hidden"))renderProductNumberBrowser("");
 }
 function productNumberInputChanged(value){
   const hint=document.getElementById("productHint");
