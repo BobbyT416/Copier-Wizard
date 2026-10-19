@@ -3388,16 +3388,16 @@ function showDiagnosticNavigation(testName){
   if(normalized.includes("sw2") && normalized.includes("top cover")){
     actionText="Open the Diagnostic Tests menu and select the SW2 top cover open detection switch test. Operate the top-cover condition as directed by the printer's test screen and observe the switch response.";
     resultText="The test result should be recorded as Pass or Fail. If the test fails, return to the documented troubleshooting step that directs the technician to escalate/check the specified controller connections.";
-  } else if (normalized.match(/\\bm11\\b/)) {
+  } else if (normalized.match(/\bm11\b/)) {
     actionText="For the M776dn/M776z, M856, and E85055 branch of the 59.00.04 troubleshooting procedure, select M11 (switchback motor test). Run the named test and observe the motor response as directed by the printer's diagnostic screen.";
     resultText="Record the result and continue only along the 59.00.04 CPMD branch for the verified machine variant. If the machine variant does not match this branch, stop and verify the product number.";
-  } else if (normalized.match(/\\bm12\\b/)) {
+  } else if (normalized.match(/\bm12\b/)) {
     actionText="For the M776dn/M776z, M856, and E85055 branch of the 59.00.03 troubleshooting procedure, select M12 as named by the CPMD. Run the named test and observe the motor response as directed by the printer's diagnostic screen.";
     resultText="Record the result and continue only along the 59.00.03 CPMD branch for the verified machine variant. If the machine variant does not match this branch, stop and verify the product number.";
-  } else if (normalized.match(/\\bm13\\b/)) {
+  } else if (normalized.match(/\bm13\b/)) {
     actionText="For the M776zs branch of the 59.00.03 troubleshooting procedure, select M13 as named by the CPMD. Run the named test and observe the motor response as directed by the printer's diagnostic screen.";
     resultText="Record the result and continue only along the 59.00.03 CPMD branch for the verified M776zs variant. Do not substitute the M776dn/M776z procedure.";
-  } else if (normalized.match(/\\bm15\\b/)) {
+  } else if (normalized.match(/\bm15\b/)) {
     actionText="For the M776zs branch of the 59.00.04 troubleshooting procedure, select M15 (switchback motor test). Run the named test and observe the motor response as directed by the printer's diagnostic screen.";
     resultText="Record the result and continue only along the 59.00.04 CPMD branch for the verified M776zs variant. Do not substitute the M776dn/M776z procedure.";
   }
