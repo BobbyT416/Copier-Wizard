@@ -2064,11 +2064,29 @@ function toggleProductNumberBrowser(forceOpen){
 function renderProductNumberBrowser(query){
   const results=document.getElementById('productCatalogResults');if(!results)return;
   const q=String(query||'').trim().toUpperCase();
-  const all=Object.entries(productNumberCatalog||{}).flatMap(([familyKey,items])=>(items||[]).map(item=>({familyKey,product:String(item.product||''),model:String(item.model||'')})));
+  const selectedModel=String(document.getElementById('model')?.value||'').trim();
+  const selectedKey=selectedModel?productCatalogKey(selectedModel):'';
+  const catalogEntries=Object.entries(productNumberCatalog||{});
+  const scopedEntries=selectedModel
+    ? (selectedKey&&productNumberCatalog[selectedKey] ? [[selectedKey,productNumberCatalog[selectedKey]]] : [])
+    : catalogEntries;
+  const all=scopedEntries.flatMap(([familyKey,items])=>(items||[]).map(item=>({familyKey,product:String(item.product||''),model:String(item.model||'')})));
   const matches=all.filter(item=>(item.product+' '+item.model+' '+item.familyKey).toUpperCase().includes(q)).sort((a,b)=>(a.model+' '+a.product).localeCompare(b.model+' '+b.product));
   results.innerHTML='';
-  if(!matches.length){const empty=document.createElement('div');empty.className='product-browser-empty';empty.textContent='No matching product numbers. Try a model name or a different search.';results.appendChild(empty);return;}
-  matches.forEach(item=>{const button=document.createElement('button');button.type='button';button.className='product-catalog-item';button.setAttribute('role','option');const name=document.createElement('span');name.textContent=item.model;const detail=document.createElement('small');detail.textContent='Family key: '+item.familyKey;name.appendChild(detail);const code=document.createElement('strong');code.textContent=item.product;button.append(name,code);button.addEventListener('click',()=>selectCatalogProduct(item.product));results.appendChild(button);});
+  if(!matches.length){
+    const empty=document.createElement('div');empty.className='product-browser-empty';
+    empty.textContent=selectedModel
+      ? 'No matching product numbers for '+selectedModel+'. Clear or change the selected model to browse other catalog entries.'
+      : 'No matching product numbers. Try a model name or a different search.';
+    results.appendChild(empty);return;
+  }
+  matches.forEach(item=>{
+    const button=document.createElement('button');button.type='button';button.className='product-catalog-item';button.setAttribute('role','option');
+    const name=document.createElement('span');name.textContent=item.model;
+    const detail=document.createElement('small');detail.textContent=selectedModel?'Product number for '+selectedModel:'Model group: '+item.familyKey;name.appendChild(detail);
+    const code=document.createElement('strong');code.textContent=item.product;button.append(name,code);
+    button.addEventListener('click',()=>selectCatalogProduct(item.product));results.appendChild(button);
+  });
 }
 function selectCatalogProduct(product){
   const input=document.getElementById('product');if(!input)return;
@@ -2085,7 +2103,12 @@ function populateProductNumberOptions(){
   const list=document.getElementById("productNumberOptions");
   if(!list)return;
   list.innerHTML="";
-  Object.entries(productNumberCatalog||{}).forEach(([key,entries])=>{
+  const selectedModel=String(document.getElementById("model")?.value||"").trim();
+  const selectedKey=selectedModel?productCatalogKey(selectedModel):"";
+  const entriesToShow=selectedModel
+    ? (selectedKey&&productNumberCatalog[selectedKey] ? [[selectedKey,productNumberCatalog[selectedKey]]] : [])
+    : Object.entries(productNumberCatalog||{});
+  entriesToShow.forEach(([key,entries])=>{
     (entries||[]).forEach(item=>{
       const option=document.createElement("option");
       option.value=item.product;
@@ -2100,6 +2123,11 @@ function configureProductNumberForModel(model){
   if(hint)hint.textContent=model
     ?"Product number is optional. Entering a known product number will identify the exact machine automatically."
     :"Enter a known HP product number to identify and verify the machine automatically, or select the machine type, family, and model below.";
+  // A search from a previous model must not make the new model look like it has no products.
+  const search=document.getElementById("productCatalogSearch");
+  const panel=document.getElementById("productBrowser");
+  if(search)search.value="";
+  if(panel&&!panel.classList.contains("hidden"))renderProductNumberBrowser("");
 }
 function productNumberInputChanged(value){
   const hint=document.getElementById("productHint");
@@ -2154,6 +2182,22 @@ function productNumberSelectionChanged(value){
   const typeEl=document.getElementById("machineType");
   const familyEl=document.getElementById("machineFamily");
   const modelEl=document.getElementById("model");
+  // If the technician already chose a machine manually, do not silently replace
+  // that selection with a different model/type when a conflicting product is typed.
+  const currentType=typeEl?.value||"";
+  const currentFamilyId=familyEl?.value||"";
+  const currentModel=modelEl?.value||"";
+  const currentFamily=machineSelectionFamilies[currentType]?.[currentFamilyId];
+  const mismatch=selected && (
+    (currentType && selected.type!==currentType) ||
+    (currentFamilyId && (selected.type!==currentType || selected.familyId!==currentFamilyId)) ||
+    (currentModel && productCatalogKey(currentModel)!==modelKey)
+  );
+  if(mismatch){
+    if(hint)hint.textContent="Product number does not match the selected machine. Choose a product number listed for "+(currentModel||currentFamily?.label||"the selected machine")+", or change the machine selection.";
+    if(verify)verify.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine: <strong>'+escapeHtml(currentModel||currentFamily?.label||currentType)+'</strong><br>Entered product number: <strong>'+escapeHtml(product)+'</strong><br>The machine selection was not changed. Choose a product number for the selected model or change the machine.<br><button type="button" class="secondary" onclick="returnToMachineSelection()">Change Machine</button></div>';
+    return;
+  }
   if(!selected){
     if(hint)hint.textContent="Product number "+product+" is cataloged as "+match.model+", but its machine family is not mapped yet. Please select the machine fields manually.";
     if(verify)verify.innerHTML='<div class="status danger"><strong>Machine Not Verified</strong><br>Product number '+escapeHtml(product)+' is cataloged as '+escapeHtml(match.model)+', but it is not mapped to a selectable family. No diagnostics or parts are available until that mapping is corrected.</div>';
@@ -5589,7 +5633,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '263';
+  const CURRENT = '264';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
