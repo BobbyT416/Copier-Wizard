@@ -44,9 +44,12 @@ const server = http.createServer((req, res) => {
     const continueButton = page.getByRole('button', { name: /Continue to Troubleshooting/i });
     assert.ok(await continueButton.isVisible(), 'verified supported machine should show an explicit Continue to Troubleshooting action');
     await continueButton.click();
-    await page.waitForTimeout(350);
-    const problemCardRect = await page.locator('#problemCard').evaluate(el => ({top:el.getBoundingClientRect().top,bottom:el.getBoundingClientRect().bottom,height:window.innerHeight}));
-    assert.ok(problemCardRect.top < problemCardRect.height && problemCardRect.bottom > 0, 'Continue to Troubleshooting should bring the next section into the viewport');
+    await page.waitForFunction(() => {
+      const el = document.getElementById('problemCard');
+      if (!el) return false;
+      const rect = el.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    }, null, { timeout: 3000 });
     console.log('✓ Product number alone identifies the machine and provides a clear continuation into troubleshooting');
 
     // Family-wide contract: every cataloged product number must work through
