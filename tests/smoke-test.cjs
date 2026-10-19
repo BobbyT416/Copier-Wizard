@@ -130,7 +130,12 @@ const server = http.createServer((req, res) => {
     assert.ok(zsParts.some(part => part.includes('RM3-7380-000CN')), 'M776zs must resolve duplex controller RM3-7380-000CN');
     assert.ok(!zsParts.some(part => part.includes('RM2-3910-000CN')), 'M776zs must not resolve M776dn/z delivery assembly');
     assert.ok(!zsParts.some(part => part.includes('RM2-9921-000CN')), 'M776zs must not resolve M776dn/z duplex controller');
-    assert.match(await page.locator('#result').innerText(), /M13/, 'M776zs diagnosis should point to M13');
+    // The diagnosis is intentionally guided step-by-step. Advance to step 4,
+    // where the CPMD documents the M13 diagnostic test for M776zs.
+    for (let step = 0; step < 3; step++) {
+      await page.getByRole('button', { name: /Step Completed — Continue/i }).click();
+    }
+    assert.match(await page.locator('#result').innerText(), /M13/, 'M776zs step 4 should point to M13');
     await page.getByRole('button', { name: /View Removal \/ Replacement Procedure/i }).click();
     const zsRepairText = await page.locator('#result').innerText();
     assert.ok(zsRepairText.includes('RM2-1786-000CN'), 'M776zs should open its own verified delivery procedure');
