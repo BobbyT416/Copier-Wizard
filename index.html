@@ -2255,7 +2255,7 @@ function cwM527ManualSearch(){
     const sourceText=fields.join(" ");
     // This is a reference search, not a guided workflow. Only return source
     // records whose extracted HP text explicitly identifies the M527 family.
-    return /\\bM527(?:c|z|dn|f|dnm|cm)?\\b/i.test(sourceText) &&
+    return /\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(sourceText) &&
       fields.some(value=>String(value||"").toLowerCase().includes(query));
   }).slice(0,8);
   if(!matches.length){
