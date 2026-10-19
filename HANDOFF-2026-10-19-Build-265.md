@@ -5,7 +5,7 @@
 **Working branch:** `development`  
 **Production branch:** `main`  
 **Build:** 265 in `development/index.html` and `development/version.json`  
-**Validation:** pending confirmation of the automated browser suite and test-site release.
+**Validation:** automated browser suite not independently confirmed in this session; Build 265 files published to test-site folder, live Pages serving status still needs confirmation.
 
 ## User-reported issue
 
@@ -33,14 +33,15 @@ After selecting/entering a machine and seeing Machine Verified, the user reports
 - Browser regression test: `e9d7f255d4ad558f312973f6ba647a97375372f5`
 - Handoff update: `9f4d786f3112763028eef34be600a73a90dccf71`
 
-## Next steps
+## Test-site release and next steps
 
-1. Check the current `development` branch head and automated browser test result. Do not claim pass until verified.
-2. If the suite passes, publish only `main/test/index.html` and `main/test/version.json` to Build 265. User has authorized test-only releases; production root files must remain unchanged.
-3. Verify the Pages deployment and ask the user to confirm Build 265 is displayed.
-4. Have the user test product `T3U55A` (M776dn): machine verification should take them to the troubleshooting section automatically, and the Continue button should also work.
-5. Test `F2A76A` (M527): identity verification should be explicit, but guided troubleshooting remains locked until exact M527 documentation/workflow validation is complete. Do not remove this safety gate just to avoid a dead end.
-6. If the user was testing M527 and expected diagnostic steps, explain that this is a separate readiness limitation, not merely a scrolling bug. Improve the unsupported-machine screen's next actions without unlocking unvalidated diagnostics.
+Build 265 was published under the user's standing authorization to `main/test/index.html` and `main/test/version.json` only. Release commits: `34f7bb76fb916e9be31b1ca31e03253a4560ec03` and `469762ec6a40af05d1cb1434fcffa94f60aee73c`. A compare against the Build 264 release confirms only those two paths changed on `main`; production root files were not modified. Live Pages serving status still needs confirmation.
+
+1. Check current `development` branch head and any matching automated browser test result; do not claim pass until verified.
+2. Confirm the live test page displays Build 265.
+3. Have the user test product `T3U55A` (M776dn): machine verification should take them to troubleshooting automatically, and the Continue button should also work.
+4. Test `F2A76A` (M527): identity verification should be explicit, but guided troubleshooting remains locked until exact M527 documentation/workflow validation is complete. Do not remove this safety gate just to avoid a dead end.
+5. If the user was testing M527 and expected diagnostic steps, explain that this is a separate readiness limitation, not merely a scrolling bug.
 
 ## Safety / change control
 
