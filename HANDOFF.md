@@ -241,3 +241,12 @@ For error `59.00.03`:
 - GitHub Pages deployment completed successfully for the final test-site version commit: [run 39310685674](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39310685674). The preceding app-only deployment was cancelled when the version-marker commit triggered the final deployment. The final run includes both test files.
 - The live site could not be independently read by the available web fetcher; the repository files and successful deployment workflow are confirmed. Ask the user to verify the visible Build 266 label before functional testing.
 - **Next action:** have the user review the contextual Yes/No wording during a real troubleshooting flow. If anything sounds unnatural or does not match the HP branch, adjust the presentation without changing diagnostic logic. Production remains untouched.
+
+
+## 2026-10-19 — Build 268 M527 verified-machine reference entry point
+- User reported Build 267 still dead-ended after verifying M527c. Root cause: the family readiness gate correctly blocks the E52645 guided workflow for M527, but the verified screen offered no diagnostic entry point.
+- Added a **Search HP Manual** reference lookup to the verified-but-guided-workflow-disabled screen. It searches the indexed HP error records only when the record's extracted text explicitly mentions the M527 family, then displays the source entry's documented summary/steps and only part references that explicitly mention M527. It is a source-reference lookup, **not** a validated branching workflow, and does not unlock the E52645 guided diagnostic engine.
+- Removed product-number browsing from the verified screen; Change Machine remains available.
+- Added a smoke-test path for verified M527 manual search using error code 30.01.44. The test has been updated in source but has **not yet been run in a browser in this session**.
+- Development source commit for the new lookup: `4def11a2d33e8d689f1c2dce9575b5c1a845d494`; development version marker updated to Build 268 in commit `a5aa04eed242cc2f6563aa70ff47412d369b8698`. Earlier same-turn commits added the implementation and test changes; these are all on `development`.
+- Next: publish Build 268 to `main/test/index.html` and `main/test/version.json` only; verify the Pages deployment; then test M527 error-code search and check that unknown codes produce a safe no-match message. Production root stays untouched.
