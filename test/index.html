@@ -377,7 +377,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
   }
 }
 </style>
-<link href="../icon-192.png" rel="icon"/><link href="../apple-touch-icon.png" rel="apple-touch-icon"/>
+<link href="icon-192.png" rel="icon"/><link href="apple-touch-icon.png" rel="apple-touch-icon"/>
 <style id="cw-update-bubble">#cwUpdateBubble{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1f5f8b;color:#fff;padding:9px 14px;border-radius:18px;font-weight:700;font-size:13px;box-shadow:0 3px 12px #0003;z-index:9999;display:none;white-space:nowrap}#cwUpdateBubble.show{display:block}</style>
 <style id="cw-parts-lookup-clean">
 .part-lookup-panel{margin-top:16px;padding:16px;border:1px solid #d8dee6;border-radius:12px;background:#fff}
@@ -462,33 +462,32 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="icon-192.png"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
 <label>Manufacturer</label>
 <select id="manufacturer"><option>HP</option></select>
-<label>Printer Type</label>
+<label>Printer Type <span style="font-weight:normal">(optional if product number is entered)</span></label>
 <select id="machineType" onchange="machineTypeChanged(this.value)">
 <option value="">Select printer type...</option>
 <option value="mono">Monochrome</option>
 <option value="color">Color</option>
 <option value="pagewide">PageWide</option>
 </select>
-<label>Machine Family</label>
+<label>Machine Family <span style="font-weight:normal">(optional if product number is entered)</span></label>
 <select disabled="" id="machineFamily" onchange="familySelectionChanged(this.value)">
 <option value="">Select a printer type first...</option>
 </select>
-<label>Model</label>
+<label>Model <span style="font-weight:normal">(optional if product number is entered)</span></label>
 <select disabled="" id="model" onchange="modelSelectionChanged(this.value)">
 <option value="">Select a family first...</option>
 </select>
 <div class="source-note" id="modelHint"></div>
 <label>Product Number <span style="font-weight:normal">(optional)</span></label>
-<select disabled="" id="product" onchange="productNumberSelectionChanged(this.value)">
-<option value="">Product Number</option>
-</select>
-<div class="source-note" id="productHint">Optional. Select the exact product number if you want the app to verify the complete model designation.</div>
+<input id="product" list="productNumberOptions" autocomplete="off" placeholder="Enter HP product number (e.g., T3U55A)" onchange="productNumberSelectionChanged(this.value)" oninput="productNumberInputChanged(this.value)"/>
+<datalist id="productNumberOptions"></datalist>
+<div class="source-note" id="productHint">Fastest option: enter the HP product number. The app will identify the machine and go directly to Machine Verified. If you do not have the product number, select the type, family, and model instead.</div>
 <div class="hidden" id="firmwareSection"><label>FutureSmart level</label><select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)"><option value="">Select FutureSmart level...</option></select></div>
 <button onclick="verifyModel()">Verify Machine</button>
 <div id="verify"></div>
@@ -978,7 +977,7 @@ function preparePrintableReportLink(el){
       body{background:#fff!important;padding:24px!important;color:#111!important}
       #serviceReportCard{display:block!important;border:0!important;box-shadow:none!important;max-width:900px!important;margin:0 auto!important}
       @media print{body{padding:0!important}}
-    </style><link rel="icon" href="../icon-192.png"><link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    </style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head><body>${clone.outerHTML}
 
 </body></html>`;
@@ -1261,7 +1260,7 @@ header.cw-header > #cw-home-btn:active{
 }
 
 
-</style><link rel="icon" href="../icon-192.png"><link rel="apple-touch-icon" href="../apple-touch-icon.png">
+</style><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head><body>
     <div class="external-report-toolbar no-print">
       <a href="${printAction}">🖨 Print</a>
@@ -2038,6 +2037,8 @@ const productNumberCatalog={
   "E58650":[{product:"L3U42A",model:"E58650dn"},{product:"L3U43A",model:"E58650z"}],
   "E75160":[{product:"J7Z06A",model:"E75160dn"}]
 };
+populateProductNumberOptions();
+
 function productCatalogKey(model){
   const s=String(model||"").trim().toUpperCase();
   if(!s)return "";
@@ -2045,29 +2046,74 @@ function productCatalogKey(model){
   return keys.find(k=>String(k).toUpperCase()===s) || "";
 }
 
+function populateProductNumberOptions(){
+  const list=document.getElementById("productNumberOptions");
+  if(!list)return;
+  list.innerHTML="";
+  Object.entries(productNumberCatalog||{}).forEach(([key,entries])=>{
+    (entries||[]).forEach(item=>{
+      const option=document.createElement("option");
+      option.value=item.product;
+      option.label=item.product+" — "+item.model+" ("+key+")";
+      list.appendChild(option);
+    });
+  });
+}
 function configureProductNumberForModel(model){
-  const el=document.getElementById("product"),hint=document.getElementById("productHint");
-  if(!el)return;
-  const key=productCatalogKey(model),entries=productNumberCatalog[key]||[],previous=el.value;
-  const isM776=String(model||"").toUpperCase()==="M776";
-  el.disabled=false;
-  el.innerHTML='<option value="">'+(isM776?'Select exact Product Number':'Select Product Number (optional)')+'</option>';
-  if(entries.length){
-    entries.forEach(item=>{const o=document.createElement("option");o.value=item.product;o.textContent=item.product+" — "+item.model;el.appendChild(o);});
-    if(previous && entries.some(x=>x.product===previous)) el.value=previous;
-    if(hint)hint.textContent=isM776?"Required for M776. Select the exact product number shown on the machine so Copier Wizard can select the correct M776dn, M776z, or M776zs variant.":"Optional. If you use Parts Lookup, select the exact product number shown on the machine.";
-  }else{
-    el.innerHTML='<option value="">No product numbers cataloged for this model</option>';
-    el.disabled=!model;
-    if(hint)hint.textContent=model?"Product Number is optional. A product-number list is not yet cataloged for this model.":"Select a model first.";
-  }
-}
-
-function productNumberSelectionChanged(value){
+  populateProductNumberOptions();
   const hint=document.getElementById("productHint");
-  if(hint) hint.textContent="";
+  if(hint)hint.textContent=model
+    ?"Product number is optional. Entering a known product number will identify the exact machine automatically."
+    :"Enter a known HP product number to identify and verify the machine automatically, or select the machine type, family, and model below.";
 }
-
+function productNumberInputChanged(value){
+  const hint=document.getElementById("productHint");
+  const typed=String(value||"").trim().toUpperCase();
+  if(!typed){if(hint)hint.textContent="Fastest option: enter the HP product number. The app will identify the machine and go directly to Machine Verified. If you do not have the product number, select the type, family, and model instead.";return;}
+  const found=Object.values(productNumberCatalog||{}).flat().some(x=>String(x.product).toUpperCase()===typed);
+  if(hint)hint.textContent=found?"Product number recognized. Machine identity will be filled in when you leave this field.":"Enter a complete product number from the machine label.";
+}
+function productNumberSelectionChanged(value){
+  const product=String(value||"").trim().toUpperCase();
+  if(!product)return;
+  let match=null,modelKey="";
+  for(const [key,entries] of Object.entries(productNumberCatalog||{})){
+    const item=(entries||[]).find(x=>String(x.product).toUpperCase()===product);
+    if(item){match=item;modelKey=key;break;}
+  }
+  const hint=document.getElementById("productHint");
+  const verify=document.getElementById("verify");
+  if(!match){
+    if(hint)hint.textContent="That product number is not in the current product-number catalog. You can still identify the machine using the fields below.";
+    return;
+  }
+  let selected=null;
+  for(const [type,families] of Object.entries(machineSelectionFamilies||{})){
+    for(const [familyId,family] of Object.entries(families||{})){
+      const models=family.models||[];
+      if(models.includes(modelKey)||models.includes(match.model)){
+        selected={type,familyId,family};
+        break;
+      }
+    }
+    if(selected)break;
+  }
+  const typeEl=document.getElementById("machineType");
+  const familyEl=document.getElementById("machineFamily");
+  const modelEl=document.getElementById("model");
+  if(!selected){
+    if(hint)hint.textContent="Product number "+product+" is cataloged as "+match.model+", but its machine family is not mapped yet. Please select the machine fields manually.";
+    return;
+  }
+  if(typeEl){typeEl.value=selected.type;machineTypeChanged(selected.type);}
+  if(familyEl){familyEl.value=selected.familyId;familySelectionChanged(selected.familyId);}
+  const modelValue=(selected.family.models||[]).includes(modelKey)?modelKey:((selected.family.models||[]).includes(match.model)?match.model:"");
+  if(modelEl&&modelValue){modelEl.value=modelValue;modelSelectionChanged(modelValue);}
+  const productEl=document.getElementById("product");
+  if(productEl)productEl.value=product;
+  if(hint)hint.textContent="Recognized "+product+" — "+match.model+". Machine details filled in; verifying automatically.";
+  if(verifyModel)verifyModel();
+}
 const firmwarePolicy={
   M506:["FS3","FS5"],M507:["FS4","FS5"],M525:["FS3","FS4"],M527:["FS3","FS4","FS5"],M528:["FS4","FS5"],E52545:["FS4","FS5"],E52645:["FS4","FS5"],
   M607:["FS4","FS5"],M608:["FS4","FS5"],M609:["FS4","FS5"],M610:["FS5"],M611:["FS5"],M612:["FS5"],
@@ -2087,7 +2133,7 @@ function firmwareLabel(v){return v==='FS3'?'FutureSmart 3':v==='FS4'?'FutureSmar
 function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1)fw.value=opts[0];return opts;}
 function modelSelectionChanged(model){const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML=family?.docs?'<span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'';configureProductNumberForModel(model);configureFirmwareForModel(model);}
 function firmwareSelectionChanged(fw){}
-function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const productEntries=productNumberCatalog[productCatalogKey(m)]||[];if(String(m).toUpperCase()==='M776'&&!product){v.innerHTML='<div class="status danger"><strong>M776 Product Number Required</strong><br>Select the exact HP Product Number before continuing. The M776dn, M776z, and M776zs variants use different documented parts and procedures.</div>';if(productEl)productEl.focus();return;}const validProduct=product ? productEntries.some(x=>x.product===product) : true;if(product && !validProduct){v.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine model: <strong>'+escapeHtml(m)+'</strong><br>Entered Product Number: <strong>'+escapeHtml(product)+'</strong><br>This product number is not cataloged for the selected model. Verify the model and product number on the machine before continuing.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level before continuing.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported || (family.supportedModels && !family.supportedModels.includes(m))){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
+function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const productEntries=productNumberCatalog[productCatalogKey(m)]||[];if(String(m).toUpperCase()==='M776'&&!product){v.innerHTML='<div class="status danger"><strong>M776 Product Number Required</strong><br>Select the exact HP Product Number before continuing. The M776dn, M776z, and M776zs variants use different documented parts and procedures.</div>';if(productEl)productEl.focus();return;}const validProduct=product ? productEntries.some(x=>x.product===product) : true;if(product && !validProduct){v.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine model: <strong>'+escapeHtml(m)+'</strong><br>Entered Product Number: <strong>'+escapeHtml(product)+'</strong><br>This product number is not cataloged for the selected model. Verify the model and product number on the machine before continuing.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw&&!product){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level if known, or enter a product number to verify the machine without this additional step.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported || (family.supportedModels && !family.supportedModels.includes(m))){v.innerHTML='<div class="status"><strong>Documentation found — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. The supporting documentation is present, but this family has not yet been enabled for guided troubleshooting in this build.</div>';return;}verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ Machine Verified — App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'</div>';document.getElementById('problemCard').classList.remove('hidden');}
 
 function backToErrorCodeEntry(){
   if(typeof closeManualCoverage==="function") closeManualCoverage();
@@ -5488,7 +5534,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='259';
+  const CURRENT='260';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
