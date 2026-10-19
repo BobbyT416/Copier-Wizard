@@ -43,6 +43,42 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#verify').innerText(), /T3U55A|M776dn/i, 'verification should identify the product-number variant');
     console.log('✓ Product number alone identifies the machine and reaches Machine Verified');
 
+    // Family-wide contract: every cataloged product number must work through
+    // the same product-number-only identification path. This automatically
+    // expands coverage when a new family/product is added to the catalog.
+    const catalogProducts = await page.evaluate(() =>
+      Object.entries(productNumberCatalog || {}).flatMap(([familyKey, items]) =>
+        (items || []).map(item => ({
+          familyKey,
+          product: String(item.product || '').trim().toUpperCase(),
+          model: String(item.model || '').trim()
+        }))
+      )
+    );
+    assert.ok(catalogProducts.length > 0, 'Product-number catalog should not be empty');
+    const seenProducts = new Set();
+    for (const item of catalogProducts) {
+      assert.ok(item.product, 'Every catalog entry must include a product number');
+      assert.ok(!seenProducts.has(item.product), 'Duplicate product number in catalog: ' + item.product);
+      seenProducts.add(item.product);
+      await page.locator('#product').fill(item.product);
+      await page.locator('#product').press('Tab');
+      const productValue = (await page.locator('#product').inputValue()).trim().toUpperCase();
+      const typeValue = await page.locator('#machineType').inputValue();
+      const familyValue = await page.locator('#machineFamily').inputValue();
+      const modelValue = await page.locator('#model').inputValue();
+      const verifyText = await page.locator('#verify').innerText();
+      assert.equal(productValue, item.product, item.product + ' should remain the selected product number');
+      assert.ok(typeValue, item.product + ' should infer machine type');
+      assert.ok(familyValue, item.product + ' should infer machine family');
+      assert.ok(modelValue, item.product + ' should infer machine model');
+      assert.ok(
+        verifyText.toUpperCase().includes(item.product),
+        item.product + ' should reach Machine Verified using the product number alone; verification text was: ' + verifyText
+      );
+    }
+    console.log('✓ Family-wide contract: product-number-only verification passed for ' + catalogProducts.length + ' catalog entries');
+
     // An unknown product number must not verify a machine or unlock diagnosis.
     await page.reload({ waitUntil: 'networkidle' });
     await page.locator('#product').fill('ZZZZZ');
