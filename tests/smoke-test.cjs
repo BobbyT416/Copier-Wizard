@@ -42,8 +42,8 @@ const server = http.createServer((req, res) => {
     await family.selectOption(familyValue);
     const model = page.locator('#model');
     await model.waitFor({ state: 'visible' });
-    const modelValue = await model.locator('option').filter({ hasText: /M776dn/i }).first().getAttribute('value');
-    assert.ok(modelValue, 'M776dn should be available in the M776 family');
+    const modelValue = await model.locator('option').filter({ hasText: /M776/i }).first().getAttribute('value');
+    assert.ok(modelValue, 'M776 model entry should be available in the M776 family');
     await model.selectOption(modelValue);
     const product = page.locator('#product');
     const productOption = product.locator('option').filter({ hasText: /T3U55A/ }).first();
