@@ -130,21 +130,16 @@ const server = http.createServer((req, res) => {
     console.log('✓ M13 diagnostic navigation identifies the M776zs branch and menu path');
 
     // Full end-to-end M776zs variant path: product verification must drive parts and repair procedure selection.
+    // Product-number-first requirement applies to every supported variant:
+    // enter T3U56A with all other identification fields blank and let the app
+    // identify and verify M776zs automatically.
     await page.reload({ waitUntil: 'networkidle' });
-    await page.locator('#machineType').selectOption('color');
-    await page.locator('#machineFamily').waitFor({ state: 'visible' });
-    const zsFamilyValue = await page.locator('#machineFamily option').filter({ hasText: /M776/i }).first().getAttribute('value');
-    assert.ok(zsFamilyValue, 'M776 family should be available for M776zs test');
-    await page.locator('#machineFamily').selectOption(zsFamilyValue);
-    await page.locator('#model').waitFor({ state: 'visible' });
-    const zsModelValue = await page.locator('#model option').filter({ hasText: /M776/i }).first().getAttribute('value');
-    assert.ok(zsModelValue, 'M776 model should be available for M776zs test');
-    await page.locator('#model').selectOption(zsModelValue);
-    const zsProductOption = page.locator('#product option').filter({ hasText: /T3U56A/ }).first();
-    assert.ok(await zsProductOption.count(), 'M776zs product number T3U56A should be offered');
-    await page.locator('#product').selectOption(await zsProductOption.getAttribute('value'));
-    await page.getByRole('button', { name: /Verify Machine/i }).click();
+    await page.locator('#product').fill('T3U56A');
+    await page.locator('#product').press('Tab');
     await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#machineType').inputValue(), 'color', 'T3U56A should infer Color type');
+    assert.ok(await page.locator('#machineFamily').inputValue(), 'T3U56A should infer machine family');
+    assert.ok(await page.locator('#model').inputValue(), 'T3U56A should infer machine model');
     assert.match(await page.locator('#verify').innerText(), /T3U56A|M776zs/i, 'Verification should acknowledge M776zs');
     await page.locator('#lookupChoiceGrid button.lookup-choice').first().click();
     await page.locator('#errorCodeLookup').fill('59.00.03');
