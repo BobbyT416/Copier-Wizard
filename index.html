@@ -3458,50 +3458,50 @@ function documentedDecisionQuestion(condition){
   // Convert common HP conditional wording into a direct technician question.
   // Keep the source condition intact; only the presentation is normalized.
   let m=c.match(/^(.+?)\s+still\s+(returns?|occurs?|persists?|fails?)$/i);
-  if(m) return \`Does \${m[1].trim()} still \${m[2].toLowerCase()}?\`;
+  if(m) return `Does \${m[1].trim()} still \${m[2].toLowerCase()}?`;
 
   m=c.match(/^(.+?)\s+(returns?|occurs?|persists?|fails?)\s+(.+)$/i);
   if(m){
     const baseVerb={returns:"return",return:"return",occurs:"occur",occur:"occur",persists:"persist",persist:"persist",fails:"fail",fail:"fail"}[m[2].toLowerCase()]||m[2].toLowerCase();
-    return \`Does \${m[1].trim()} \${baseVerb} \${m[3].trim()}?\`;
+    return `Does \${m[1].trim()} \${baseVerb} \${m[3].trim()}?`;
   }
 
   m=c.match(/^(.+?)\s+are\s+(.+?)\s+and\s+(.+?)\s+still\s+(persists?|returns?|occurs?|fails?)$/i);
   if(m){
     const baseVerb={persists:"persist",persist:"persist",returns:"return",return:"return",occurs:"occur",occur:"occur",fails:"fail",fail:"fail"}[m[5].toLowerCase()]||m[5].toLowerCase();
-    return \`Are \${m[1].trim()} \${m[2].trim()}, and does \${m[3].trim()} still \${baseVerb}?\`;
+    return `Are \${m[1].trim()} \${m[2].trim()}, and does \${m[3].trim()} still \${baseVerb}?`;
   }
 
   m=c.match(/^(.+?)\s+is\s+(.+)$/i);
-  if(m) return \`Is \${m[1].trim()} \${m[2].trim()}?\`;
+  if(m) return `Is \${m[1].trim()} \${m[2].trim()}?`;
   m=c.match(/^(.+?)\s+are\s+(.+)$/i);
-  if(m) return \`Are \${m[1].trim()} \${m[2].trim()}?\`;
+  if(m) return `Are \${m[1].trim()} \${m[2].trim()}?`;
   m=c.match(/^(.+?)\s+was\s+(.+)$/i);
-  if(m) return \`Was \${m[1].trim()} \${m[2].trim()}?\`;
+  if(m) return `Was \${m[1].trim()} \${m[2].trim()}?`;
   m=c.match(/^(.+?)\s+were\s+(.+)$/i);
-  if(m) return \`Were \${m[1].trim()} \${m[2].trim()}?\`;
+  if(m) return `Were \${m[1].trim()} \${m[2].trim()}?`;
 
   m=c.match(/^(.+?)\s+did\s+not\s+(.+)$/i);
-  if(m) return \`Did \${m[1].trim()} not \${m[2].trim()}?\`;
+  if(m) return `Did \${m[1].trim()} not \${m[2].trim()}?`;
   m=c.match(/^(.+?)\s+does\s+not\s+(.+)$/i);
-  if(m) return \`Does \${m[1].trim()} not \${m[2].trim()}?\`;
+  if(m) return `Does \${m[1].trim()} not \${m[2].trim()}?`;
   m=c.match(/^(.+?)\s+do\s+not\s+(.+)$/i);
-  if(m) return \`Do \${m[1].trim()} not \${m[2].trim()}?\`;
+  if(m) return `Do \${m[1].trim()} not \${m[2].trim()}?`;
   m=c.match(/^(.+?)\s+has\s+not\s+(.+)$/i);
-  if(m) return \`Has \${m[1].trim()} not \${m[2].trim()}?\`;
+  if(m) return `Has \${m[1].trim()} not \${m[2].trim()}?`;
 
   m=c.match(/^(.+?)\s+(reappears?|reoccurs?)$/i);
-  if(m) return \`Does \${m[1].trim()} \${m[2].toLowerCase().startsWith("reappear")?"reappear":"reoccur"}?\`;
+  if(m) return `Does \${m[1].trim()} \${m[2].toLowerCase().startsWith("reappear")?"reappear":"reoccur"}?`;
   m=c.match(/^(.+?)\s+displays?\s+again$/i);
-  if(m) return \`Does \${m[1].trim()} display again?\`;
+  if(m) return `Does \${m[1].trim()} display again?`;
   m=c.match(/^(.+?)\s+moves?\s+freely$/i);
-  if(m) return \`Does \${m[1].trim()} move freely?\`;
+  if(m) return `Does \${m[1].trim()} move freely?`;
   m=c.match(/^(.+?)\s+persists?$/i);
-  if(m) return \`Does \${m[1].trim()} persist?\`;
+  if(m) return `Does \${m[1].trim()} persist?`;
   m=c.match(/^(.+?)\s+fails?$/i);
-  if(m) return \`Does \${m[1].trim()} fail?\`;
+  if(m) return `Does \${m[1].trim()} fail?`;
 
-  return \`Does this match what you observed: \${c}?\`;
+  return `Does this match what you observed: \${c}?`;
 }
 
 function documentedDecisionAnswerLabels(question){
@@ -3521,14 +3521,14 @@ function documentedDecisionAnswerLabels(question){
     let phrase=m[2].trim();
     if(/^not\s+/i.test(phrase)){
       const rest=phrase.replace(/^not\s+/i,"");
-      return {yes:\`Yes — \${subject} does not \${rest}\`,no:\`No — \${subject} does \${rest}\`};
+      return {yes:`Yes — \${subject} does not \${rest}`,no:`No — \${subject} does \${rest}`};
     }
     let modifier="";
     if(/^still\s+/i.test(phrase)){modifier="still ";phrase=phrase.replace(/^still\s+/i,"");}
     const v=phrase.match(/^([a-z-]+)(.*)$/i);
     if(v){
       const verb=v[1].toLowerCase(), rest=v[2]||"";
-      return {yes:\`Yes — \${subject} \${modifier}\${conjugate(verb)}\${rest}\`,no:\`No — \${subject} does not \${verb}\${rest}\`};
+      return {yes:`Yes — \${subject} \${modifier}\${conjugate(verb)}\${rest}`,no:`No — \${subject} does not \${verb}\${rest}`};
     }
   }
   m=q.match(/^(Is|Are|Was|Were|Has|Have|Did|Do)\s+(.+)$/i);
@@ -3536,7 +3536,7 @@ function documentedDecisionAnswerLabels(question){
     const aux=m[1].toLowerCase();
     const yesForm={is:"it is",are:"they are",was:"it was",were:"they were",has:"it has",have:"they have",did:"it did",do:"they do"}[aux];
     const noForm={is:"it is not",are:"they are not",was:"it was not",were:"they were not",has:"it has not",have:"they have not",did:"it did not",do:"they do not"}[aux];
-    return {yes:\`Yes — \${yesForm}\`,no:\`No — \${noForm}\`};
+    return {yes:`Yes — \${yesForm}`,no:`No — \${noForm}`};
   }
   return {yes:"Yes — this matches the documented check",no:"No — this does not match the documented check"};
 }
@@ -3547,7 +3547,7 @@ function renderDocumentedDecisionControls(step, index, mode){
   const fn=mode==="alphabetical" ? "cwAlphabeticalDecision" : "cwDocumentedDecision";
   const question=documentedDecisionQuestion(decision.condition);
   const answers=documentedDecisionAnswerLabels(question);
-  return \`<div class="documented-decision" style="margin-top:16px;padding:14px;border:1px solid #cfd9e2;border-radius:9px;background:#f8fafc;">
+  return `<div class="documented-decision" style="margin-top:16px;padding:14px;border:1px solid #cfd9e2;border-radius:9px;background:#f8fafc;">
     <strong>Decision point</strong>
     <div style="margin-top:7px;line-height:1.45;font-weight:600;">\${escapeHtml(question)}</div>
     <div style="margin-top:6px;color:#5b6875;font-size:.92rem;">Answer based on the documented check you just performed.</div>
@@ -3556,7 +3556,7 @@ function renderDocumentedDecisionControls(step, index, mode){
       <button type="button" class="secondary" onclick="\${fn}('no')">\${escapeHtml(answers.no)}</button>
     </div>
     <div id="documentedDecisionDetail" style="margin-top:12px;"></div>
-  </div>\`;
+  </div>`;
 }
 
 function extractDiagnosticTestReference(step){
