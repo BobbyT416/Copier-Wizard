@@ -106,6 +106,22 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#verify').innerText(), /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, 'M527 must not inherit E52645 workflow without exact validation');
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 diagnostics must remain locked until its workflow is validated');
     console.log('✓ Exact-model readiness gate: E52645 enabled; M527 identity verified but diagnostics locked');
+    // Unsupported-but-identified machines must have a clear exit path.
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'unsupported M527 must not unlock diagnostics');
+    assert.ok(await page.getByRole('button', { name: 'Change Machine' }).isVisible(), 'unsupported M527 should offer Change Machine');
+    assert.ok(await page.getByRole('button', { name: 'Browse Product Numbers' }).isVisible(), 'unsupported M527 should offer Browse Product Numbers');
+    await page.getByRole('button', { name: 'Change Machine' }).click();
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'Change Machine should leave diagnostics locked');
+    await page.getByRole('button', { name: 'Browse Product Numbers' }).click();
+    await page.locator('#productCatalogSearch').fill('M776zs');
+    const zsChoice = page.locator('#productCatalogResults button').filter({ hasText: 'T3U56A' });
+    await zsChoice.waitFor({ state: 'visible' });
+    await zsChoice.click();
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#verify').innerText(), /T3U56A|M776zs/i, 'browser selection should verify the selected product number');
+    assert.equal(await page.locator('#productBrowser').isVisible(), false, 'selecting a product should close the browser');
+    console.log('✓ Unsupported-machine navigation and searchable product-number browser');
+
 
     // Clearing the product number or changing manual machine selectors must
     // invalidate any previously verified machine and hide its diagnostic path.
@@ -153,7 +169,7 @@ const server = http.createServer((req, res) => {
     assert.ok(modelValue, 'M776 model entry should be available in the M776 family');
     await model.selectOption(modelValue);
     const product = page.locator('#product');
-    // Product number is a text input with datalist suggestions, not a select.
+    // Product number is a text input with datalist suggestions and a searchable browser, not a select.
     // Enter the known number and let the app's product-number workflow verify it.
     await product.fill('T3U55A');
     await product.press('Tab');

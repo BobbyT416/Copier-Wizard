@@ -89,3 +89,11 @@ For each CPMD, Repair/Service Manual, and other approved HP document:
 - Build 262 narrows the shared M501/M506/M507/M527/M528/E50045/E50145/E52545/E52645 selection family to `supportedModels: ["E52645"]`, because the normalized manual package explicitly identifies E52645. Other models can be identity-verified but stay locked until exact applicability and their workflows are validated. The Build 262 test result must pass before publishing.
 - The next architecture step after the contract test is stable: gradually move family-specific troubleshooting/variant data into validated family packages and adapters, beginning with a small known-good family; do not rewrite all families at once.
 
+
+
+## Product-number selection and dead-end navigation (Build 263)
+
+- Keep direct product-number typing as the fastest path and retain native datalist suggestions.
+- Add an explicit **Browse Product Numbers** panel for browsers where datalist suggestions are not obvious. Search by product number, exact model label, or catalog key. Choosing a result must call the same verification path as direct entry.
+- When identity is confirmed but guided troubleshooting is not validated, show clear **Change Machine** and **Browse Product Numbers** actions. Never unlock unsupported diagnostics merely to avoid a dead end.
+- Regression-test browser selection and navigation out of the unsupported identity state.
