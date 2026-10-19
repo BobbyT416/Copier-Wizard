@@ -64,7 +64,7 @@ const server = http.createServer((req, res) => {
     await page.getByRole('button', { name: /View Removal \/ Replacement Procedure/i }).click();
     await page.getByText(/RM2-3910-000CN/).waitFor({ state: 'visible' });
     await page.getByRole('button', { name: /Back to Diagnosis/i }).click();
-    await page.getByText(/Documented Error — 59\\.00\\.03/i).waitFor({ state: 'visible' });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
     console.log('✓ Real UI flow: M776dn error 59.00.03 shows correct parts, opens the matching procedure, and returns');
 
     await page.evaluate(() => {
