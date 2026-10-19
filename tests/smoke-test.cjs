@@ -126,6 +126,8 @@ const server = http.createServer((req, res) => {
 
     // Switching from a verified machine to an unknown product must clear all
     // previous verification/diagnostic state rather than leave stale guidance visible.
+    await page.locator('#product').fill('');
+    await page.locator('#product').press('Tab');
     await page.locator('#product').fill('T3U55A');
     await page.locator('#product').press('Tab');
     await page.locator('#problemCard').waitFor({ state: 'visible' });
