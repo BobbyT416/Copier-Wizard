@@ -109,10 +109,10 @@ const server = http.createServer((req, res) => {
     // Unsupported-but-identified machines must have a clear exit path.
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'unsupported M527 must not unlock diagnostics');
     assert.ok(await page.getByRole('button', { name: 'Change Machine' }).isVisible(), 'unsupported M527 should offer Change Machine');
-    assert.ok(await page.getByRole('button', { name: 'Browse Product Numbers' }).isVisible(), 'unsupported M527 should offer Browse Product Numbers');
+    assert.ok(await page.locator('#verify').getByRole('button', { name: 'Browse Product Numbers' }).isVisible(), 'unsupported M527 should offer Browse Product Numbers');
     await page.getByRole('button', { name: 'Change Machine' }).click();
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'Change Machine should leave diagnostics locked');
-    await page.getByRole('button', { name: 'Browse Product Numbers' }).click();
+    await page.locator('.product-browser-toggle').click();
     await page.locator('#productCatalogSearch').fill('M776zs');
     const zsChoice = page.locator('#productCatalogResults button').filter({ hasText: 'T3U56A' });
     await zsChoice.waitFor({ state: 'visible' });

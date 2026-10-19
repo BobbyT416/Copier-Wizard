@@ -4,7 +4,7 @@
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current build marker observed on development:** **263** (`version.json` reports build/version 263)  
+**Current build marker observed on development:** **263** (`version.json` reports build/version 262)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -39,11 +39,11 @@ Target workflow: **Identify/verify machine → enter error/message → guided tr
 - A separate development preview URL and its deployment wiring must be verified; do not assume GitHub Pages deploys the `development` branch.
 - A local/automated browser test passing does not prove the live test website is serving that build.
 - Prefer direct commits on `development` and automated tests over ZIP handoffs unless a ZIP is needed for a specific deployment or offline test.
-- Verified development head: `e845b8888edb0df93df011ccfd93d557dbd0b3be`. `version.json` on `development` reports Build 263.
+- Development head before Build 263: `45f1d0d3fa279b02b02cdaf0e318b7b1aa1b56ba`. Build 263 commit: `648187eaf5b53ede58f82a1e4c9c96b5a8e787b4`. `version.json` on `development` reports Build 263.
 - Latest complete automated browser suite: **PASS**, [GitHub Actions run 39291163344](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291163344), commit `e845b8888edb0df93df011ccfd93d557dbd0b3be`.
-- User authorized test-only releases on 2026-10-19. The `main/test/index.html` and `main/test/version.json` files have now been updated to Build 263. `main/test/cw-manual-data.js` already matches the development data file and was not changed.
-- The only files changed on `main` for the Build 263 release are `test/index.html` and `test/version.json`. Verified `main/version.json` remains Build 257; the production root app was not changed.
-- Build 261's Pages deployment completed successfully ([run 39290714550](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39290714550)). Build 263's GitHub Pages deployment completed successfully: [run 39291308543](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291308543). Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ .
+- User authorized test-only releases on 2026-10-19. The `main/test/index.html` and `main/test/version.json` files have now been updated to Build 262. `main/test/cw-manual-data.js` already matches the development data file and was not changed.
+- The only files changed on `main` for the Build 262 release are `test/index.html` and `test/version.json`. Verified `main/version.json` remains Build 257; the production root app was not changed.
+- Build 261's Pages deployment completed successfully ([run 39290714550](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39290714550)). Build 262's GitHub Pages deployment completed successfully: [run 39291308543](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291308543). Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ .
 
 ## 4. Latest work and evidence (2026-10-19)
 
@@ -83,14 +83,14 @@ Current `tests/smoke-test.cjs` includes:
 - The family-specific diagnostic engine has **not** yet been fully refactored into data-driven family packages. The current document is the onboarding standard; migration should be gradual, starting from a small known-good family and preserving existing tests.
 - The Build 261 test-site files have been committed under `main/test/`; the Pages deployment run is pending, so the live site has not yet been confirmed.
 
-### Build 263 — exact-model readiness and stale-state protection
+### Build 262 — exact-model readiness and stale-state protection
 
-- App build marker and `version.json` are both Build 263.
+- App build marker and `version.json` are both Build 262.
 - Added explicit `supportedModels: ["E52645"]` to the shared M501/M506/M507/M527/M528/E50045/E50145/E52545/E52645 selection family. The normalized manual-data package identifies E52645, so other models in that selection family are identity-verified but do not inherit E52645 troubleshooting until their exact workflows are validated.
 - Identity and diagnostic readiness are separate states. Product-number-only entry is exercised for all 75 catalog entries; enabled families open diagnostics, while not-yet-enabled families confirm identity but keep diagnostics locked.
 - Changing or clearing a product number, or changing the manual machine type/family/model selectors, clears previous verification, diagnostic results/history, and service-report context. Unknown/unmapped products show an explicit Machine Not Verified state.
 - Latest complete automated suite passed: [run 39291163344](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291163344), commit `e845b8888edb0df93df011ccfd93d557dbd0b3be`. Logs confirm the 75-product contract, E52645 enabled/M527 gated, stale-state clearing, M776dn/M776zs variant paths, M13, service report before resolution, and no uncaught browser errors.
-- The Build 263 app and version files have been committed to `main/test/`, and GitHub Pages deployment run [39291308543](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291308543) completed successfully. Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ .
+- The Build 262 app and version files have been committed to `main/test/`, and GitHub Pages deployment run [39291308543](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291308543) completed successfully. Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ .
 - Added `FAMILY-ONBOARDING.md` as the repeatable contract for future family imports. The runtime has not yet been fully refactored to data-driven family packages; that remains the next architecture phase.
 
 Useful file references:
@@ -101,8 +101,8 @@ Useful file references:
 
 ## 5. Immediate next actions — in order
 
-1. Build 263's GitHub Pages deployment completed successfully at [39291308543](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291308543). The repository test marker is Build 263; have the user open https://bobbyt416.github.io/Copier-Wizard/test/ and confirm the visible build label. Production root remains Build 257 and must remain untouched.
-2. Once Build 263 is live, ask the user to test:
+1. Build 262's GitHub Pages deployment completed successfully at [39291308543](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291308543). The repository test marker is Build 262; have the user open https://bobbyt416.github.io/Copier-Wizard/test/ and confirm the visible build label. Production root remains Build 257 and must remain untouched.
+2. Once Build 262 is live, ask the user to test:
    - Enter `T3U55A` with Type/Family/Model blank; it should identify M776dn and open the supported workflow.
    - Enter a known product number from a family not yet enabled; identity should be confirmed but guided troubleshooting must remain locked.
    - Enter E52645 product number `1PS54A`; the validated E52645 workflow should open.
@@ -112,7 +112,7 @@ Useful file references:
    - Confirm the service report works before marking the repair resolved.
 3. Continue family onboarding gradually. Before enabling any additional model, verify exact CPMD/Repair Manual coverage and add representative/adjacent-variant tests.
 4. Use `FAMILY-ONBOARDING.md` as the acceptance contract. Next architecture step: move family-specific troubleshooting and variant data toward validated family packages/adapters, starting with one bounded family; do not rewrite all families at once.
-5. Keep Build 263 as the current candidate baseline until live testing uncovers any issue. Do not merge into production.
+5. Keep Build 262 as the current candidate baseline until live testing uncovers any issue. Do not merge into production.
 
 ## 6. Important M776 facts
 
@@ -179,22 +179,22 @@ For error `59.00.03`:
 - Published Build 261 app and version files to `main/test/` with user authorization. Confirmed only `test/index.html` and `test/version.json` changed on `main`; root `version.json` remains Build 257.
 - Pages deployment run `39290714550` was pending at the last check. Verify live test site before asking for manual testing.
 - **Next action:** confirm Pages deployment; then test Build 261 and start gradual data-driven family onboarding work.
-### 2026-10-19 — Build 263 exact-model gate
-- Build 263 now separates identity verification from diagnostic readiness and clears stale identity/diagnostic state when product number or manual selectors change.
+### 2026-10-19 — Build 262 exact-model gate
+- Build 262 now separates identity verification from diagnostic readiness and clears stale identity/diagnostic state when product number or manual selectors change.
 - The shared M501/M506/M507/M527/M528/E50045/E50145/E52545/E52645 selection family now enables only E52645, because the normalized manual-data package identifies E52645; M527 is specifically tested as identity-verified but diagnostics locked.
 - Catalog-wide browser contract covers all 75 product numbers and confirms supported vs not-yet-enabled readiness behavior.
 - Latest complete automated suite passed: [run 39291163344](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291163344), commit `e845b8888edb0df93df011ccfd93d557dbd0b3be`.
-- Build 263 app and version files published to `main/test/` with explicit user authorization; only `test/index.html` and `test/version.json` changed on `main`. Root `version.json` remains Build 257.
-- Build 263 Pages deployment run `39291308543` completed successfully. Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ . Ask the user to confirm the visible build label and manually test the workflow.
-- **Next action:** confirm the live Build 263 preview, then have the user test identity/readiness behavior and service reports. After that, begin a gradual data-driven family-package migration.
+- Build 262 app and version files published to `main/test/` with explicit user authorization; only `test/index.html` and `test/version.json` changed on `main`. Root `version.json` remains Build 257.
+- Build 262 Pages deployment run `39291308543` completed successfully. Test URL: https://bobbyt416.github.io/Copier-Wizard/test/ . Ask the user to confirm the visible build label and manually test the workflow.
+- **Next action:** confirm the live Build 262 preview, then have the user test identity/readiness behavior and service reports. After that, begin a gradual data-driven family-package migration.
 
 
 
-## Build 263 — implementation and validation status (2026-10-19)
+## 10. Build 263 — product browser and unsupported-machine navigation (2026-10-19)
 
-- Base commit before this change: `45f1d0d3fa279b02b02cdaf0e318b7b1aa1b56ba`; Build 262.
-- User reported that an identified machine could become a dead end and that replacing the product-number dropdown with text entry made browsing harder.
-- Build 263 adds an explicit searchable product-number browser alongside direct typing and native datalist suggestions. It searches product number, exact model label, and catalog key; choosing a result calls the same product-number verification function as direct entry.
-- An identified-but-unsupported model remains safely blocked from diagnostics, but now offers **Change Machine** and **Browse Product Numbers** actions.
-- Automated browser tests were extended to verify the unsupported-machine escape path and select M776zs/T3U56A through the browser. Test/deployment status is pending GitHub Actions.
-- If validated, update only `main/test/index.html` and `main/test/version.json`; do not touch production root files.
+- Implemented in commit `648187eaf5b53ede58f82a1e4c9c96b5a8e787b4` on `development`.
+- Added an explicit searchable **Browse Product Numbers** panel alongside direct product-number typing and native datalist suggestions. It searches product number, model label, and catalog key; selecting a result uses the existing verification path.
+- Identified-but-unsupported models remain blocked from guided diagnostics, but now show **Change Machine** and **Browse Product Numbers** actions instead of leaving the technician stranded.
+- Updated `tests/smoke-test.cjs` to cover unsupported-machine navigation and choosing M776zs/T3U56A from the browser. The selectors were tightened to avoid ambiguity between the always-present browser toggle and the unsupported-state action.
+- Build 263 automated run: [GitHub Actions run 39299019340](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39299019340), initially in progress; confirm its final result after the follow-up test-selector correction.
+- If validation passes, update only `main/test/index.html` and `main/test/version.json`; do not touch production root files.
