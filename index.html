@@ -468,18 +468,18 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <h2>1. Select Equipment</h2>
 <label>Manufacturer</label>
 <select id="manufacturer"><option>HP</option></select>
-<label>Printer Type</label>
+<label>Printer Type <span style="font-weight:normal">(optional if product number is entered)</span></label>
 <select id="machineType" onchange="machineTypeChanged(this.value)">
 <option value="">Select printer type...</option>
 <option value="mono">Monochrome</option>
 <option value="color">Color</option>
 <option value="pagewide">PageWide</option>
 </select>
-<label>Machine Family</label>
+<label>Machine Family <span style="font-weight:normal">(optional if product number is entered)</span></label>
 <select disabled="" id="machineFamily" onchange="familySelectionChanged(this.value)">
 <option value="">Select a printer type first...</option>
 </select>
-<label>Model</label>
+<label>Model <span style="font-weight:normal">(optional if product number is entered)</span></label>
 <select disabled="" id="model" onchange="modelSelectionChanged(this.value)">
 <option value="">Select a family first...</option>
 </select>
@@ -487,7 +487,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <label>Product Number <span style="font-weight:normal">(optional)</span></label>
 <input id="product" list="productNumberOptions" autocomplete="off" placeholder="Enter HP product number (e.g., T3U55A)" onchange="productNumberSelectionChanged(this.value)" oninput="productNumberInputChanged(this.value)"/>
 <datalist id="productNumberOptions"></datalist>
-<div class="source-note" id="productHint">Enter a known HP product number to identify and verify the machine automatically, or select the machine type, family, and model below.</div>
+<div class="source-note" id="productHint">Fastest option: enter the HP product number. The app will identify the machine and go directly to Machine Verified. If you do not have the product number, select the type, family, and model instead.</div>
 <div class="hidden" id="firmwareSection"><label>FutureSmart level</label><select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)"><option value="">Select FutureSmart level...</option></select></div>
 <button onclick="verifyModel()">Verify Machine</button>
 <div id="verify"></div>
@@ -2069,7 +2069,7 @@ function configureProductNumberForModel(model){
 function productNumberInputChanged(value){
   const hint=document.getElementById("productHint");
   const typed=String(value||"").trim().toUpperCase();
-  if(!typed){if(hint)hint.textContent="Enter a known HP product number to identify and verify the machine automatically, or select the machine type, family, and model below.";return;}
+  if(!typed){if(hint)hint.textContent="Fastest option: enter the HP product number. The app will identify the machine and go directly to Machine Verified. If you do not have the product number, select the type, family, and model instead.";return;}
   const found=Object.values(productNumberCatalog||{}).flat().some(x=>String(x.product).toUpperCase()===typed);
   if(hint)hint.textContent=found?"Product number recognized. Machine identity will be filled in when you leave this field.":"Enter a complete product number from the machine label.";
 }
