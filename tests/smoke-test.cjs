@@ -43,6 +43,14 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#verify').innerText(), /T3U55A|M776dn/i, 'verification should identify the product-number variant');
     console.log('✓ Product number alone identifies the machine and reaches Machine Verified');
 
+    // An unknown product number must not verify a machine or unlock diagnosis.
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('#product').fill('ZZZZZ');
+    await page.locator('#product').press('Tab');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'unknown product number must not unlock diagnosis');
+    assert.match(await page.locator('#productHint').innerText(), /not in the current product-number catalog/i, 'unknown product number should explain why it was not verified');
+    console.log('✓ Unknown product number is not falsely verified and manual identification remains available');
+
     await page.reload({ waitUntil: 'networkidle' });
     await page.locator('#machineType').selectOption('color');
     const family = page.locator('#machineFamily');
