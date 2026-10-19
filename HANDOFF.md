@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-19 (Build 264 product-number filtering fix)  
+**Updated:** 2026-10-19 (Build 265 verified-machine navigation fix)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current build marker observed on development:** **263** (`version.json` reports build/version 262)  
+**Current development build:** **265** (`index.html` and `version.json` both set to 265; automated test result and test-site deployment still need confirmation)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -39,7 +39,7 @@ Target workflow: **Identify/verify machine → enter error/message → guided tr
 - A separate development preview URL and its deployment wiring must be verified; do not assume GitHub Pages deploys the `development` branch.
 - A local/automated browser test passing does not prove the live test website is serving that build.
 - Prefer direct commits on `development` and automated tests over ZIP handoffs unless a ZIP is needed for a specific deployment or offline test.
-- Development head before Build 263: `45f1d0d3fa279b02b02cdaf0e318b7b1aa1b56ba`. Build 263 commit: `648187eaf5b53ede58f82a1e4c9c96b5a8e787b4`. `version.json` on `development` reports Build 263.
+- Build 265 navigation fix was committed across `index.html`, `version.json`, and `tests/smoke-test.cjs`; latest known development commit from the test update is `046420b8b28d43fbee1374fb43f94cbd8e3a256b`. Confirm branch head before further work.
 - Latest complete automated browser suite: **PASS**, [GitHub Actions run 39291163344](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39291163344), commit `e845b8888edb0df93df011ccfd93d557dbd0b3be`.
 - User authorized test-only releases on 2026-10-19. The `main/test/index.html` and `main/test/version.json` files have now been updated to Build 262. `main/test/cw-manual-data.js` already matches the development data file and was not changed.
 - The only files changed on `main` for the Build 262 release are `test/index.html` and `test/version.json`. Verified `main/version.json` remains Build 257; the production root app was not changed.
@@ -212,3 +212,15 @@ For error `59.00.03`:
 - Published Build 264 to `main/test/index.html` and `main/test/version.json` only. Verified each release commit touched only its intended `test/...` file. Production root app was not changed.
 - Live Pages rendering could not be independently confirmed from the available browser access; user should confirm the test site displays Build 264 before functional testing.
 - Next action: user tests M527's filtered browser and mismatch behavior. If correct, continue standardizing the family-onboarding and regression-test process.
+
+
+## 11. Build 265 — verified-machine continuation (2026-10-19)
+
+- User reported that after machine verification the app appeared to be a dead end.
+- Code inspection found that the supported-machine branch removed the hidden state from `#problemCard` but did not scroll to it or offer a clear continue action in the verification status. On a phone, the newly revealed section can remain below the fold and look like the flow stopped.
+- Build 265 updates the successful verification status to include **Continue to Troubleshooting**, which scrolls the next section into view. Successful verification also automatically scrolls to the troubleshooting section after layout settles.
+- The existing safety gate remains: M527 (product `F2A76A`) is identity-verified but guided troubleshooting remains locked because the current normalized manual-data package has only validated the E52645 workflow in that shared monochrome family. Do not unlock M527 by merely changing navigation. Unsupported-model screen retains Change Machine and Browse Product Numbers options.
+- Added a browser regression assertion to `tests/smoke-test.cjs` that the supported M776dn product-number flow exposes the continue action and brings the troubleshooting card into the viewport.
+- Development files updated: `index.html` build marker 265; `version.json` build/version 265; `tests/smoke-test.cjs` navigation regression test. Latest known development commit after these edits: `046420b8b28d43fbee1374fb43f94cbd8e3a256b` (verify branch head and workflow status before declaring validation complete).
+- **Automated test status:** pending independent confirmation for Build 265. Do not yet publish to `main/test/` or claim the test suite passed.
+- **Next action:** check the latest Actions run for the development head; fix any test failures. If the suite passes, publish Build 265 to `main/test/index.html` and `main/test/version.json` only (user already authorized test-only releases), verify the Pages deployment, then ask the user to test the supported M776 path and confirm the M527 gated state is clearly explained.
