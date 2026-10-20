@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-19 (Build 266 contextual diagnostic decision wording)  
+**Updated:** 2026-10-20 (Build 269 fixes stale runtime build label and test version metadata)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **266** (`index.html` and `version.json` both set to 266; automated validation passed; test-site deployment workflow succeeded; live page not independently readable from tools)  
+**Current development build:** **269** (`index.html` runtime label/update checker and `version.json` set to 269; M527 verified-machine screen offers HP manual reference search, not a validated guided workflow; Build 269 copied to `main/test/` only. No browser regression run or live Pages deployment confirmation performed for this update.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
