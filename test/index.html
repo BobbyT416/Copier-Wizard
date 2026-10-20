@@ -469,28 +469,28 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <h2>1. Select Equipment</h2>
 <label>Manufacturer</label>
 <select id="manufacturer"><option>HP</option></select>
-<label>Printer Type <span style="font-weight:normal">(optional if product number is entered)</span></label>
+<label>Printer Type</label>
 <select id="machineType" onchange="machineTypeChanged(this.value)">
 <option value="">Select printer type...</option>
 <option value="mono">Monochrome</option>
 <option value="color">Color</option>
 <option value="pagewide">PageWide</option>
 </select>
-<label>Machine Family <span style="font-weight:normal">(optional if product number is entered)</span></label>
+<label>Machine Family</label>
 <select disabled="" id="machineFamily" onchange="familySelectionChanged(this.value)">
 <option value="">Select a printer type first...</option>
 </select>
-<label>Model <span style="font-weight:normal">(optional if product number is entered)</span></label>
+<label>Model</label>
 <select disabled="" id="model" onchange="modelSelectionChanged(this.value)">
 <option value="">Select a family first...</option>
 </select>
 <div class="source-note" id="modelHint"></div>
-<label>Product Number <span style="font-weight:normal">(optional)</span></label>
+<label>Product Number</label>
 <input id="product" list="productNumberOptions" autocomplete="off" placeholder="Enter HP product number (e.g., T3U55A)" aria-describedby="productHint" onchange="productNumberSelectionChanged(this.value)" oninput="productNumberInputChanged(this.value)"/>
 <datalist id="productNumberOptions"></datalist>
 <button type="button" class="secondary product-browser-toggle" onclick="toggleProductNumberBrowser()">Browse Product Numbers</button>
 <div id="productBrowser" class="product-browser hidden"><label for="productCatalogSearch">Search by product number or model</label><input id="productCatalogSearch" type="search" autocomplete="off" placeholder="Search model or product number" oninput="renderProductNumberBrowser(this.value)"/><div id="productCatalogResults" class="product-catalog-results" role="listbox" aria-label="Product number results"></div></div>
-<div class="source-note" id="productHint">Fastest option: enter the HP product number. The app will identify the machine and go directly to Machine Verified. If you do not have the product number, select the type, family, and model instead.</div>
+<div class="source-note" id="productHint">Enter a product number, or select printer type, family, and model.</div>
 <div class="hidden" id="firmwareSection"><label>FutureSmart level</label><select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)"><option value="">Select FutureSmart level...</option></select></div>
 <button onclick="verifyModel()">Verify Machine</button>
 <div id="verify"></div>
@@ -2120,9 +2120,7 @@ function populateProductNumberOptions(){
 function configureProductNumberForModel(model){
   populateProductNumberOptions();
   const hint=document.getElementById("productHint");
-  if(hint)hint.textContent=model
-    ?"Product number is optional. Entering a known product number will identify the exact machine automatically."
-    :"Enter a known HP product number to identify and verify the machine automatically, or select the machine type, family, and model below.";
+  if(hint)hint.textContent="Enter a product number, or select printer type, family, and model.";
   // A search from a previous model must not make the new model look like it has no products.
   const search=document.getElementById("productCatalogSearch");
   const panel=document.getElementById("productBrowser");
@@ -2132,9 +2130,9 @@ function configureProductNumberForModel(model){
 function productNumberInputChanged(value){
   const hint=document.getElementById("productHint");
   const typed=String(value||"").trim().toUpperCase();
-  if(!typed){if(hint)hint.textContent="Fastest option: enter the HP product number. The app will identify the machine and go directly to Machine Verified. If you do not have the product number, select the type, family, and model instead.";return;}
+  if(!typed){if(hint)hint.textContent="Enter a product number, or select printer type, family, and model.";return;}
   const found=Object.values(productNumberCatalog||{}).flat().some(x=>String(x.product).toUpperCase()===typed);
-  if(hint)hint.textContent=found?"Product number recognized. Machine identity will be filled in when you leave this field.":"Enter a complete product number from the machine label.";
+  if(hint)hint.textContent=found?"Product number recognized.":"Enter a complete product number from the machine label.";
 }
 function cwClearMachineVerificationState(){
   window.CW_MACHINE_IDENTITY_VERIFIED=null;
@@ -2230,7 +2228,7 @@ function firmwareOptionsForModel(model){const s=String(model||"").toUpperCase();
 function firmwareLabel(v){return v==='FS3'?'FutureSmart 3':v==='FS4'?'FutureSmart 4':v==='FS5'?'FutureSmart 5':v;}
 function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1)fw.value=opts[0];return opts;}
 function modelSelectionChanged(model){
-  cwClearMachineVerificationState();const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML=family?.docs?'<span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'';configureProductNumberForModel(model);configureFirmwareForModel(model);}
+  cwClearMachineVerificationState();const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.textContent="";configureProductNumberForModel(model);configureFirmwareForModel(model);}
 function firmwareSelectionChanged(fw){}
 function continueToTroubleshooting(){
   const card=document.getElementById('problemCard');
@@ -5795,7 +5793,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '273';
+  const CURRENT = '274';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
