@@ -36,8 +36,8 @@ const server = http.createServer((req, res) => {
       'machine-family label should remain concise');
     assert.equal(await page.locator('#selectCard label').filter({hasText:'Product Number'}).filter({hasText:/^Product Number$/}).innerText(), 'Product Number',
       'product-number label should remain concise');
-    assert.match(await page.locator('#productHint').innerText(), /^Enter a product number, or select printer type, family, and model\\.$/,
-      'opening screen should use one concise instruction instead of a long explanation');
+    assert.match(await page.locator('#productHint').innerText(), /^Optional — helps verify the exact variant\\.$/,
+      'product-number helper should remain concise');
     console.log('✓ App loads in Chromium with concise opening-screen labels');
     // Each machine selection should automatically advance to the next meaningful picker.
     const pickerFlow = await page.evaluate(() => {
