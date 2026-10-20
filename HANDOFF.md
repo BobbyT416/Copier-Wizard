@@ -1,13 +1,25 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 269 fixes stale runtime build label and test version metadata)  
+**Updated:** 2026-10-20 (Build 270 adds a model-checked M527 documented error workflow entry point)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **269** (`index.html` runtime label/update checker and `version.json` set to 269; M527 verified-machine screen offers HP manual reference search, not a validated guided workflow; Build 269 copied to `main/test/` only. No browser regression run or live Pages deployment confirmation performed for this update.)  
+**Current development build:** **270** (`index.html` runtime label/update checker and `version.json` set to 270; test-site copy updated. Added a path from M527 HP manual search results into a documented error workflow, with model-reference checks, no E52645-specific override, and variant-filtered M527 parts. Smoke-test assertions updated but not executed in this session; live Pages deployment not independently confirmed.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
+
+
+## 0A. Latest M527 work — Build 270 (2026-10-20)
+
+- The user reported Build 269 still dead-ended after machine verification. Build 269 had fixed stale version labeling only; it had not delivered guided M527 troubleshooting.
+- Build 270 adds a **Start Documented Troubleshooting** action to M527 manual-search results when an extracted error record includes steps. For a verified M527 product number, it routes to the existing documented-error renderer.
+- The M527 route suppresses getE52645TechnicianOverride, checks the extracted record for M527-family applicability, displays the exact variant from the selected product number, and only lists part entries whose source text explicitly names M527 and is not restricted to a different named M527 variant.
+- The M527 route uses the supplied normalized HP error catalog; it does not unlock the generic E52645 symptom workflow or any E52645-only part override. An unvalidated error entry is withheld.
+- Added smoke-test assertions for product F2A81A (M527c), searching error 30.01.44, starting the documented workflow, and checking that the resulting screen contains the documented scanner error and technician troubleshooting without identifying as E52645. **These assertions have not been run in this session.**
+- Test-only release: main/test/index.html and main/test/version.json updated to Build 270. Production root files were not changed. Live Pages deployment is not independently confirmed.
+- Development commits: 79eb7eca94b30c601f12359d0ef2e005be16211a (initial M527 entry point), b7f286687993c6b367e9fc6fc3e564deecf428fd (regex correction), b8d54542f66ebf57eeb121270098aff669ca92f4 (M527c regression test), ef5437f61282d5ea262e4b14b3c582c70b23a836 (version metadata). Test commits: 81e4842c94602cc6b66afcba6e26087478497ea5 (test index), 389068c0458d4edd7595a4e0a75c8ca58193b4d4 (test version).
+- Next: run the smoke test in CI or a local Playwright environment, fix any failures, verify live test-site Build 270, then expand exact-model validation for more M527 error codes and variant-specific repair procedures. Do not claim Build 270 behavior is tested until that happens.
 
 ## 1. Product purpose and target workflow
 
