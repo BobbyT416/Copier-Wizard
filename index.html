@@ -2889,7 +2889,7 @@ function openManualErrorFromIndex(index){
   const code=extractErrorCodeAliases(item.code)[0]||item.code;
   const input=document.getElementById("errorCodeLookup");
   if(input) input.value=code;
-  beginErrorCodeDiagnosis(code);
+  beginErrorCodeDiagnosis(code,item);
 }
 
 function openManualMessageFromIndex(index){
@@ -2924,7 +2924,7 @@ function cwEnsureResultNavigation(){
   nav.innerHTML='<button type="button" class="secondary" onclick="returnToMachineSelection()">Change Machine</button>';
 }
 
-function beginErrorCodeDiagnosis(code){
+function beginErrorCodeDiagnosis(code, preferredItem){
   if(typeof closeManualCoverage==="function") closeManualCoverage();
   const raw=String(code||"").trim();
   if(!raw) return;
@@ -2934,7 +2934,7 @@ function beginErrorCodeDiagnosis(code){
   // Exact M527 variants may use only extracted error entries that explicitly
   // reference the M527 family. The renderer suppresses E52645-only overrides
   // and filters parts by the verified M527 product variant.
-  if(renderDocumentedErrorBranch(raw)){
+  if(renderDocumentedErrorBranch(raw, preferredItem)){
     // Keep a clear exit available after a documented result, including the
     // M527 manual-reference flow where guided troubleshooting is not enabled.
     cwEnsureResultNavigation();
@@ -3152,12 +3152,20 @@ function errorCodePatternMatches(pattern, code){
  }
  return /[XYZ*]/.test(p);
 }
-function findDocumentedError(code){
+function findDocumentedError(code, preferredItem){
  const c=normalizeErrorCode(code); if(!c) return null;
+ const catalog=cwActiveErrorCatalog();
+
+ // A search result can represent one of several documented procedures for
+ // the same numerical code. Honor the specific result the technician chose.
+ if(preferredItem && catalog.includes(preferredItem)){
+   const aliases=extractErrorCodeAliases(preferredItem.code);
+   if(aliases.includes(c)) return {item:preferredItem,matched:aliases.some(a=>/[XYZ*]/.test(a))?'pattern':'exact'};
+ }
 
  // First check every exact code explicitly represented in a combined
  // documentation heading.
- for(const item of cwActiveErrorCatalog()){
+ for(const item of catalog){
    const aliases=extractErrorCodeAliases(item.code);
    if(aliases.includes(c) && !aliases.some(a=>/[XYZ*]/.test(a))){
      return {item,matched:'exact'};
@@ -3165,7 +3173,7 @@ function findDocumentedError(code){
  }
 
  // Then check documented wildcard/pattern families.
- for(const item of cwActiveErrorCatalog()){
+ for(const item of catalog){
    const aliases=extractErrorCodeAliases(item.code);
    for(const alias of aliases){
      if(errorCodePatternMatches(alias,c)){
@@ -3387,8 +3395,8 @@ function getDocumentedStepParts(step, displayedParts){
   return [];
 }
 
-function renderDocumentedErrorBranch(raw){
-  const hit=findDocumentedError(raw), r=document.getElementById("result");
+function renderDocumentedErrorBranch(raw, preferredItem){
+  const hit=findDocumentedError(raw, preferredItem), r=document.getElementById("result");
   if(!hit || !r) return false;
 
   const x=hit.item, code=normalizeErrorCode(raw), activeModel=(currentMachineModel||verifiedModel||"E52645");
