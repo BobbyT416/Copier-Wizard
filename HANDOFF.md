@@ -11,6 +11,14 @@
 
 
 
+## 0G. Build 278 CI failure and test-selector correction (2026-10-20)
+
+- Inspected the actual GitHub Actions result for Build 278: [run 39362768841](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39362768841). HTML/JavaScript/build/safety validation passed, but the Playwright smoke suite failed before reaching the M527 regression test.
+- Failure was an ambiguous test locator in `tests/smoke-test.cjs`: filtering labels by substring `Product Number` matched both the Product Number label and “Search by product number or model.” This is a test-selector failure, not evidence that the application itself failed.
+- Corrected the test locator to match the exact Product Number label in commit `8bc72c85c208856dc13e3e0e68d2c476debee363` on `development`. The rerun is pending/not yet verified at handoff time.
+- No test-site release was made. Production remains untouched.
+- Next: inspect the Actions run triggered by `8bc72c85...`; fix any further failures. Then complete the CPMD-to-catalog comparison for every numerical code applicable to M527, and only publish to `main/test/` after the suite passes. Do not call the 31-series issue fixed until the actual M527 browser behavior and manual reconciliation are verified.
+
 ## 0F. M527 numerical 31-series error-code investigation — Build 278 (2026-10-20)
 
 - User's live test reported that selecting M527 and opening Numerical Error Code showed no 31-series errors.
