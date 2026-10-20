@@ -250,3 +250,5 @@ For error `59.00.03`:
 - Added a smoke-test path for verified M527 manual search using error code 30.01.44. The test has been updated in source but has **not yet been run in a browser in this session**.
 - Development source commit for the new lookup: `4def11a2d33e8d689f1c2dce9575b5c1a845d494`; development version marker updated to Build 268 in commit `a5aa04eed242cc2f6563aa70ff47412d369b8698`. Earlier same-turn commits added the implementation and test changes; these are all on `development`.
 - Next: publish Build 268 to `main/test/index.html` and `main/test/version.json` only; verify the Pages deployment; then test M527 error-code search and check that unknown codes produce a safe no-match message. Production root stays untouched.
+
+- Test-only publication: `main/test/index.html` updated in commit `aeb8090eeae13a0b4df13bde53741c87abe80d4c`; `main/test/version.json` updated to Build 268 in commit `3d90f74b7784a6a78b3e9ea03a48c470b5e3a602`. Re-fetched repository files confirm the test folder contains the M527 search code and version 268. Live GitHub Pages deployment and browser test are not independently confirmed; do not claim either passed.
