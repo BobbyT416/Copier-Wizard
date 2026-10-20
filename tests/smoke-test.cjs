@@ -511,6 +511,42 @@ const server = http.createServer((req, res) => {
       '32.08.A2 must remain available as a no-action event code');
     console.log('✓ Backup/restore event codes, grouped aliases, and no-action event handling');
 
+    // Output-accessory codes are valid only for stapler-equipped M527c/f/z
+    // variants. Without an exact product number, show a verification gate.
+    await page.evaluate(() => {
+      currentMachineModel = 'M527';
+      verifiedModel = 'M527';
+      window.verifiedProduct = '';
+      document.getElementById('product').value = '';
+      beginErrorCodeDiagnosis('65.80.A0');
+    });
+    await page.locator('#result').getByText(/Product Variant Verification Required/i).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /M527c, M527f, and M527z/i,
+      'output-accessory instructions must be gated until the exact stapler-equipped variant is verified');
+
+    await page.evaluate(() => {
+      window.verifiedProduct = 'F2A81A';
+      document.getElementById('product').value = 'F2A81A';
+      beginErrorCodeDiagnosis('65.80.A0');
+    });
+    await page.locator('#documentedStepList').waitFor({ state: 'visible' });
+    const staplerParts = await page.evaluate(() => {
+      const hit = findDocumentedError('65.80.A0');
+      return hit ? cwM527PartsForError(hit.item, 'M527') : [];
+    });
+    assert.ok(staplerParts.some(part => /B5L46-60102/.test(part)),
+      'verified M527c variant should expose the CPMD stapler/stacker part number');
+
+    await page.evaluate(() => beginErrorCodeDiagnosis('82.73.47'));
+    await page.locator('#documentedStepList').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /Event log only/i,
+      '82.73.47 must be clearly labeled as an event-log-only entry');
+    assert.match(await page.locator('#documentedStepList').innerText(), /Format Disk/i,
+      '82.73.47 must include the documented disk-cleaning recovery steps');
+    assert.match(await page.locator('#result').innerText(), /Part number withheld pending verification/i,
+      'disk-cleaning failure must not guess which HDD option is installed');
+    console.log('✓ Variant-gated output-accessory and event-log disk-cleaning procedures');
+
     // No-procedure codes remain usable: show a concise terminal state and a clear way back,
     // rather than leaving the technician with a hidden outcome/parts panel.
     await page.evaluate(() => {
