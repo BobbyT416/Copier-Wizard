@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 278 adds M527 31-series numerical-search regression coverage)
+**Updated:** 2026-10-20 (Build 279 restores numerical-code prefix search and complete 31-series results)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **278** (`version.json` is 278; Build 278 source adds M527 31-series numerical-search regression coverage. Automated browser suite currently fails in an earlier product-number test due to test-state contamination; see latest session log below. No Build 278 test-site release has been made. Production root remains Build 257.)  
+**Current development build:** **279** (`version.json` and the in-app build label are 279. Build 279 corrects numerical lookup: search now runs while typing and on Enter, results are no longer capped at eight, HP descriptions render from `desc`, and the M527 31-series regression test checks the full list. The updated browser suite has not yet been confirmed passing. No Build 279 test-site release has been made. Production remains untouched.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -12,6 +12,17 @@
 
 
 
+
+## 0J. Build 279 — numerical error-code search fix (2026-10-20)
+
+- **Root cause found in `index.html`:** the final keyboard handler intercepted Enter and immediately called the diagnostic router, while the existing `searchErrorCodes()` function was not wired to the input event. As a result, the numerical-code result list was not populated through the expected search flow. The renderer also displayed `item.description` although the HP records use `desc`, hiding useful descriptions, and it truncated prefix results to eight entries.
+- Fixed the numerical-code input listener so typing and Enter search the active catalog; the explicit **Enter Error Code** button remains the direct-entry route. Selecting a result still opens its documented diagnostic.
+- Removed the eight-result cap so a prefix such as `31` can display all matching catalog entries, and corrected descriptions to use `item.desc || item.description`.
+- Bumped development build to **279** in `index.html` and `version.json`.
+- Updated `tests/smoke-test.cjs`: product-number test now follows the explicit verification/Continue flow; M527 prefix regression asserts the full list is returned (at least 10 results) and includes `31.01.47` and `31.03.30`. Exact-code regression remains in place.
+- Commits: app fix `674cec521a56a0a4ced9599c8cc7a08b21a18ffa`, description fix `4cba53080fa65cb9e60b55b3b8cea84c0b3e4ad3`, test updates `45dbdaaf8cb7ff2e14346ef1c29658d3d941e8d9` and `01905437c04fb2cc95dddac8c826b5de0fde120c`, build marker `026f5539c1414b52dc0bace21a4d4d7d67b1ff8e).
+- **Verification status:** source changes committed; automated browser run for the latest commit is not yet visible through the available commit-run lookup. Do not mark fixed or deploy until CI confirms the browser tests pass and the M527 list is reconciled against the correct HP CPMD/service manual.
+- Production branch `main` was not changed. Do not release to production. Next: inspect the next Actions run, resolve any failure, then compare all M527-applicable numeric codes in the uploaded M527 service manual/CPMD against the catalog and test Build 279 at the test URL.
 
 ## 0I. Correct M527 31-series regression assertion — 2026-10-20
 
