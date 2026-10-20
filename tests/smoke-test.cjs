@@ -98,7 +98,10 @@ const server = http.createServer((req, res) => {
     // proceed to the verified/app-ready state without requiring other fields.
     await page.locator('#product').fill('T3U55A');
     await page.locator('#product').press('Tab');
-    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    // Verification is a distinct state; enter troubleshooting through the
+    // explicit Continue button instead of assuming the hidden workflow card
+    // is already visible.
+    await page.getByText(/Machine Verified — App Ready/i).waitFor({ state: 'visible' });
     assert.equal(await page.locator('#machineType').inputValue(), 'color', 'product number should infer Color type');
     assert.ok(await page.locator('#machineFamily').inputValue(), 'product number should infer machine family');
     assert.ok(await page.locator('#model').inputValue(), 'product number should infer machine model');
