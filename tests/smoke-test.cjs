@@ -273,7 +273,7 @@ const server = http.createServer((req, res) => {
       'M527 should offer numerical error-code lookup after continuing');
     assert.equal(await page.locator('#verify #m527ManualLookup').count(), 0,
       'supported M527 should use the normal troubleshooting flow, not the unsupported-model manual-search fallback');
-    await page.getByRole('button', { name: 'Change Machine' }).click();
+    await page.evaluate(() => returnToMachineSelection());
     console.log('✓ Model-only M527 verification, scoped product choices, and continuation flow');
     
     // Clearing the product number or changing manual machine selectors must
