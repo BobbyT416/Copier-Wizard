@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 275 simplifies opening-screen field explanations)  
+**Updated:** 2026-10-20 (Build 276 adds automatic machine-selection progression)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -28,6 +28,16 @@
 - Preserved the user's category-first flow: Printer Type (Monochrome / Color / PageWide) → Machine Family → Model → Product Number → FutureSmart when applicable → Verify Machine. No selection or verification logic was intentionally changed.
 - Published Build 275 to test only. Development/test HTML are identical; both version files say 275; all 15 inline script blocks compile; production root remains Build 257.
 - User has not yet manually reviewed Build 275. Full browser smoke test suite not run.
+
+## 0E. Automatic machine-selection progression — Build 276 (2026-10-20)
+
+- User confirmed the simplified opening-screen labels worked, then requested that choosing machine information jump to the next field and open its selection list.
+- Build 276 adds `cwFocusAndOpenSelect()`, which focuses the next enabled select and attempts the native `showPicker()` API, falling back to `click()` when unavailable or blocked.
+- Selecting **Printer Type** now populates and opens **Machine Family**. Selecting **Machine Family** now populates and opens **Model**.
+- After selecting a model, if more than one FutureSmart level applies, the FutureSmart picker opens automatically. A single applicable level is still selected automatically. If no additional firmware choice is required, the page scrolls to Product Number but deliberately does not open the mobile keyboard for that optional text field.
+- Added Playwright smoke-test assertions for the automatic picker sequence and firmware-picker behavior.
+- Published only to `main/test/index.html` and `main/test/version.json`. Development and test HTML match; all 15 inline JavaScript blocks compile; both version files show Build 276; production root remains Build 257.
+- The full Playwright suite and iPhone/Safari native picker behavior have not been run/independently verified in this session.
 
 ## 0D. Restore the main-site M527 verified troubleshooting screen — Build 273 (2026-10-20)
 
