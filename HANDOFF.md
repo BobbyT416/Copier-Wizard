@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 274 simplifies opening-screen field explanations)  
+**Updated:** 2026-10-20 (Build 275 simplifies opening-screen field explanations)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **274** (`index.html` runtime label/update checker and `version.json` set to 274; test-site `index.html` and `version.json` synchronized. User confirmed Build 273 fixed the M527 entry path; Build 274 simplifies the opening fields and shortens hints without changing selection/verification logic. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run.)  
+**Current development build:** **275** (`index.html` runtime label/update checker and `version.json` set to 275; test-site `index.html` and `version.json` synchronized. User confirmed Build 273 fixed the M527 entry path; Build 275 shortens opening field placeholders and product-number hints without changing selection/verification logic. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -18,6 +18,16 @@
 - Shortened dynamic product-number hints to brief status text and removed the family documentation paragraph displayed under Model, since it cluttered the form. Product-number validation and all selection behavior remain in place.
 - Added smoke-test assertions for concise labels and the short hint.
 - Published Build 274 to the test folder only. Development/test HTML match; all 15 inline script blocks compile; version metadata is 274; production root remains Build 257. Full Playwright smoke tests have not been run.
+
+## 0E. Simplify opening machine-selection screen — Build 275 (2026-10-20)
+
+- User requested less explanatory text beside the opening fields.
+- Shortened dropdown placeholders to **Select type…**, **Select family…**, and **Select model…**.
+- Changed product-number placeholder to **HP product number (optional)** and the helper line to **Optional — helps verify the exact variant.**
+- Shortened the product-number catalog feedback to concise status messages.
+- Preserved the user's category-first flow: Printer Type (Monochrome / Color / PageWide) → Machine Family → Model → Product Number → FutureSmart when applicable → Verify Machine. No selection or verification logic was intentionally changed.
+- Published Build 275 to test only. Development/test HTML are identical; both version files say 275; all 15 inline script blocks compile; production root remains Build 257.
+- User has not yet manually reviewed Build 275. Full browser smoke test suite not run.
 
 ## 0D. Restore the main-site M527 verified troubleshooting screen — Build 273 (2026-10-20)
 
