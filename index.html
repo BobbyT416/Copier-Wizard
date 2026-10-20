@@ -2689,7 +2689,7 @@ function searchErrorCodes(value){
     const key=String(item.code);
     if(!seen.has(key)){seen.add(key);unique.push(item);}
   }
-  box.innerHTML=unique.slice(0,8).map((item,i)=>
+  box.innerHTML=unique.map((item,i)=>
     `<button class="lookup-result" onclick="event.preventDefault();event.stopPropagation();window.cwSelectErrorLookup(${i})">
       <strong>${escapeHtml(item.code)}</strong>
       ${item.description?`<br><span>${escapeHtml(item.description)}</span>`:""}
@@ -5458,7 +5458,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT='257';
+  const CURRENT='258';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
