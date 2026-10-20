@@ -2364,7 +2364,17 @@ function cwM527DocumentMatches(item, exactModel){
   // This lets generic CPMD entries (such as toner-supply codes) remain
   // available for M527 even when the message text does not repeat the model.
   const explicitModels=Array.isArray(item?.applicableModels)?item.applicableModels:[];
-  if(explicitModels.some(model=>String(model||"").trim().toUpperCase()==="M527")) return true;
+  if(explicitModels.some(model=>String(model||"").trim().toUpperCase()==="M527")){
+    const variants=Array.isArray(item?.applicableVariants)?item.applicableVariants.map(v=>String(v||"").toUpperCase()):[];
+    if(variants.length){
+      const exactVariant=cwM527ExactModel();
+      // Keep variant-specific codes discoverable before a product number is
+      // known, but only expose the procedure for a verified supported variant.
+      if(exactVariant==="M527") return true;
+      return variants.includes(exactVariant);
+    }
+    return true;
+  }
   // The shared CPMD documents the entire 31.xx.xx document-feeder family.
   // These codes apply to M527 models with an ADF even when the extracted
   // record's text or parts table does not repeat the model name.
@@ -3414,6 +3424,14 @@ function renderDocumentedErrorBranch(raw, preferredItem){
   if(isM527 && !cwM527DocumentMatches(x,activeModel)){
     r.innerHTML='<div class="pill">HP '+escapeHtml(activeModel)+'</div><h2>Entry Not Validated for This Model</h2><div class="status warn">The supplied HP text does not clearly establish this error entry for '+escapeHtml(activeModel)+'. No troubleshooting steps or parts are being shown.</div><button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button><button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
     return true;
+  }
+  if(isM527 && Array.isArray(x.applicableVariants) && x.applicableVariants.length){
+    const exactVariant=cwM527ExactModel();
+    const allowedVariants=x.applicableVariants.map(v=>String(v||"").toUpperCase());
+    if(!allowedVariants.includes(exactVariant)){
+      r.innerHTML='<div class="pill">HP M527</div><h2>Product Variant Verification Required</h2><div class="status warn">The CPMD lists this output-accessory procedure only for M527c, M527f, and M527z variants. Enter and verify the exact product number before following the procedure or ordering a part.</div><button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button><button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
+      return true;
+    }
   }
   let html='<div class="pill">HP '+escapeHtml(activeModel)+'</div><div class="pill">Model verified</div>';
   html+=`<h2>Documented Error — ${escapeHtml(code)}</h2>
