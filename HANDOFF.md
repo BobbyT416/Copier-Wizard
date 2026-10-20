@@ -1,14 +1,24 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 272 adds three M527 troubleshooting entry options)  
+**Updated:** 2026-10-20 (Build 273 restores the main-site M527 troubleshooting entry screen)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **272** (`index.html` runtime label/update checker and `version.json` set to 272; test-site `index.html` and `version.json` synchronized. M527 model-only selection offers error-code, control-panel-message, and symptom/problem search modes. Exact product verification remains required before starting a documented diagnostic. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run and live Pages behavior has not been independently confirmed.)  
+**Current development build:** **273** (`index.html` runtime label/update checker and `version.json` set to 273; test-site `index.html` and `version.json` synchronized. Verified M527 now enters the standard App Ready / What's wrong? screen; numerical error catalog is scoped to M527-referenced records and exact variant. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run and live Pages behavior has not been independently confirmed.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
 
+
+## 0D. Restore the main-site M527 verified troubleshooting screen — Build 273 (2026-10-20)
+
+- User supplied a screenshot of the expected main-site flow after verifying product F2A81A: “Machine Verified — App Ready,” product M527c / FutureSmart 5, then the standard “2. What's wrong?” card with Numerical Error Code, Alphabetical Message, Parts Lookup, and “I don't have an error code or message.”
+- Root cause: development had a `supportedModels: ["E52645"]` restriction inside the shared M501/M506/M507/M527/M528/E50045/E50145/E52545/E52645 family. Production main did not have this restriction, so the test branch incorrectly diverted M527 to the unsupported/manual-search screen.
+- Build 273 changes the allowed list to `["E52645","M527"]`, restoring the normal App Ready + problemCard entry path for M527 while keeping the other family models gated.
+- `cwActiveErrorCatalog()` now scopes M527 numerical-code search/browse results to extracted error records that explicitly mention M527 and match the verified M527 product variant where the source names variants. The existing M527 error renderer continues to suppress E52645-specific overrides and filter M527 parts.
+- Smoke test updated to assert the four expected entry options and that M527c error-code search finds documented 30.01.44 Scanner error.
+- Published only to `main/test/index.html` and `main/test/version.json`. Static validation confirms development and test HTML are identical, all 15 inline script blocks compile, version metadata is Build 273, and production root remains Build 257.
+- Full browser/Playwright smoke tests and live GitHub Pages behavior have not been independently verified in this session.
 
 ## 0C. Multiple M527 troubleshooting entry options — Build 272 (2026-10-20)
 
