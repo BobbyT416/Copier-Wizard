@@ -474,6 +474,16 @@ const server = http.createServer((req, res) => {
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 10.00.12' }).waitFor({ state: 'visible' });
     assert.match(await page.locator('#documentedStepList').innerText(), /FutureSmart firmware version 4\.10/i,
       '10.00.12 must use the grouped CPMD supply-memory procedure');
+    await page.evaluate(() => {
+      const input = document.getElementById('errorCodeLookup');
+      input.value = '10.00.01';
+      searchErrorCodes(input.value);
+      const index = (window._errorLookupMatches || []).findIndex(item =>
+        extractErrorCodeAliases(item.code).includes('10.00.01'));
+      if (index < 0) throw new Error('10.00.01 not found in grouped error-code search');
+      selectErrorLookup(index);
+    });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 10.00.01' }).waitFor({ state: 'visible' });
     console.log('✓ Recovered supply recommendations and exact grouped-code aliases');
 
     // If the source explicitly says "No action necessary", display that as
