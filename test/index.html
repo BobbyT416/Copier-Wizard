@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js?v=279"></script>
+<script src="cw-manual-data.js?v=280"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -3193,6 +3193,20 @@ function getE52645TechnicianOverride(code, item){
   // Build 239: first importer-readiness batch; refined in Build 245. These procedures exercise
   // consumable, firmware/power-cycle, conditional replacement, voltage-specific
   // parts, and escalation outcomes using the existing HP manual data layer.
+  if(normalized==="31.03.20"){
+    // The extracted HP entry mixes a call-center heading/escalation with the
+    // actual onsite checks. Present the documented technician procedure only.
+    return {
+      steps:[
+        "Turn the printer off, and then on.",
+        "Verify the cables between scanner and scanner control board (SCB) are connected (connection 6 — ADF (side 2) FFC). Also check the connection from the ADF to the PCA on the scanner.",
+        "Ensure the FFC cable routing from the ADF has been installed correctly and is not bent, torn, or nicked. If this occurred after installing a new ADF, remove the FFC, check for damage, and reroute it.",
+        "Replace the document feeder assembly.",
+        "If the issue persists, replace the scanner control board (SCB)."
+      ],
+      parts:[]
+    };
+  }
   if(normalized==="10.00.00" || normalized==="10.00.01"){
     return {
       steps:[
@@ -5834,7 +5848,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '279';
+  const CURRENT = '280';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
