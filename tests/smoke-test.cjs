@@ -453,6 +453,29 @@ const server = http.createServer((req, res) => {
       'no-procedure results must not expose a hidden procedure-completion outcome');
     console.log('✓ Codes without procedures remain searchable and show a clear no-procedure result');
 
+    // CPMD review recovered documented actions that were missing from the
+    // extracted data. Ensure the app shows them rather than the no-procedure fallback.
+    await page.evaluate(() => beginErrorCodeDiagnosis('10.00.60'));
+    await page.locator('#documentedStepList').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#documentedStepList').innerText(), /If print quality is no longer acceptable, replace the print cartridge/i,
+      '10.00.60 must show the documented print-quality-dependent recommendation');
+
+    // Grouped CPMD codes must be searchable by each exact alias and preserve the
+    // entered alias when selected, not silently substitute the first code.
+    await page.evaluate(() => {
+      const input = document.getElementById('errorCodeLookup');
+      input.value = '10.00.12';
+      searchErrorCodes(input.value);
+      const index = (window._errorLookupMatches || []).findIndex(item =>
+        extractErrorCodeAliases(item.code).includes('10.00.12'));
+      if (index < 0) throw new Error('10.00.12 not found in grouped error-code search');
+      selectErrorLookup(index);
+    });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 10.00.12' }).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#documentedStepList').innerText(), /FutureSmart firmware version 4\.10/i,
+      '10.00.12 must use the grouped CPMD supply-memory procedure');
+    console.log('✓ Recovered supply recommendations and exact grouped-code aliases');
+
     // If the source explicitly says "No action necessary", display that as
     // an informational outcome rather than calling it a missing procedure.
     await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.40'));
