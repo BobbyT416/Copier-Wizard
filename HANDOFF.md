@@ -4,7 +4,7 @@
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **282** (`development/version.json` reports 282). **Latest test-site build:** **290** (`main/test/version.json` reports 290). These are different branches/artifacts: Build 290's test HTML imports `test/cw-cpmd-catalog.js`; production root remains protected. Do not claim Build 290 passed CI or browser tests based on the currently available evidence. Production `main` must remain untouched unless the user explicitly approves.)  
+**Current development build:** **283** (`development/version.json` and `index.html` `CURRENT` marker report 283). **Latest test-site artifact:** **290** (`main/test/version.json` reports 290). These are different branches/artifacts: Build 290's test HTML imports `test/cw-cpmd-catalog.js`; production root remains protected. Do not claim Build 283 or Build 290 passed CI/browser tests or was deployed unless verified. Production `main` must remain untouched unless the user explicitly approves.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -14,6 +14,18 @@
 
 
 
+
+## 0Q. Build 283 — restore missing source-backed supply actions and grouped-code behavior (2026-10-20)
+
+- Updated only `development` app/data/test files; did not merge into `main` or deploy to the test site.
+- Reconciled the M527-family CPMD supply section against its actual source text. The previous data extraction had incorrectly merged the `10.00.11, 10.00.12 Supply Memory Error` procedure into `10.00.10`, leaving both grouped codes unsearchable and making `10.00.10` display unrelated steps. Split the records: `10.00.10` now keeps its four applicable steps; a separate grouped `10.00.11, 10.00.12` entry contains the source-backed firmware, reset-frequency, genuine-supply/warranty, reinstall, and replacement guidance.
+- Restored documented recommended actions for `10.00.15`, `10.00.35`, `10.00.41`, `10.00.60`, `10.00.69`, `10.00.70`, and `10.00.91`; added the explicit no-action wording for `10.00.33`; and preserved the authenticity note for `10.00.34`. These corrections reduce false 'no procedure extracted' results without inventing steps.
+- Expanded the generic no-action matcher to recognize exact standalone source statements `No action necessary.` and `There is no action needed [for this message].` This allows informational entries such as `10.00.40`, `10.00.59`, and `32.1C.40` to display as no-action outcomes.
+- Fixed grouped-code selection to preserve the exact alias the technician entered. For example, selecting the grouped `10.00.00 or 10.00.01` record after searching `10.00.01` should open/report `10.00.01`, not silently substitute `10.00.00`.
+- Added/updated smoke tests for the genuinely missing-procedure path (`13.00.EE`), the recovered `10.00.60` procedure, exact alias searches for `10.00.12` and `10.00.01`, and the explicit no-action `32.1C.40` outcome.
+- Build `version.json` and the app `CURRENT` marker both report **283**. Static parsing confirms all 15 inline scripts and the smoke-test source parse successfully; the current Actions run for the latest test commit is still pending. Do not publish until it completes and any failures are fixed.
+- CPMD coverage comparison after these fixes: **168 of 210 concrete code tokens** from the 303-record catalog are now present in the app's stored `code` fields; **42 concrete tokens remain to reconcile**: `11.00.02`, `32.08.A1`, `32.08.A2`, `32.08.A3`, `32.1C.06`, `32.1C.07`, `32.1C.08`, `32.1C.09`, `32.1C.0A`, `32.1C.0D`, `32.1C.11`, `32.1C.13`, `32.1C.14`, `41.03.01`, `41.03.A1`, `41.03.B1`, `41.03.C1`, `41.03.A2`, `41.03.B2`, `41.03.C2`, `41.03.03`, `41.03.A3`, `41.03.B3`, `41.03.C3`, `41.03.04`, `41.03.A4`, `41.03.B4`, `41.03.C4`, `41.03.05`, `41.03.A5`, `41.03.B5`, `41.03.C5`, `41.03.0D`, `41.03.AD`, `41.03.BD`, `41.03.CD`, `42.B0.02`, `65.80.A0`, `65.80.A1`, `82.73.46`, `82.73.47`, `98.01.00`. Many are grouped entries or event codes; reconcile body instructions and applicability before enabling them, and keep event-code entries distinct from repair procedures.
+- Next: finish Build 283 CI/browser verification; continue the 42-token reconciliation from the actual CPMD body; then audit every remaining no-step record against the CPMD for extraction gaps, explicit no-action entries, and genuinely absent procedures. Candidate next family remains M607/M608/M609 plus E60055/E60065/E60075/E60155/E60165/E60175, which has both a service manual and CPMD in the Library; keep it gated until validation is complete.
 
 ## 0P. M527 CPMD inventory comparison and browser-test follow-up (2026-10-20)
 
