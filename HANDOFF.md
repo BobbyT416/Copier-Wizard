@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 281 adds a simplified no-procedure result and regression coverage; full audit remains in progress)
+**Updated:** 2026-10-20 (Build 282 distinguishes explicit no-action entries from missing procedure extraction; full audit remains in progress)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **281** (`version.json` reports 281. Build 281 adds a simpler terminal screen for codes without extracted step-by-step instructions and a regression assertion. Inline-script syntax and smoke-test source syntax pass; the full Playwright/browser suite and test-site deployment are not yet verified. Production `main` must remain untouched unless the user explicitly approves.)  
+**Current development build:** **282** (`version.json` and the in-app `CURRENT` marker report 282. Build 282 simplifies no-procedure results and detects explicit source statements that no action is necessary. The latest GitHub Actions run is pending; browser verification and test-site deployment are not yet confirmed. Production `main` must remain untouched unless the user explicitly approves.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -14,6 +14,17 @@
 
 
 
+
+## 0O. Build 282 — distinguish no-action entries from extraction gaps (2026-10-20)
+
+- Added a reusable source-data rule: if the documented summary or steps contain the exact standalone recommendation `No action necessary.`, the result is shown as **No technician action required** instead of a generic missing-procedure warning. The match is deliberately exact to avoid suppressing troubleshooting because the phrase appears incidentally in other text.
+- Updated regression coverage to test two different cases: `13.00.EE` should keep a clear no-procedure result and return navigation; `32.1C.40` should show the explicit no-action outcome and must not enter a repair-step flow.
+- Build 281's first CI run failed because `version.json` had been bumped before the app's `const CURRENT` marker; that mismatch was fixed. Build 282 synchronizes both to 282. The no-action regex was also corrected after source inspection. Wait for the latest Actions run before claiming validation passed.
+- Source-audit finding: in `cw-manual-data.js`, the shared E52645 database has 256 error records, 191 with non-empty `steps`, and 65 without. Of those 65, 13 summaries contain `See recommended action`, 26 are marked informational/event-log-only, 31 lack a `desc`, 13 are pattern entries, and none has a `parts` array. These are extraction-structure counts, not proof the source has no procedure.
+- Confirmed extraction-gap example: code `10.00.60` has no stored `steps`, but the uploaded CPMD search result includes a recommended action to replace the toner cartridge only if print quality is no longer acceptable, plus a note to have replacement supplies available. Therefore the app must not equate an empty `steps` array with 'the manual has no procedure.' Audit each affected record against its actual applicable source before labeling it no-procedure or importing any instructions.
+- Additional confirmed source behavior: `32.1C.40` is informational and its CPMD recommendation is `No action necessary.` This is the reason the explicit no-action fallback was added.
+- Static syntax check before the latest no-action matcher correction passed for all 15 inline scripts and the smoke-test file. The current corrected revision still needs the GitHub Actions validation run to confirm syntax, build/safety checks, and browser tests.
+- Next: confirm Build 282 Actions status; audit all 65 no-step records against applicable CPMD/service-manual sources, repair extraction gaps without mixing model-specific procedures, and add test cases for complete procedure, source recommendation without steps, explicit no-action, and genuinely absent procedure. Then continue the end-to-end diagnostic audit and add machine families through a repeatable validated onboarding process.
 
 ## 0N. Build 281 — simplify no-procedure results (2026-10-20)
 
