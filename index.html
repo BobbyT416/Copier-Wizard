@@ -1877,7 +1877,7 @@ const machineSelectionFamilies = {
       label: "M501 / M506 / M507 / M527 / M528 / E50045 / E50145 / E52545 / E52645 family",
       models: ["M501","M506","M507","M527","M528","E50045","E50145","E52545","E52645"],
       supported: true,
-      supportedModels: ["E52645"],
+      supportedModels: ["E52645","M527"],
       docs: "E52645 Service Manual + CPMD — E52645 workflow enabled; other models gated pending exact validation"
     },
     "m607-family": {
@@ -2510,7 +2510,17 @@ function cwUseM776Catalog(){return String(currentMachineModel||verifiedModel||""
 function cwM776Product(){return String(window.verifiedProduct||document.getElementById("product")?.value||"").toUpperCase();}
 function cwM776Variant(){const p=cwM776Product();if(p==="T3U55A")return "M776dn";if(p==="3WT91A")return "M776z";if(p==="T3U56A")return "M776zs";return "";}
 function cwM776PartsForError(x){const code=String(x?.code||"").toUpperCase(),variant=cwM776Variant();if(!variant)return Array.isArray(x?.parts)?x.parts:[];if(code==="59.00.03"||code==="59.00.04")return variant==="M776zs"?["Right door assembly — RM2-3434-000CN","Paper delivery assembly — RM2-1786-000CN","Duplexing controller PCB assembly — RM3-7380-000CN"]:["Right door assembly — RM2-3434-000CN","Paper delivery assembly — RM2-3910-000CN","Duplexing controller PCB assembly — RM2-9921-000CN"];if(code==="58.00.03")return [variant==="M776zs"?"DC controller PCB assembly — RM2-9931-000CN":"DC controller PCB assembly — RM2-9930-000CN"];if(code==="59.00.00")return ["Paper pickup assembly — SOURCE CONFLICT: CPMD lists RM2-1393-000CN; Repair Manual lists RM2-3908-000CN","DC controller PCB assembly — "+(variant==="M776zs"?"RM2-9931-000CN":"RM2-9930-000CN")];return Array.isArray(x?.parts)?x.parts:[];}
-function cwActiveErrorCatalog(){return cwUseM776Catalog()?M776_ERROR_CATALOG:E52645_ERROR_CATALOG;}
+function cwM527ExactModel(){
+  const product=String(window.verifiedProduct||document.getElementById("product")?.value||"").toUpperCase();
+  const match=Object.values(productNumberCatalog||{}).flat().find(x=>String(x.product||"").toUpperCase()===product);
+  return String(match?.model||"M527").toUpperCase();
+}
+function cwActiveErrorCatalog(){
+  if(cwUseM776Catalog()) return M776_ERROR_CATALOG;
+  if(/^M527/i.test(String(currentMachineModel||verifiedModel||"")))
+    return E52645_ERROR_CATALOG.filter(item=>cwM527DocumentMatches(item,cwM527ExactModel()));
+  return E52645_ERROR_CATALOG;
+}
 function cwActiveMessageCatalog(){return cwUseM776Catalog()?M776_MESSAGE_CATALOG:window.E52645_ALPHABETICAL_MESSAGES;}
 window.E52645_ERROR_CATALOG=E52645_ERROR_CATALOG;
 function startSymptomDiagnosis(label,kind){
@@ -5785,7 +5795,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '272';
+  const CURRENT = '273';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
