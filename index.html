@@ -3410,8 +3410,16 @@ function renderDocumentedErrorBranch(raw){
   // that a condition is informational/no action required, do not pass it into
   // the generic step/decision engine. This prevents invented troubleshooting,
   // escalation, or parts recommendations for future imported manuals too.
-  if(technicianOverride && technicianOverride.noAction){
-    html+=`<div class="status" style="margin-top:16px;"><strong>No technician action required.</strong><br>${escapeHtml(technicianOverride.message||"The supplied documentation indicates that no action is required.")}</div>
+  // Honor explicit no-action recommendations embedded in the source record,
+  // not only hand-authored model overrides. Keep this exact-match so unrelated
+  // explanatory text containing the phrase cannot suppress troubleshooting.
+  const sourceNoAction=[...(Array.isArray(x.summary)?x.summary:[]),...(Array.isArray(x.steps)?x.steps:[])]
+    .some(v=>/^\\s*(?:[■●]\\s*)?No action necessary\\.?\\s*$/i.test(String(v||"")));
+  if((technicianOverride && technicianOverride.noAction) || sourceNoAction){
+    const noActionMessage=technicianOverride?.message ||
+      (sourceNoAction ? "The HP documentation explicitly states that no action is necessary for this informational condition." :
+      "The supplied documentation indicates that no action is required.");
+    html+=`<div class="status" style="margin-top:16px;"><strong>No technician action required.</strong><br>${escapeHtml(noActionMessage)}</div>
       <button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>
       <button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
     r.innerHTML=html;
