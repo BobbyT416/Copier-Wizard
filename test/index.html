@@ -407,7 +407,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice span { display:block !important; }
 </style>
 <script src="cw-manual-data.js?v=290"></script>
-<script src="cw-cpmd-catalog.js?v=290"></script>
+<script src="cw-cpmd-catalog.js?v=291"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -2318,7 +2318,8 @@ function cwM527ManualSearch(){
       ? extractErrorCodeAliases(codeText).some(alias=>alias.toLowerCase()===query) || codeText.toLowerCase().includes(query)
       : fields.some(value=>value.toLowerCase().includes(query));
     // Only show records whose extracted HP text explicitly identifies M527.
-    return cwM527DocumentMatches(item,cwM527ExactModel()) && matchesQuery;
+    // Keep every extracted CPMD code searchable; applicability is enforced before a diagnostic can show steps or parts.
+    return (item?.source==='CPMD' || cwM527DocumentMatches(item,cwM527ExactModel())) && matchesQuery;
   });
   if(!matches.length){
     const labels={code:"error code",message:"control-panel message",symptom:"symptom or keyword"};
@@ -2361,7 +2362,7 @@ function cwM527StartDocumentedError(code){
 }
 
 function cwM527DocumentMatches(item, exactModel){
-  if(item?.source==='CPMD') return true;
+  // Do not treat CPMD source membership alone as proof that an entry applies to M527.
   const fields=[item?.code,item?.desc,...(item?.summary||[]),...(item?.steps||[]),...(item?.parts||[])];
   const source=fields.map(v=>String(v||"")).join(" ");
   // The shared HP catalog includes documented 31-series error codes that do
@@ -2564,7 +2565,7 @@ function cwActiveErrorCatalog(){
   const cpmd=Array.isArray(window.CW_CPMD_CATALOG)?window.CW_CPMD_CATALOG:[];
   const combined=base.concat(cpmd);
   if(/^M527/i.test(String(currentMachineModel||verifiedModel||"")))
-    return combined.filter(item=>item?.source==='CPMD' || cwM527DocumentMatches(item,cwM527ExactModel()));
+    return combined.filter(item=>cwM527DocumentMatches(item,cwM527ExactModel()));
   return combined;
 }
 function cwActiveMessageCatalog(){return cwUseM776Catalog()?M776_MESSAGE_CATALOG:window.E52645_ALPHABETICAL_MESSAGES;}
