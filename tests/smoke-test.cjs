@@ -206,15 +206,15 @@ const server = http.createServer((req, res) => {
     const m52731Results = await page.locator('#errorCodeResults .lookup-result').allInnerTexts();
     assert.ok(m52731Results.length >= 10,
       'M527 prefix search must show the complete matching 31-series list, not truncate it');
-    assert.ok(m52731Results.some(text => /31\\.01\\.47/.test(text)),
+    assert.ok(m52731Results.some(text => /31\.01\.47/.test(text)),
       'M527 prefix search must include 31.01.47');
-    assert.ok(m52731Results.some(text => /31\\.03\\.30/.test(text)),
+    assert.ok(m52731Results.some(text => /31\.03\.30/.test(text)),
       'M527 prefix search must include 31.03.30');
     // Regression: a general M527 error must not be hidden just because its
     // source's parts list names a different M527 variant's feeder kit.
     await page.locator('#errorCodeLookup').fill('31.03.30');
     await page.locator('#errorCodeLookup').press('Enter');
-    await page.locator('#errorCodeResults').getByText(/31\\.03\\.30/).first().waitFor({ state: 'visible' });
+    await page.locator('#errorCodeResults').getByText(/31\.03\.30/).first().waitFor({ state: 'visible' });
     assert.match(await page.locator('#errorCodeResults').innerText(), /Document feeder pick motor error/i,
       'M527 numerical lookup must retain the documented 31-series error across variants');
     await page.locator('#errorCodeLookup').fill('30.01.44');
