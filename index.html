@@ -3044,9 +3044,13 @@ function selectErrorLookup(index){
   const item=(window._errorLookupMatches||[])[index];
   if(!item) return;
   const input=document.getElementById("errorCodeLookup");
-  if(input) input.value=item.code;
-  // Use the existing error-code diagnostic entry point.
-  const code=extractErrorCodeAliases(item.code)[0] || item.code;
+  const query=normalizeErrorCode(input?.value||"");
+  const aliases=extractErrorCodeAliases(item.code);
+  // When a grouped CPMD entry is selected after an exact alias search,
+  // preserve the code the technician actually entered instead of silently
+  // substituting the first code in the group.
+  const code=aliases.find(alias=>alias===query) || aliases[0] || item.code;
+  if(input) input.value=code;
   beginErrorCodeDiagnosis(code);
 }
 
@@ -3414,7 +3418,7 @@ function renderDocumentedErrorBranch(raw){
   // not only hand-authored model overrides. Keep this exact-match so unrelated
   // explanatory text containing the phrase cannot suppress troubleshooting.
   const sourceNoAction=[...(Array.isArray(x.summary)?x.summary:[]),...(Array.isArray(x.steps)?x.steps:[])]
-    .some(v=>/^\s*(?:[■●]\s*)?No action necessary\.?\s*$/i.test(String(v||"")));
+    .some(v=>/^\s*(?:[■●]\s*)?(?:No action necessary|There is no action needed(?: for this message)?)\.?\s*$/i.test(String(v||"")));
   if((technicianOverride && technicianOverride.noAction) || sourceNoAction){
     const noActionMessage=technicianOverride?.message ||
       (sourceNoAction ? "The HP documentation explicitly states that no action is necessary for this informational condition." :
