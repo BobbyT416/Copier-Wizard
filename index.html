@@ -3414,7 +3414,7 @@ function renderDocumentedErrorBranch(raw){
   // not only hand-authored model overrides. Keep this exact-match so unrelated
   // explanatory text containing the phrase cannot suppress troubleshooting.
   const sourceNoAction=[...(Array.isArray(x.summary)?x.summary:[]),...(Array.isArray(x.steps)?x.steps:[])]
-    .some(v=>/^\\s*(?:[■●]\\s*)?No action necessary\\.?\\s*$/i.test(String(v||"")));
+    .some(v=>/^\s*(?:[■●]\s*)?No action necessary\.?\s*$/i.test(String(v||"")));
   if((technicianOverride && technicianOverride.noAction) || sourceNoAction){
     const noActionMessage=technicianOverride?.message ||
       (sourceNoAction ? "The HP documentation explicitly states that no action is necessary for this informational condition." :
