@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js?v=283"></script>
+<script src="cw-manual-data.js?v=284"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -463,7 +463,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=283"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=284"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -3391,7 +3391,7 @@ function renderDocumentedErrorBranch(raw){
     .replace(/\.$/,"");
   html+=`<h2 style="font-size:1.65rem;line-height:1.2;margin-bottom:8px;">Documented Error — ${escapeHtml(code)}</h2>
     <div style="font-size:1.65rem;font-weight:800;line-height:1.2;margin:0 0 16px;color:var(--text,#17212b);">${escapeHtml(prominentProblem)}</div>
-    <div class="status"><strong>✓ Found in the supplied HP documentation.</strong></div>`;`;
+    <div class="status"><strong>✓ Found in the supplied HP documentation.</strong></div>`;
 
   if(hit.matched==="pattern"){
     html+=`<p class="muted">This code is covered by the documented pattern
@@ -5851,7 +5851,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '283';
+  const CURRENT = '284';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
