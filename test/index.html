@@ -406,7 +406,8 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js?v=289"></script>
+<script src="cw-manual-data.js?v=290"></script>
+<script src="cw-cpmd-catalog.js?v=290"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -463,7 +464,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=289"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=290"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -2360,6 +2361,7 @@ function cwM527StartDocumentedError(code){
 }
 
 function cwM527DocumentMatches(item, exactModel){
+  if(item?.source==='CPMD') return true;
   const fields=[item?.code,item?.desc,...(item?.summary||[]),...(item?.steps||[]),...(item?.parts||[])];
   const source=fields.map(v=>String(v||"")).join(" ");
   // The shared HP catalog includes documented 31-series error codes that do
@@ -2558,9 +2560,12 @@ function cwM527ExactModel(){
 }
 function cwActiveErrorCatalog(){
   if(cwUseM776Catalog()) return M776_ERROR_CATALOG;
+  const base=Array.isArray(E52645_ERROR_CATALOG)?E52645_ERROR_CATALOG:[];
+  const cpmd=Array.isArray(window.CW_CPMD_CATALOG)?window.CW_CPMD_CATALOG:[];
+  const combined=base.concat(cpmd);
   if(/^M527/i.test(String(currentMachineModel||verifiedModel||"")))
-    return E52645_ERROR_CATALOG.filter(item=>cwM527DocumentMatches(item,cwM527ExactModel()));
-  return E52645_ERROR_CATALOG;
+    return combined.filter(item=>item?.source==='CPMD' || cwM527DocumentMatches(item,cwM527ExactModel()));
+  return combined;
 }
 function cwActiveMessageCatalog(){return cwUseM776Catalog()?M776_MESSAGE_CATALOG:window.E52645_ALPHABETICAL_MESSAGES;}
 window.E52645_ERROR_CATALOG=E52645_ERROR_CATALOG;
@@ -5873,7 +5878,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '289';
+  const CURRENT = '290';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
