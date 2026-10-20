@@ -187,12 +187,12 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#verify').innerText(), /Machine Verified — App Ready/i, 'M527c should reach the same verified entry screen shown on the main site');
     await page.locator('#problemCard').waitFor({ state: 'visible' });
     assert.match(await page.locator('#problemCard').innerText(), /What.s wrong\\?/i, 'M527 should show the normal troubleshooting choices');
-    assert.ok(await page.locator('#problemCard').getByRole('button', { name: /Numerical Error Code/i }).isVisible(), 'M527 should offer numerical error-code troubleshooting');
-    assert.ok(await page.locator('#problemCard').getByRole('button', { name: /Alphabetical Message/i }).isVisible(), 'M527 should offer alphabetical-message troubleshooting');
-    assert.ok(await page.locator('#problemCard').getByRole('button', { name: /Parts Lookup/i }).isVisible(), 'M527 should offer documented parts lookup');
+    assert.ok(await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Numerical Error Code' }).isVisible(), 'M527 should offer numerical error-code troubleshooting');
+    assert.ok(await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Alphabetical Message' }).isVisible(), 'M527 should offer alphabetical-message troubleshooting');
+    assert.ok(await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Parts Lookup' }).isVisible(), 'M527 should offer documented parts lookup');
     assert.ok(await page.locator('#problemCard').getByRole('button', { name: /I don.t have an error code or message/i }).isVisible(), 'M527 should offer symptom-based entry');
     console.log('✓ M527 verified-machine screen matches the main-site troubleshooting entry layout');
-    await page.locator('#problemCard').getByRole('button', { name: /Numerical Error Code/i }).click();
+    await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Numerical Error Code' }).click();
     await page.locator('#errorLookupPanel').waitFor({ state: 'visible' });
     await page.locator('#errorCodeLookup').fill('30.01.44');
     await page.locator('#errorCodeLookup').press('Enter');
