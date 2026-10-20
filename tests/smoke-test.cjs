@@ -448,8 +448,10 @@ const server = http.createServer((req, res) => {
       beginErrorCodeDiagnosis('10.00.60');
     });
     await page.locator('#documentedStepList').waitFor({ state: 'visible' });
-    assert.match(await page.locator('#documentedStepList').innerText(), /If print quality is no longer acceptable, replace the print cartridge/i,
-      'M527 should expose the CPMD supply-code procedure when applicability is source-verified');
+    assert.match(await page.locator('#documentedStepList').innerText(), /Is print quality no longer acceptable\?/i,
+      'M527 should expose the CPMD decision point for the source-verified supply code');
+    assert.ok(await page.locator('#documentedStepList').getByRole('button', { name: /Yes — it is/i }).isVisible(),
+      'the supply-code decision should have a clear affirmative action');
     console.log('✓ Source-reviewed M527 applicability exposes generic supply-code troubleshooting');
 
     await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.07'));
@@ -494,8 +496,8 @@ const server = http.createServer((req, res) => {
     // extracted data. Ensure the app shows them rather than the no-procedure fallback.
     await page.evaluate(() => beginErrorCodeDiagnosis('10.00.60'));
     await page.locator('#documentedStepList').waitFor({ state: 'visible' });
-    assert.match(await page.locator('#documentedStepList').innerText(), /If print quality is no longer acceptable, replace the print cartridge/i,
-      '10.00.60 must show the documented print-quality-dependent recommendation');
+    assert.match(await page.locator('#documentedStepList').innerText(), /Is print quality no longer acceptable\?/i,
+      '10.00.60 must show the documented print-quality-dependent decision point');
 
     // Grouped CPMD codes must be searchable by each exact alias and preserve the
     // entered alias when selected, not silently substitute the first code.
