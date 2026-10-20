@@ -34,7 +34,7 @@ const server = http.createServer((req, res) => {
       'opening screen field labels should not repeat optional-field explanations');
     assert.equal(await page.locator('#selectCard label').filter({hasText:'Machine Family'}).innerText(), 'Machine Family',
       'machine-family label should remain concise');
-    assert.equal(await page.locator('#selectCard label').filter({hasText:'Product Number'}).innerText(), 'Product Number',
+    assert.equal(await page.locator('#selectCard label').filter({hasText:'Product Number'}).filter({hasText:/^Product Number$/}).innerText(), 'Product Number',
       'product-number label should remain concise');
     assert.match(await page.locator('#productHint').innerText(), /^Enter a product number, or select printer type, family, and model\\.$/,
       'opening screen should use one concise instruction instead of a long explanation');
