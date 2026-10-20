@@ -190,6 +190,15 @@ const server = http.createServer((req, res) => {
       'M527 fallback must not repeat Browse Product Numbers inside the verification result');
     assert.equal(await page.locator('#verify #m527ManualLookup').count(), 1,
       'M527 model-only verification must expose the manual search');
+    assert.equal(await page.locator('#verify [data-m527-search-mode]').count(), 3,
+      'M527 manual search must provide error-code, control-panel-message, and symptom entry options');
+    await page.locator('#verify [data-m527-search-mode="message"]').click();
+    assert.match(await page.locator('#verify #m527ManualLookup').getAttribute('placeholder'), /control-panel message/i,
+      'selecting message mode must update the search prompt');
+    await page.locator('#verify [data-m527-search-mode="symptom"]').click();
+    assert.match(await page.locator('#verify #m527ManualLookup').getAttribute('placeholder'), /problem/i,
+      'selecting symptom mode must update the search prompt');
+    await page.locator('#verify [data-m527-search-mode="code"]').click();
     const m527Options = await page.locator('#productNumberOptions option').evaluateAll(options => options.map(o => o.value));
     assert.deepEqual(m527Options.sort(), ['F2A76A','F2A77A','F2A78A','F2A79A','F2A80A','F2A81A'].sort(), 'M527 datalist must contain only M527 product numbers');
     await page.locator('.product-browser-toggle').click();
