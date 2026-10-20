@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 279 restores numerical-code prefix search and complete 31-series results)
+**Updated:** 2026-10-20 (Build 280 reported in version.json; troubleshooting audit and family expansion now prioritized)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **279** (`version.json` and the in-app build label are 279. Build 279 corrects numerical lookup: search now runs while typing and on Enter, results are no longer capped at eight, HP descriptions render from `desc`, and the M527 31-series regression test checks the full list. The updated browser suite has not yet been confirmed passing. No Build 279 test-site release has been made. Production remains untouched.)  
+**Current development build:** **280** (`version.json` reports 280. The previous handoff's Build 279 validation notes remain relevant, but the exact Build 280 diff, in-app label, browser suite, and test-site deployment still need verification. Production `main` must remain untouched unless the user explicitly approves.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -12,6 +12,34 @@
 
 
 
+
+
+
+## 0M. User priorities and troubleshooting audit kickoff (2026-10-20)
+
+The user explicitly directed: **keep documented error codes even when no procedure is available; simplify the technician experience; perform a complete self-audit of troubleshooting; and work toward onboarding additional machine families.** These are active priorities, not completed work.
+
+### Initial source inspection (development branch)
+- `version.json` currently reports build **280**, while the previous handoff described Build 279. Reconcile the in-app build marker, latest commits, CI, and deployment before describing a build as released or verified.
+- The shared `cw-manual-data.js` `CW_MANUAL_DATABASE` parses successfully and contains **256 error records** in the E52645 source database. A preliminary structural count finds **65 records without a non-empty `steps` array** across the full shared database. This is a data-shape count, not yet a source-verified audit of which codes truly have no procedure; some records may be patterns, aliases, grouped headings, or have procedures elsewhere in the source.
+- A preliminary applicability filter found 57 candidate M527 records and zero without steps, but this is not yet an authoritative M527 CPMD reconciliation. Do not report this as proof that every M527 code has a procedure.
+- `renderDocumentedErrorBranch()` already preserves catalog hits with no extracted steps and displays a warning rather than inventing steps. However, the renderer also creates a hidden documented-parts section that normally becomes visible after the documented steps finish; no-step records may therefore have a confusing/blocked path to any source-listed parts. Review and simplify this path without inventing actions or parts.
+- `searchErrorCodes()` now displays all matching prefixes without an eight-result cap. Keep that behavior; do not remove valid codes to make the UI shorter. Simplify presentation and navigation, not coverage.
+
+### Required self-audit before declaring troubleshooting complete
+1. Inventory every diagnostic entry point: numerical codes, alphabetical control-panel messages, symptom categories, manual-text search, model-specific overrides, diagnostic tests, part recommendations, removal/replacement procedures, and service-report capture.
+2. For every error/message record, validate source provenance, applicable model/family/variant/firmware, whether a documented procedure exists, parts linkage, and end-of-path navigation.
+3. Test four outcomes separately: complete documented procedure; description/recommendation without a detailed procedure; code listed but no action supplied; and unknown/unverified code. Keep listed codes discoverable in every case.
+4. Check grouped/pattern codes and aliases so they resolve to the proper source entry without generating fabricated instructions. Ensure documented informational/no-action entries do not trigger generic repair steps.
+5. Verify the full user flow with browser tests and manual iPhone/Safari testing where possible; record evidence, failures, and remaining gaps.
+6. After the audit baseline is stable, onboard more machine families one at a time using a repeatable family checklist and regression tests. Do not enable guided troubleshooting for a family until model/variant scope, source coverage, parts, procedures, and fallback behavior are validated.
+
+### Guardrails
+- Preserve all documented error codes, including those with no detailed procedure.
+- Do not fabricate troubleshooting, part recommendations, or source claims.
+- Apply reusable fixes globally when safe; keep model/variant applicability filters strict.
+- Work only on `development` and test builds. **Do not merge into or deploy `main` without explicit user approval.**
+- Update this handoff with measured results and test evidence after each meaningful milestone; do not mark the audit complete until the checks above are actually performed.
 
 ## 0L. Latest browser run and follow-up test fix (2026-10-20)
 
