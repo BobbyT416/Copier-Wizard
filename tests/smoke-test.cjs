@@ -440,6 +440,39 @@ const server = http.createServer((req, res) => {
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
     console.log('✓ Full UI flow: M776zs/T3U56A selects 59.00.03, correct parts, M13, correct repair procedure, and returns');
 
+    // The same CPMD code can have a general procedure and a specific
+    // condition-specific procedure. Search results must let the technician
+    // choose the intended documented entry rather than silently taking the first.
+    const duplicateCodeResults = await page.evaluate(() => {
+      currentMachineModel = 'M527';
+      verifiedModel = 'M527';
+      const input = document.getElementById('errorCodeLookup');
+      input.value = '41.03.02';
+      searchErrorCodes(input.value);
+      return (window._errorLookupMatches || []).map(item => ({ code: item.code, desc: item.desc || '' }));
+    });
+    assert.ok(duplicateCodeResults.some(item => /Paper size mismatch from Tray 2/i.test(item.desc)),
+      '41.03.02 search must include the general Tray 2 paper-size procedure');
+    assert.ok(duplicateCodeResults.some(item => /slow printing/i.test(item.desc)),
+      '41.03.02 search must retain the separate slow-printing procedure');
+    await page.evaluate(() => {
+      const index = (window._errorLookupMatches || []).findIndex(item => /Paper size mismatch from Tray 2/i.test(item.desc || ''));
+      if (index < 0) throw new Error('General Tray 2 paper-size entry not found');
+      selectErrorLookup(index);
+    });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 41.03.02' }).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /Paper-size mismatch.*Tray 2/i,
+      'selecting the general entry must open its own procedure');
+    await page.locator('#result').getByText(/Part number withheld pending verification/i).waitFor({ state: 'visible' });
+    await page.evaluate(() => {
+      const index = (window._errorLookupMatches || []).findIndex(item => /slow printing/i.test(item.desc || ''));
+      if (index < 0) throw new Error('Slow-printing Tray 2 entry not found');
+      selectErrorLookup(index);
+    });
+    assert.match(await page.locator('#result').innerText(), /slow printing/i,
+      'selecting the alternate entry must preserve the slow-printing procedure');
+    console.log('✓ Duplicate CPMD code entries remain selectable by their documented context');
+
     // Explicit source-reviewed applicability metadata must make generic
     // M527-family supply codes available even when the description omits "M527".
     await page.evaluate(() => {
