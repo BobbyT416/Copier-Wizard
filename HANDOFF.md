@@ -1,14 +1,23 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 273 M527 flow confirmed by user on test site)  
+**Updated:** 2026-10-20 (Build 274 simplifies opening-screen field explanations)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **273** (`index.html` runtime label/update checker and `version.json` set to 273; test-site `index.html` and `version.json` synchronized. User manually confirmed the test site now enters the expected App Ready / What's wrong? screen for verified M527c. Numerical error catalog is scoped to M527-referenced records and exact variant. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run.)  
+**Current development build:** **274** (`index.html` runtime label/update checker and `version.json` set to 274; test-site `index.html` and `version.json` synchronized. User confirmed Build 273 fixed the M527 entry path; Build 274 simplifies the opening fields and shortens hints without changing selection/verification logic. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
 
+
+## 0E. Simplify opening screen fields — Build 274 (2026-10-20)
+
+- User asked to reduce the amount of explanation shown beside/under the opening-screen fields.
+- Removed repeated “optional if product number is entered” text from Printer Type, Machine Family, and Model labels; removed “(optional)” from Product Number label.
+- Replaced the long initial product hint with one concise instruction: “Enter a product number, or select printer type, family, and model.”
+- Shortened dynamic product-number hints to brief status text and removed the family documentation paragraph displayed under Model, since it cluttered the form. Product-number validation and all selection behavior remain in place.
+- Added smoke-test assertions for concise labels and the short hint.
+- Published Build 274 to the test folder only. Development/test HTML match; all 15 inline script blocks compile; version metadata is 274; production root remains Build 257. Full Playwright smoke tests have not been run.
 
 ## 0D. Restore the main-site M527 verified troubleshooting screen — Build 273 (2026-10-20)
 
