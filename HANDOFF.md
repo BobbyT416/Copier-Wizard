@@ -1,14 +1,24 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 271 fixes the M527 model-only verification dead end)  
+**Updated:** 2026-10-20 (Build 272 adds three M527 troubleshooting entry options)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **271** (`index.html` runtime label/update checker and `version.json` set to 271; test-site `index.html` and `version.json` synchronized. M527 model-only selection now opens the supplied-HP-manual search instead of the previous generic dead-end; the Start Documented Troubleshooting action remains gated until an exact M527 product number is verified. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run and live Pages deployment has not been independently confirmed.)  
+**Current development build:** **272** (`index.html` runtime label/update checker and `version.json` set to 272; test-site `index.html` and `version.json` synchronized. M527 model-only selection offers error-code, control-panel-message, and symptom/problem search modes. Exact product verification remains required before starting a documented diagnostic. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run and live Pages behavior has not been independently confirmed.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
 
+
+## 0C. Multiple M527 troubleshooting entry options — Build 272 (2026-10-20)
+
+- User tested Build 271 and said a single manual-search field was only a slight improvement; they expected multiple troubleshooting options.
+- Build 272 replaces the single generic M527 search prompt with three selectable entry modes: **Numerical Error Code**, **Control-Panel Message**, and **Symptom or Problem**.
+- Search behavior changes by mode: error-code mode searches the extracted error-code field; message mode searches descriptions and summaries; symptom mode searches descriptions, summaries, steps, and parts. Results still must explicitly mention M527 in the supplied HP text.
+- Exact-variant safeguard remains: the source-reference results are available at family selection, but starting a documented diagnostic branch requires a verified exact M527 product number. No generic E52645 workflow is enabled by this change.
+- Added regression assertions for all three options and their placeholder changes in `tests/smoke-test.cjs`.
+- Published only to `main/test/index.html`; development and test HTML are identical, both labels and version metadata show Build 272, all 15 inline script blocks compile, and production root stays at Build 257.
+- Full Playwright smoke tests and live Pages behavior have not been independently verified in this session.
 
 ## 0B. M527 model-only verification fix — Build 271 (2026-10-20)
 
