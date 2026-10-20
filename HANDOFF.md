@@ -4,7 +4,7 @@
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **275** (`index.html` runtime label/update checker and `version.json` set to 275; test-site `index.html` and `version.json` synchronized. User confirmed Build 273 fixed the M527 entry path; Build 275 shortens opening field placeholders and product-number hints without changing selection/verification logic. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run.)  
+**Current development build:** **276** (`index.html` runtime label/update checker and `version.json` set to 276; test-site `index.html` and `version.json` synchronized. User confirmed Build 273 fixed the M527 entry path; Build 275 simplified opening-screen text; Build 276 adds automatic next-picker progression. Inline JavaScript syntax checks passed; Playwright smoke tests and live iPhone/Safari picker behavior have not been run.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
