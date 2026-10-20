@@ -30,7 +30,15 @@ const server = http.createServer((req, res) => {
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
     assert.match(await page.title(), /Copier Wizard/i);
     assert.equal(await page.locator('#machineType').count(), 1);
-    console.log('✓ App loads in Chromium');
+    assert.equal(await page.locator('#selectCard label').filter({hasText:'Printer Type'}).innerText(), 'Printer Type',
+      'opening screen field labels should not repeat optional-field explanations');
+    assert.equal(await page.locator('#selectCard label').filter({hasText:'Machine Family'}).innerText(), 'Machine Family',
+      'machine-family label should remain concise');
+    assert.equal(await page.locator('#selectCard label').filter({hasText:'Product Number'}).innerText(), 'Product Number',
+      'product-number label should remain concise');
+    assert.match(await page.locator('#productHint').innerText(), /^Enter a product number, or select printer type, family, and model\\.$/,
+      'opening screen should use one concise instruction instead of a long explanation');
+    console.log('✓ App loads in Chromium with concise opening-screen labels');
     // Decision answers should be derived from the observed condition, not generic true/false wording.
     const decisionLabels = await page.evaluate(() => {
       const sourceCondition = 'error 31.03.20 still returns';
