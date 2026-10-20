@@ -551,8 +551,9 @@ const server = http.createServer((req, res) => {
       '82.73.47 must be clearly labeled as an event-log-only entry');
     await page.locator('#documentedStepList').getByRole('button', { name: /Step Completed — Continue/i }).click();
     await page.locator('#documentedStepList').getByRole('button', { name: /Step Completed — Continue/i }).click();
+    await page.locator('#documentedStepList').getByRole('button', { name: /Yes — the error persists/i }).click();
     assert.match(await page.locator('#documentedStepList').innerText(), /Format Disk/i,
-      '82.73.47 must guide the technician to the documented disk-cleaning recovery step');
+      '82.73.47 must guide the technician to the documented disk-cleaning recovery step after confirming persistence');
     assert.match(await page.locator('#result').innerText(), /Part number withheld pending verification/i,
       'disk-cleaning failure must not guess which HDD option is installed');
     console.log('✓ Variant-gated output-accessory and event-log disk-cleaning procedures');
