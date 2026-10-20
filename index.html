@@ -3422,6 +3422,17 @@ function renderDocumentedErrorBranch(raw, preferredItem){
       '</ul>';
   }
 
+  // Do not silently omit an uncertain part number. This applies to both
+  // source-data warnings and technician overrides.
+  const partWithheld=!!(technicianOverride?.partWithheld || x.partWithheld);
+  const partWithheldReason=technicianOverride?.partWithheldReason || x.partWithheldReason;
+  if(partWithheld){
+    html+=`<div class="status warn" style="margin-top:12px;">
+      <strong>Part number withheld pending verification.</strong><br>
+      ${escapeHtml(partWithheldReason || "The supplied documentation does not establish a single verified part number for this condition. Check the exact model's Repair Service Manual before ordering.")}
+    </div>`;
+  }
+
   // Global no-action rule: when the verified documentation explicitly says
   // that a condition is informational/no action required, do not pass it into
   // the generic step/decision engine. This prevents invented troubleshooting,
