@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 285 passed GitHub Actions/Playwright; full troubleshooting audit remains in progress)
+**Updated:** 2026-10-20 (Build 287 passed GitHub Actions/Playwright; concrete CPMD code inventory reconciled; no-step audit continues)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -14,6 +14,17 @@
 
 
 
+
+## 0T. Build 287 — all concrete CPMD code tokens present; continued procedure audit (2026-10-20)
+
+- **Build 287 passed** GitHub Actions validation and Playwright smoke tests in run `39518279743`. The branch remains `development`; no production merge or test-site deployment was made.
+- The CPMD inventory contains 303 TOC records and 210 concrete numerical code tokens. A fresh comparison against `cw-manual-data.js` now finds **210/210 concrete tokens represented in stored code fields**. This means the concrete code inventory is reconciled; it does not mean every entry applies to every model or that every procedure is complete.
+- Added source-backed M527-family records for `65.80.A0/A1` output-accessory failure and `82.73.46/.47` disk-cleaning failure. The 65.80 procedure is visible only after product-variant verification for M527c/f/z; the correct accessory part is B5L46-60102. The 82.73 entries are explicitly marked event-log-only, include the documented power-cycle/firmware/Preboot Format Disk sequence and data-loss warning, and withhold any HDD replacement part not established by that CPMD entry.
+- Corrected variant-specific part filtering so an exact verified product variant is used when filtering parts. Generic model label `M527` is not treated as sufficient proof that a variant-specific part applies.
+- Added a visible warning when the source does not establish a single verified part number. This is used for the conflicting Tray 2/4/5 roller-kit references and the unverified HDD configuration instead of guessing.
+- Continued the no-step audit of M527 backup/restore event codes: recovered documented actions for `32.1C.15`, `.2F`, `.49`, `.61`, `.62`, `.69`, `.6A`, and `.6D`; marked `.43`, `.44`, and `.60` with explicit `No action necessary` language. The source-backed no-action UI is tested separately from the genuinely missing-procedure path.
+- The shared database now has **274 error records**, **50 records with no non-empty `steps` array**. This count still includes patterns, explicit no-action entries, and entries for other families; audit them against their own source scope rather than treating all 50 as missing procedures. In particular, continue checking the M527 CPMD for `20.00.00`, `21.00.00`, remaining 32.1C informational entries, and any message records with only summaries.
+- Next: finish the model-scoped no-step audit; confirm the 65.80 variant gate and 82.73 no-part outcome in the live browser smoke suite (now included in Build 287 tests); then proceed with the next family. Library source files are available for M607/M608/M609 and E60055/E60065/E60075/E60155/E60165/E60175 (`M607_8_9 E600x5 E601x5 CPMD.pdf` plus `HP E60xx5_E62xx5 Service Manual.pdf`). Keep that family gated until model/variant, code, procedure, part, and regression coverage are verified.
 
 ## 0S. Build 285 — source-backed M527 code coverage and duplicate-procedure UX (2026-10-20)
 
