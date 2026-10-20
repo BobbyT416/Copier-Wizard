@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 280 reported in version.json; troubleshooting audit and family expansion now prioritized)
+**Updated:** 2026-10-20 (Build 281 adds a simplified no-procedure result and regression coverage; full audit remains in progress)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **280** (`version.json` reports 280. The previous handoff's Build 279 validation notes remain relevant, but the exact Build 280 diff, in-app label, browser suite, and test-site deployment still need verification. Production `main` must remain untouched unless the user explicitly approves.)  
+**Current development build:** **281** (`version.json` reports 281. Build 281 adds a simpler terminal screen for codes without extracted step-by-step instructions and a regression assertion. Inline-script syntax and smoke-test source syntax pass; the full Playwright/browser suite and test-site deployment are not yet verified. Production `main` must remain untouched unless the user explicitly approves.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -14,6 +14,16 @@
 
 
 
+
+## 0N. Build 281 — simplify no-procedure results (2026-10-20)
+
+- Implemented on `development`: when a code is found but has no extracted step-by-step procedure, the result now ends in a concise terminal state with a clear explanation and navigation buttons. It does not leave the technician facing a hidden completion/outcome panel. Source-listed parts, if any, are labeled as documentation context rather than a replacement recommendation.
+- The documented code and description/summary remain visible. This change does not remove codes, invent steps, or treat missing extracted steps as proof that HP has no recommendation elsewhere in the source.
+- Added a Playwright smoke-test assertion using `32.1C.40` to check the no-procedure state, return navigation, and absence of the hidden procedure outcome panel.
+- Bumped `version.json` from 280 to **281**.
+- Commits: app `d79b3c4e0c50397736050e8849776f6d9a2b69fa`; regression test `0e4648b631d86085e6d7ad45c70f148511e52c6b`; build marker `9292c954a3957a353117674985d089d771450e8c`.
+- Static validation: all 15 inline scripts in `index.html` parse; `tests/smoke-test.cjs` parses; 19 smoke-test checkpoints are present. **The Playwright suite has not been executed against this latest HEAD**, so do not claim browser behavior is verified and do not deploy yet.
+- Next: run the latest Playwright workflow; resolve any failures; audit whether the 65 shared-database records with no `steps` are true no-procedure entries, informational records, extraction gaps, or procedures documented elsewhere. Then continue auditing all diagnostic entry points and prepare the repeatable machine-family onboarding checklist.
 
 ## 0M. User priorities and troubleshooting audit kickoff (2026-10-20)
 
