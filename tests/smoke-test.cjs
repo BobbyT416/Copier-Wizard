@@ -200,7 +200,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#errorCodeLookup').fill('31');
     await page.locator('#errorCodeLookup').press('Enter');
     await page.locator('#errorCodeResults .lookup-result').first().waitFor({ state: 'visible' });
-    assert.match(await page.locator('#errorCodeResults').innerText(), /31\\./,
+    assert.match(await page.locator('#errorCodeResults').innerText(), /31\./,
       'M527 numerical lookup must return 31-series codes for a family-prefix search');
     // Regression: a general M527 error must not be hidden just because its
     // source's parts list names a different M527 variant's feeder kit.
