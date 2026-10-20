@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js?v=278"></script>
+<script src="cw-manual-data.js?v=279"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -2362,6 +2362,11 @@ function cwM527StartDocumentedError(code){
 function cwM527DocumentMatches(item, exactModel){
   const fields=[item?.code,item?.desc,...(item?.summary||[]),...(item?.steps||[]),...(item?.parts||[])];
   const source=fields.map(v=>String(v||"")).join(" ");
+  // The shared HP catalog includes documented 31-series error codes that do
+  // not repeat the model name in each entry. Keep these available for M527
+  // instead of incorrectly filtering them out for lacking an explicit M527 label.
+  const code=String(item?.code||"").trim();
+  if(/^31(?:\.|$)/i.test(code)) return true;
   if(!/\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(source)) return false;
   const named=[...source.matchAll(/\bM527(c|z|dnm|cm|dn|f)\b/gi)].map(m=>("M527"+m[1]).toUpperCase());
   const unique=[...new Set(named)];
@@ -5829,7 +5834,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '278';
+  const CURRENT = '279';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
