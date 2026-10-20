@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 290 test-catalog review; full audit remains in progress)
+**Updated:** 2026-10-20 (Build 285 passed GitHub Actions/Playwright; full troubleshooting audit remains in progress)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -14,6 +14,19 @@
 
 
 
+
+## 0S. Build 285 — source-backed M527 code coverage and duplicate-procedure UX (2026-10-20)
+
+- **Build 285 validation passed:** GitHub Actions run `39517463066` completed successfully, including the HTML/JavaScript/build/safety checks and Playwright browser smoke tests. This validates the current development branch, not a test-site deployment.
+- The no-procedure path is now a concise terminal state with a clear return route; source entries explicitly stating `No action necessary` / `There is no action needed for this message` are shown as no-action outcomes. Extracted procedures that were previously missing are being restored from the CPMD rather than misclassified as 'no procedure.'
+- Recovered supply-code content: separated `10.00.10` from the `10.00.11, 10.00.12` Supply Memory Error procedure; added the grouped codes and source-backed recommendations for `10.00.15`, `10.00.33`, `10.00.34`, `10.00.35`, `10.00.41`, `10.00.60`, `10.00.69`, `10.00.70`, and `10.00.91`; explicitly scoped audited supply entries to M527 where the combined-family CPMD supports that applicability.
+- Restored missing backup/restore event entries `32.08.A1/A2/A3`, `32.1C.06`, `.07`, `.08`, `.09`, `.0A`, `.0D`, `.11`, and grouped `.13/.14`. `32.1C.05` no longer carries the neighboring event-code instructions in its own step list. Event codes with documented actions now show those actions; event codes with explicit no-action language remain informational.
+- Added explicit source-reviewed M527 applicability metadata for audited entries. Generic M527 supply-code lookup now works even when the code description itself does not repeat `M527`.
+- Added the six M527 paper-size mismatch groups from the CPMD: `41.03.01/A1/B1/C1` (Tray 1), `41.03.02/A2/B2/C2` (Tray 2), `41.03.03/A3/B3/C3` (Tray 3), `41.03.04/A4/B4/C4` (Tray 4), `41.03.05/A5/B5/C5` (Tray 5), and `41.03.0D/AD/BD/CD` (duplexer). The Tray 2 roller-kit part number is withheld because the combined-family CPMD gives conflicting references; the UI now visibly explains when a part number is withheld pending exact-model verification.
+- The CPMD has two separate `41.03.02` contexts: the general Tray 2 paper-size mismatch and a separate slow-printing procedure. Search results now preserve the chosen documented entry, including through the actual UI selection handler, instead of silently routing both to the first matching code. Regression tests cover both choices.
+- CPMD inventory comparison now finds **206 of 210 concrete code tokens** present in stored app code fields. **Four tokens remain to reconcile:** `65.80.A0`, `65.80.A1`, `82.73.46`, `82.73.47`. The `65.80` output-accessory procedure is variant-specific (M527c/f/z) and needs product-number gating before exposing its repair steps. `82.73.46/.47` are event-log-only disk-cleaning failures; add their source procedure and withhold HDD part recommendations until exact configuration is verified.
+- Current shared E52645 database contains **272 error records**, with **59 records still lacking a non-empty `steps` array**. That is a structural count, not proof those 59 entries have no procedure. Continue source-checking them against the CPMD and any applicable service-manual section before deciding between recovered steps, explicit no-action, event-log-only, and genuinely absent procedure.
+- Next: reconcile the final four concrete code tokens safely; audit all 59 no-step records; then complete the end-to-end troubleshooting audit (symptom entry, alphabetical messages, manual search, diagnostic tests, parts, repair procedures, service report, return navigation). After M527-family coverage is stable, begin onboarding M607/M608/M609 and E60055/E60065/E60075/E60155/E60165/E60175 from their service manual and CPMD, keeping guided troubleshooting disabled until family tests pass.
 
 ## 0Q. Build 283 — restore missing source-backed supply actions and grouped-code behavior (2026-10-20)
 
