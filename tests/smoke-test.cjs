@@ -88,6 +88,11 @@ const server = http.createServer((req, res) => {
       'generic true/false wording must not appear in the UI');
     console.log('✓ Documented decision answers use contextual wording instead of generic true/false labels');
 
+    // The picker-flow unit check above intentionally changes selector state. Reload
+    // before end-to-end product-number tests so a leftover M527 selection cannot
+    // turn the M776 product test into a legitimate mismatch/dead-end.
+    await page.reload();
+    await page.locator('#product').waitFor({ state: 'visible' });
 
     // A known product number alone must populate the machine identity and
     // proceed to the verified/app-ready state without requiring other fields.
