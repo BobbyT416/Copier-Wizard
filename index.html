@@ -2863,7 +2863,8 @@ function beginErrorCodeDiagnosis(code){
   // knowledge-base message instead of silently doing nothing.
   const r=document.getElementById("result");
   if(!r) return;
-  r.innerHTML=`<div class="pill">HP E52645</div><div class="pill">Model verified</div>
+  const activeModel=currentMachineModel||verifiedModel||"";
+  r.innerHTML=`<div class="pill">HP ${escapeHtml(activeModel)}</div><div class="pill">Model verified</div>
     <h2>Error Code Not Verified</h2>
     <div class="status warn">The supplied documentation does not establish a verified diagnostic path for <strong>${escapeHtml(raw)}</strong> for this machine.</div>
     <p>The assistant will not invent a repair or substitute an Internet result for the manufacturer's documentation.</p>
