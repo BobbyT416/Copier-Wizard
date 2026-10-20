@@ -2317,8 +2317,8 @@ function cwM527ManualSearch(){
       ? extractErrorCodeAliases(codeText).some(alias=>alias.toLowerCase()===query) || codeText.toLowerCase().includes(query)
       : fields.some(value=>value.toLowerCase().includes(query));
     // Only show records whose extracted HP text explicitly identifies M527.
-    return /\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(sourceText) && matchesQuery;
-  }).slice(0,8);
+    return cwM527DocumentMatches(item,cwM527ExactModel()) && matchesQuery;
+  });
   if(!matches.length){
     const labels={code:"error code",message:"control-panel message",symptom:"symptom or keyword"};
     out.innerHTML='<div class="lookup-help">No indexed HP manual entry mentioning M527 matched that '+labels[mode]+'. Try another search. This reference search does not infer a repair.</div>';
