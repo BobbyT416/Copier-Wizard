@@ -2388,11 +2388,15 @@ function cwM527DocumentMatches(item, exactModel){
 }
 
 function cwM527PartsForError(item, exactModel){
+  // Use the verified product variant when available; the broad selector
+  // value "M527" is not specific enough to validate variant-scoped parts.
+  const selectedVariant=typeof cwM527ExactModel==="function" ? cwM527ExactModel() : "";
+  const targetModel=selectedVariant && selectedVariant!=="M527" ? selectedVariant : String(exactModel||"M527").toUpperCase();
   return [...new Set((item?.parts||[]).filter(p=>{
     const text=String(p||"");
     if(!/\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(text)) return false;
     const variant=[...text.matchAll(/\bM527(c|z|dnm|cm|dn|f)\b/gi)].map(m=>("M527"+m[1]).toUpperCase());
-    return variant.length===0 || variant.includes(exactModel);
+    return variant.length===0 || variant.includes(targetModel);
   }).map(p=>String(p||"").replace(/\s+/g," ").trim()).filter(Boolean))];
 }
 
