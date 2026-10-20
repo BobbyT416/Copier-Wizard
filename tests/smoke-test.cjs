@@ -452,6 +452,20 @@ const server = http.createServer((req, res) => {
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
     console.log('✓ Full UI flow: M776zs/T3U56A selects 59.00.03, correct parts, M13, correct repair procedure, and returns');
 
+    // No-procedure codes remain usable: show a concise terminal state and a clear way back,
+    // rather than leaving the technician with a hidden outcome/parts panel.
+    await page.evaluate(() => {
+      currentMachineModel = 'E52645';
+      verifiedModel = 'E52645';
+      beginErrorCodeDiagnosis('32.1C.40');
+    });
+    await page.locator('#result').getByText(/No step-by-step procedure available/i).waitFor({ state: 'visible' });
+    assert.ok(await page.locator('#result').getByRole('button', { name: /Back to Error Code/i }).isVisible(),
+      'codes without extracted procedures must retain a clear return path');
+    assert.equal(await page.locator('#documentedOutcome').count(), 0,
+      'no-procedure results must not expose a hidden procedure-completion outcome');
+    console.log('✓ Codes without procedures remain searchable and show a clear no-procedure result');
+
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
     console.log('✓ No uncaught browser JavaScript errors');
   } finally {
