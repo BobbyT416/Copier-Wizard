@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 282 distinguishes explicit no-action entries from missing procedure extraction; full audit remains in progress)
+**Updated:** 2026-10-20 (Build 282 troubleshooting UX and code-inventory audit; full audit remains in progress)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -14,6 +14,17 @@
 
 
 
+
+## 0P. M527 CPMD inventory comparison and browser-test follow-up (2026-10-20)
+
+- Located the actual combined-family M527 CPMD PDF and its generated `m527-cpmd-catalog.json` / `.csv` inventory in the user's Library. The catalog states that it represents the M501/M506/M507/M527/M528/E50045/E50145/E52545/E52645 combined-family CPMD and warns that a code's presence does not prove applicability to every model.
+- Parsed the CPMD catalog: **303 TOC records**, **330 unique code tokens**, including **210 concrete code tokens** and **120 pattern/nonstandard tokens**. Record types: 242 message entries, 22 grouped entries, 32 family-section headings, and 7 event-code entries. These counts describe the catalog's TOC inventory; they are not 330 independent actionable control-panel errors.
+- Compared concrete tokens against the current `cw-manual-data.js` error-record `code` fields. **165 of 210 concrete tokens appear directly in the stored code fields; 45 are not directly searchable by their own token.** Some may be intended grouped aliases or event-log-only entries, but they must be explicitly reconciled, not ignored.
+- Missing concrete tokens from the code-field comparison (preserve this list for the audit): `10.00.01`, `10.00.11`, `10.00.12`, `11.00.02`, `32.08.A1`, `32.08.A2`, `32.08.A3`, `32.1C.06`, `32.1C.07`, `32.1C.08`, `32.1C.09`, `32.1C.0A`, `32.1C.0D`, `32.1C.11`, `32.1C.13`, `32.1C.14`, `41.03.01`, `41.03.A1`, `41.03.B1`, `41.03.C1`, `41.03.A2`, `41.03.B2`, `41.03.C2`, `41.03.03`, `41.03.A3`, `41.03.B3`, `41.03.C3`, `41.03.04`, `41.03.A4`, `41.03.B4`, `41.03.C4`, `41.03.05`, `41.03.A5`, `41.03.B5`, `41.03.C5`, `41.03.0D`, `41.03.AD`, `41.03.BD`, `41.03.CD`, `42.B0.02`, `65.80.A0`, `65.80.A1`, `82.73.46`, `82.73.47`, `98.01.00`.
+- Important grouped-entry finding: many of the missing tokens appear in grouped headings whose first code is already represented (e.g. `10.00.00 or 10.00.01`, `10.00.11/10.00.12`, `11.00.01/11.00.02`, and the 41.03 families). Ensure each token is searchable and resolves to the exact documented grouped entry. For an exact entered alias, the result title/report should preserve the exact code the technician entered, rather than always substituting the first alias in the group.
+- The 7 event-code entries and family/pattern headings must remain clearly distinguished from concrete control-panel messages. Add them to search only with accurate type/description and source wording; do not turn every TOC heading into a repair procedure.
+- Latest Playwright run against commit `1eb2ee67044714ee99964d7af4d9473c84b586b4` passed build/syntax/safety validation and installed Chromium, but browser smoke tests failed at an outdated assertion expecting `HP M527 selected — manual search available`; the current app correctly shows `Machine Verified — App Ready` and a Continue button. Updated the test to validate the current flow and retain the M527-only product-number scope assertions. New test commit: `0921ad5d093fd41c28d22145b38e2acc43a52981`; its Actions run is pending/not yet verified.
+- Current family readiness found in `machineSelectionFamilies`: guided troubleshooting is enabled for the validated `E52645` and `M527` models in the M501/M506/M507/M527/M528 family, and for `M776`; the other listed families remain gated. Candidate next family for onboarding is M607/M608/M609 plus E60055/E60065/E60075/E60155/E60165/E60175 because the Library contains both the `HP E60xx5_E62xx5 Service Manual.pdf` and `M607_8_9 E600x5 E601x5 CPMD.pdf`. Do not enable it until its code, procedure, part, model-variant, and regression-test coverage is audited.
 
 ## 0O. Build 282 — distinguish no-action entries from extraction gaps (2026-10-20)
 
