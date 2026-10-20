@@ -458,7 +458,7 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => {
       const index = (window._errorLookupMatches || []).findIndex(item => /Paper size mismatch from Tray 2/i.test(item.desc || ''));
       if (index < 0) throw new Error('General Tray 2 paper-size entry not found');
-      selectErrorLookup(index);
+      window.cwSelectErrorLookup(index);
     });
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 41.03.02' }).waitFor({ state: 'visible' });
     assert.match(await page.locator('#result').innerText(), /Paper-size mismatch.*Tray 2/i,
@@ -467,7 +467,7 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => {
       const index = (window._errorLookupMatches || []).findIndex(item => /slow printing/i.test(item.desc || ''));
       if (index < 0) throw new Error('Slow-printing Tray 2 entry not found');
-      selectErrorLookup(index);
+      window.cwSelectErrorLookup(index);
     });
     assert.match(await page.locator('#result').innerText(), /slow printing/i,
       'selecting the alternate entry must preserve the slow-printing procedure');
@@ -499,7 +499,7 @@ const server = http.createServer((req, res) => {
       const index = (window._errorLookupMatches || []).findIndex(item =>
         extractErrorCodeAliases(item.code).includes('32.1C.14'));
       if (index < 0) throw new Error('32.1C.14 not found in grouped error-code search');
-      selectErrorLookup(index);
+      window.cwSelectErrorLookup(index);
     });
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 32.1C.14' }).waitFor({ state: 'visible' });
     assert.match(await page.locator('#documentedStepList').innerText(), /Free up disk space/i,
@@ -541,7 +541,7 @@ const server = http.createServer((req, res) => {
       const index = (window._errorLookupMatches || []).findIndex(item =>
         extractErrorCodeAliases(item.code).includes('10.00.12'));
       if (index < 0) throw new Error('10.00.12 not found in grouped error-code search');
-      selectErrorLookup(index);
+      window.cwSelectErrorLookup(index);
     });
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 10.00.12' }).waitFor({ state: 'visible' });
     assert.match(await page.locator('#documentedStepList').innerText(), /FutureSmart firmware version 4\.10/i,
@@ -553,7 +553,7 @@ const server = http.createServer((req, res) => {
       const index = (window._errorLookupMatches || []).findIndex(item =>
         extractErrorCodeAliases(item.code).includes('10.00.01'));
       if (index < 0) throw new Error('10.00.01 not found in grouped error-code search');
-      selectErrorLookup(index);
+      window.cwSelectErrorLookup(index);
     });
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 10.00.01' }).waitFor({ state: 'visible' });
     console.log('✓ Recovered supply recommendations and exact grouped-code aliases');
