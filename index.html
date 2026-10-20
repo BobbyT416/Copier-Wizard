@@ -3423,22 +3423,37 @@ function renderDocumentedErrorBranch(raw){
   }
 
   const steps=technicianOverride ? technicianOverride.steps : (Array.isArray(x.steps) ? x.steps.map(cleanTechnicianStep).filter(v=>v.trim()) : []);
+  const displayedParts=technicianOverride ? technicianOverride.parts : (isM527 ? cwM527PartsForError(x,activeModel) : (cwUseM776Catalog() ? [...new Set(cwM776PartsForError(x).map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : [])));
 
-  if(steps.length){
-    html+=`<h3>Technician Troubleshooting</h3>
-      <div class="status">
-        Complete each documented step in order. The next step is shown only after you confirm that you completed the current step.
-      </div>
-      <div id="documentedStepList" class="documented-step-list"></div>
-      <div id="documentedStepProgress" class="muted" style="margin-top:10px;"></div>`;
-  }else{
-    html+=`<div class="status warn">
-      The supplied manual identifies this condition but no documented procedure
-      was extracted for this entry. The assistant will not invent one.
+  // Simplified terminal state for codes that have no extracted step-by-step
+  // procedure. Keep the code and source description visible, but don't leave
+  // the technician on a hidden "outcome" screen or imply a repair.
+  if(!steps.length){
+    html+=`<div class="status warn" style="margin-top:14px;">
+      <strong>No step-by-step procedure available</strong><br>
+      This entry has no extracted step-by-step procedure. Review the documented information above. Copier Wizard will not infer repair steps or recommend a part.
     </div>`;
+    if(displayedParts.length){
+      html+=`<h3>Parts mentioned in the documentation</h3>
+        <div class="muted">These parts are listed in the source entry; this is not a recommendation to replace them.</div>
+        <ul class="documented-parts">`+displayedParts.map(v=>`<li>${escapeHtml(v)}</li>`).join("")+`</ul>`;
+    }
+    html+=`<button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button>
+      <button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>`;
+    r.innerHTML=html;
+    const resultCard=document.getElementById("resultCard");
+    if(resultCard) resultCard.classList.remove("hidden");
+    const target=document.getElementById("resultCard");
+    if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+    return true;
   }
 
-  const displayedParts=technicianOverride ? technicianOverride.parts : (isM527 ? cwM527PartsForError(x,activeModel) : (cwUseM776Catalog() ? [...new Set(cwM776PartsForError(x).map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : [])));
+  html+=`<h3>Technician Troubleshooting</h3>
+    <div class="status">
+      Complete each documented step in order. The next step is shown only after you confirm that you completed the current step.
+    </div>
+    <div id="documentedStepList" class="documented-step-list"></div>
+    <div id="documentedStepProgress" class="muted" style="margin-top:10px;"></div>`;
   if(displayedParts.length){
     html+=`<div id="documentedPartsSection" class="hidden">
       <h3>Parts Specifically Mentioned by the Manual</h3>
