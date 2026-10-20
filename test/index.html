@@ -471,26 +471,26 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 <select id="manufacturer"><option>HP</option></select>
 <label>Printer Type</label>
 <select id="machineType" onchange="machineTypeChanged(this.value)">
-<option value="">Select printer type...</option>
+<option value="">Select type...</option>
 <option value="mono">Monochrome</option>
 <option value="color">Color</option>
 <option value="pagewide">PageWide</option>
 </select>
 <label>Machine Family</label>
 <select disabled="" id="machineFamily" onchange="familySelectionChanged(this.value)">
-<option value="">Select a printer type first...</option>
+<option value="">Select family...</option>
 </select>
 <label>Model</label>
 <select disabled="" id="model" onchange="modelSelectionChanged(this.value)">
-<option value="">Select a family first...</option>
+<option value="">Select model...</option>
 </select>
 <div class="source-note" id="modelHint"></div>
 <label>Product Number</label>
-<input id="product" list="productNumberOptions" autocomplete="off" placeholder="Enter HP product number (e.g., T3U55A)" aria-describedby="productHint" onchange="productNumberSelectionChanged(this.value)" oninput="productNumberInputChanged(this.value)"/>
+<input id="product" list="productNumberOptions" autocomplete="off" placeholder="HP product number (optional)" aria-describedby="productHint" onchange="productNumberSelectionChanged(this.value)" oninput="productNumberInputChanged(this.value)"/>
 <datalist id="productNumberOptions"></datalist>
 <button type="button" class="secondary product-browser-toggle" onclick="toggleProductNumberBrowser()">Browse Product Numbers</button>
 <div id="productBrowser" class="product-browser hidden"><label for="productCatalogSearch">Search by product number or model</label><input id="productCatalogSearch" type="search" autocomplete="off" placeholder="Search model or product number" oninput="renderProductNumberBrowser(this.value)"/><div id="productCatalogResults" class="product-catalog-results" role="listbox" aria-label="Product number results"></div></div>
-<div class="source-note" id="productHint">Enter a product number, or select printer type, family, and model.</div>
+<div class="source-note" id="productHint">Optional — helps verify the exact variant.</div>
 <div class="hidden" id="firmwareSection"><label>FutureSmart level</label><select id="firmwareLevel" onchange="firmwareSelectionChanged(this.value)"><option value="">Select FutureSmart level...</option></select></div>
 <button onclick="verifyModel()">Verify Machine</button>
 <div id="verify"></div>
@@ -1351,8 +1351,8 @@ function startOverDiagnostic(){
   const familyEl=document.getElementById("machineFamily");
   const modelEl=document.getElementById("model");
   const productEl=document.getElementById("product");
-  if(familyEl){familyEl.innerHTML='<option value="">Select a printer type first...</option>';familyEl.disabled=true;}
-  if(modelEl){modelEl.innerHTML='<option value="">Select a family first...</option>';modelEl.disabled=true;}
+  if(familyEl){familyEl.innerHTML='<option value="">Select family...</option>';familyEl.disabled=true;}
+  if(modelEl){modelEl.innerHTML='<option value="">Select model...</option>';modelEl.disabled=true;}
   if(productEl){productEl.innerHTML='<option value="">Product Number</option>';productEl.disabled=true;}
   const fwSection=document.getElementById("firmwareSection");
   const fwEl=document.getElementById("firmwareLevel");
@@ -1965,7 +1965,7 @@ function machineTypeChanged(type){
   familyEl.disabled=true;
   familyEl.innerHTML='<option value="">Select a machine family...</option>';
   modelEl.disabled=true;
-  modelEl.innerHTML='<option value="">Select a family first...</option>';
+  modelEl.innerHTML='<option value="">Select model...</option>';
   if(hint)hint.textContent="";
   if(!type)return;
   const groups=machineSelectionFamilies;
@@ -2120,7 +2120,7 @@ function populateProductNumberOptions(){
 function configureProductNumberForModel(model){
   populateProductNumberOptions();
   const hint=document.getElementById("productHint");
-  if(hint)hint.textContent="Enter a product number, or select printer type, family, and model.";
+  if(hint)hint.textContent="Optional — helps verify the exact variant.";
   // A search from a previous model must not make the new model look like it has no products.
   const search=document.getElementById("productCatalogSearch");
   const panel=document.getElementById("productBrowser");
@@ -2130,7 +2130,7 @@ function configureProductNumberForModel(model){
 function productNumberInputChanged(value){
   const hint=document.getElementById("productHint");
   const typed=String(value||"").trim().toUpperCase();
-  if(!typed){if(hint)hint.textContent="Enter a product number, or select printer type, family, and model.";return;}
+  if(!typed){if(hint)hint.textContent="Optional — helps verify the exact variant.";return;}
   const found=Object.values(productNumberCatalog||{}).flat().some(x=>String(x.product).toUpperCase()===typed);
   if(hint)hint.textContent=found?"Product number recognized.":"Enter a complete product number from the machine label.";
 }
@@ -2162,7 +2162,7 @@ function productNumberSelectionChanged(value){
   const hint=document.getElementById("productHint");
   const verify=document.getElementById("verify");
   if(!match){
-    if(hint)hint.textContent="That product number is not in the current product-number catalog. You can still identify the machine using the fields below.";
+    if(hint)hint.textContent="Not in the catalog; select the machine below.";
     if(verify)verify.innerHTML='<div class="status danger"><strong>Machine Not Verified</strong><br>Product number '+escapeHtml(product)+' is not in the current catalog. No diagnostics or part recommendations are available until the exact machine is identified.</div>';
     return;
   }
@@ -5793,7 +5793,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '274';
+  const CURRENT = '275';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
