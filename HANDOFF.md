@@ -1,14 +1,24 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 270 adds a model-checked M527 documented error workflow entry point)  
+**Updated:** 2026-10-20 (Build 271 fixes the M527 model-only verification dead end)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **270** (`index.html` runtime label/update checker and `version.json` set to 270; test-site copy updated. Added a path from M527 HP manual search results into a documented error workflow, with model-reference checks, no E52645-specific override, and variant-filtered M527 parts. Smoke-test assertions updated but not executed in this session; live Pages deployment not independently confirmed.)  
+**Current development build:** **271** (`index.html` runtime label/update checker and `version.json` set to 271; test-site `index.html` and `version.json` synchronized. M527 model-only selection now opens the supplied-HP-manual search instead of the previous generic dead-end; the Start Documented Troubleshooting action remains gated until an exact M527 product number is verified. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run and live Pages deployment has not been independently confirmed.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
 
+
+## 0B. M527 model-only verification fix — Build 271 (2026-10-20)
+
+- User screenshot showed Build 270 still displaying the old “Machine selected — guided workflow not yet enabled” card and its redundant Browse Product Numbers button when M527 was selected without entering a product number.
+- Root cause confirmed in `verifyModel()`: the no-product-number branch still used the generic unsupported-family fallback; the new M527 manual-search entry was only shown after a valid product number had been entered.
+- Build 271 adds an M527-specific no-product-number result: “HP M527 selected — manual search available,” with the HP manual search field and Change Machine. It removes the redundant Browse Product Numbers button from that result.
+- Manual search remains usable before exact variant confirmation, but its result explains that the exact product number must be entered and Verify Machine selected before documented troubleshooting can start. This prevents a family-level search from silently running variant-specific steps or parts.
+- Added a Playwright smoke-test regression assertion for the model-only M527 path in `tests/smoke-test.cjs`.
+- Published Build 271 only to `main/test/index.html` and `main/test/version.json`. Production root remains untouched.
+- Static validation performed: all 15 inline script blocks compiled successfully; development and test `index.html` contents match exactly; both runtime labels show Build 271 and test `version.json` is 271. Playwright smoke test was **not run** because the browser/test runtime was not available in this session; live GitHub Pages behavior is **not independently confirmed**.
 
 ## 0A. Latest M527 work — Build 270 (2026-10-20)
 
