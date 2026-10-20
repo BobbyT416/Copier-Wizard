@@ -4,12 +4,22 @@
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **276** (`index.html` runtime label/update checker and `version.json` set to 276; test-site `index.html` and `version.json` synchronized. User confirmed Build 273 fixed the M527 entry path; Build 275 simplified opening-screen text; Build 276 adds automatic next-picker progression. Inline JavaScript syntax checks passed; Playwright smoke tests and live iPhone/Safari picker behavior have not been run.)  
+**Current development build:** **278** (`version.json` is 278; Build 278 source adds M527 31-series numerical-search regression coverage. Automated browser suite currently fails in an earlier product-number test due to test-state contamination; see latest session log below. No Build 278 test-site release has been made. Production root remains Build 257.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
 
 
+
+
+## 0H. Fix browser-test state contamination before M527 verification (2026-10-20)
+
+- Inspected failed Actions run [39365402765](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39365402765). HTML/JavaScript/build/safety checks passed; Playwright failed at the product-number-only T3U55A test because the earlier picker-flow unit check left the machine selector on M527. T3U55A was then correctly rejected as a mismatch, leaving `#problemCard` hidden. This is a test isolation defect, not evidence that the product-number feature itself is broken.
+- Added `page.reload()` after the picker/decision-wording checks and before the end-to-end product-number tests, so later tests start from a clean machine-selection state. Commit: `9f086537713930d5c9d8440ceecffb9bf2fd1195` on `development`.
+- This test adjustment is committed; its new Actions result has not yet been checked. Do not claim the suite passed until the run is inspected.
+- Source inspection confirms `cwActiveErrorCatalog()` filters M527 records through `cwM527DocumentMatches()`, which allows 31-series codes regardless of whether each record repeats the model name. The standard numerical-code lookup loops over `cwActiveErrorCatalog()`. The separate M527 manual-reference search still has an explicit M527-text filter, but it is a different UI path and should not be confused with the standard Numerical Error Code browser.
+- The uploaded CPMD PDF `08431526-6768-47f3-bbb9-8ee5e8bcfaf0.pdf` documents the 31-series section, including `31.03.37`; its note says that code typically appears on Flow models such as M776z/M776zs. Do not assume it applies to M527 without checking the M527-specific manual applicability. Catalog entries currently include the other 31-series codes listed in section 0F, plus wildcard `31.*`, but not a discrete `31.03.37` record.
+- Next: inspect the Actions run for commit `9f086537...`; fix any failure, verify the M527 prefix and exact-code regression tests execute and pass, then reconcile the complete applicable numerical-code index against the CPMD. Test-site release remains pending and production must remain untouched.
 
 ## 0G. Build 278 CI failure and test-selector correction (2026-10-20)
 
