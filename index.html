@@ -2907,6 +2907,19 @@ function showLookup(which){
   if(mp){mp.classList.toggle("lookup-hidden",which!=="message");mp.classList.toggle("hidden",which!=="message");mp.style.display=which==="message"?"block":"none";}
   const el=document.getElementById(which==="error"?"errorCodeLookup":"messageLookup");if(el)el.focus();
 }
+function cwEnsureResultNavigation(){
+  const card=document.getElementById("resultCard");
+  if(!card)return;
+  let nav=document.getElementById("cwResultNavigation");
+  if(!nav){
+    nav=document.createElement("div");
+    nav.id="cwResultNavigation";
+    nav.style.cssText="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid var(--line,#d7dde5)";
+    card.appendChild(nav);
+  }
+  nav.innerHTML='<button type="button" class="secondary" onclick="returnToMachineSelection()">Change Machine</button>';
+}
+
 function beginErrorCodeDiagnosis(code){
   if(typeof closeManualCoverage==="function") closeManualCoverage();
   const raw=String(code||"").trim();
@@ -2918,6 +2931,9 @@ function beginErrorCodeDiagnosis(code){
   // reference the M527 family. The renderer suppresses E52645-only overrides
   // and filters parts by the verified M527 product variant.
   if(renderDocumentedErrorBranch(raw)){
+    // Keep a clear exit available after a documented result, including the
+    // M527 manual-reference flow where guided troubleshooting is not enabled.
+    cwEnsureResultNavigation();
     const resultCard=document.getElementById("resultCard");
     if(resultCard){
       resultCard.classList.remove("hidden");
@@ -5836,7 +5852,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '279';
+  const CURRENT = '280';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
