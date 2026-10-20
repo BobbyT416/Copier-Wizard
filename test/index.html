@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js?v=286"></script>
+<script src="cw-manual-data.js?v=287"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -463,7 +463,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=286"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=287"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -3170,10 +3170,14 @@ function cleanTechnicianStep(raw){
   t=t.replace(/\bRecommended action for customer\s*\d*\b/gi," ");
   t=t.replace(/\bRecommended action for customers\b/gi," ");
 
-  // Customer-facing escalation is not a technician action. Keep the fact that
-  // escalation is needed, but remove HP customer-support wording.
-  t=t.replace(/If the error persists,\s*(contact your HP-authorized service or support provider,?\s*or\s*)?contact customer support at www\.hp\.com\/go\/contactHP\.?/gi,
-              "If the error persists, escalate for additional service-level troubleshooting.");
+  // Do not turn customer/call-center support directions into technician
+  // troubleshooting steps. These are routing instructions for another audience,
+  // not a physical check or repair the onsite technician should be asked to do.
+  t=t.replace(/If the error persists,\s*(contact your HP-authorized service or support provider,?\s*or\s*)?contact customer support at www\.hp\.com\/go\/contactHP\.?/gi,"");
+  t=t.replace(/If the error persists,\s*contact (?:your )?HP-authorized service or support provider\.?/gi,"");
+  t=t.replace(/If the error persists,\s*contact customer support\.?/gi,"");
+  t=t.replace(/\s{2,}/g," ").trim();
+  if(!t) return "";
 
   // Convert customer-directed replacement language to technician-directed language.
   t=t.replace(/Recommend that the customer replace the ([^.]+?) if the status is Low or Very Low/gi,
@@ -5860,7 +5864,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '286';
+  const CURRENT = '287';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
