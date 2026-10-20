@@ -452,6 +452,30 @@ const server = http.createServer((req, res) => {
       'M527 should expose the CPMD supply-code procedure when applicability is source-verified');
     console.log('✓ Source-reviewed M527 applicability exposes generic supply-code troubleshooting');
 
+    await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.07'));
+    await page.locator('#documentedStepList').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#documentedStepList').innerText(), /Retry the job/i,
+      '32.1C.07 must show its source-documented backup/restore action');
+
+    await page.evaluate(() => {
+      const input = document.getElementById('errorCodeLookup');
+      input.value = '32.1C.14';
+      searchErrorCodes(input.value);
+      const index = (window._errorLookupMatches || []).findIndex(item =>
+        extractErrorCodeAliases(item.code).includes('32.1C.14'));
+      if (index < 0) throw new Error('32.1C.14 not found in grouped error-code search');
+      selectErrorLookup(index);
+    });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 32.1C.14' }).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#documentedStepList').innerText(), /Free up disk space/i,
+      '32.1C.14 must use the documented grouped backup-space recommendation');
+
+    await page.evaluate(() => beginErrorCodeDiagnosis('32.08.A2'));
+    await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /No action necessary/i,
+      '32.08.A2 must remain available as a no-action event code');
+    console.log('✓ Backup/restore event codes, grouped aliases, and no-action event handling');
+
     // No-procedure codes remain usable: show a concise terminal state and a clear way back,
     // rather than leaving the technician with a hidden outcome/parts panel.
     await page.evaluate(() => {
