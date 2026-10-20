@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 276 adds automatic machine-selection progression)
+**Updated:** 2026-10-20 (Build 278 adds M527 31-series numerical-search regression coverage)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -8,6 +8,19 @@
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
+
+
+
+## 0F. M527 numerical 31-series error-code investigation — Build 278 (2026-10-20)
+
+- User's live test reported that selecting M527 and opening Numerical Error Code showed no 31-series errors.
+- Inspected current development source. `cwActiveErrorCatalog()` routes M527 to `E52645_ERROR_CATALOG.filter(item => cwM527DocumentMatches(item, ...))`. The current `cwM527DocumentMatches()` explicitly allows codes beginning `31.` (and `31.*`) without requiring the record text to repeat M527. Therefore the source code at the current development head should not filter out all 31-series records; the test site may be serving an older build, or the failure is elsewhere in the catalog/rendering path. This has not yet been reproduced in a live browser.
+- Inspected `cw-manual-data.js`: the stored error catalog currently has these 31-series entries: `31.*`, `31.01.47`, `31.03.14`, `31.03.20`, `31.03.22`, `31.03.30`, `31.03.31`, `31.03.32`, `31.03.33`, `31.03.34`, `31.13.00`, `31.13.01`, `31.13.02`, `31.13.13`, and `31.13.14`. The stored catalog has no `31.03.37` record.
+- The uploaded file `08431526-6768-47f3-bbb9-8ee5e8bcfaf0.pdf` includes a `31.03.37` section, but its note says the code typically appears on Flow models such as M776z/M776zs. Do not automatically add this entry to M527's supported list until its applicability in the M527 CPMD is confirmed; don't fabricate model applicability or copy an M776-specific workflow into M527.
+- Build 278 changes the app's build marker and `version.json`, and adds a browser regression assertion that a verified M527 search for prefix `31` returns at least one 31-series result, followed by the existing exact `31.03.30` lookup check. This is a regression guard, not yet proof that the entire issue is fixed.
+- Development commits: app `1951db532d925f210fad8be02015d3407f5298a5`; version `225d6f76525903f5ab30f16c92a49fd21f415ec8`; smoke test `a8e538630314f0fd4069e4108f547dfa69b97bc2`. Commit each update sequentially; verify current branch head before further writes.
+- **Automated test status:** not yet checked after Build 278 changes. **Test-site deployment:** not performed in this step. **Production:** untouched.
+- Next action: inspect the GitHub Actions run triggered by the Build 278 commits; fix any failures; then publish the validated Build 278 files to `main/test/` only, confirm Pages deployment, and manually verify M527 prefix search on the test URL. Continue comparing every code in the M527 CPMD index against the stored list before declaring completion.
 
 
 ## 0E. Simplify opening screen fields — Build 274 (2026-10-20)
