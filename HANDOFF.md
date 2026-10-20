@@ -13,6 +13,14 @@
 
 
 
+## 0L. Latest browser run and follow-up test fix (2026-10-20)
+
+- Validation run `39366938249` ran the Build 279 source. HTML/JavaScript/build/safety validation passed; the product-number-only flow passed and all 75 cataloged product numbers passed.
+- The browser suite then stopped on a strict-mode test selector at `tests/smoke-test.cjs:190`: the regex `/Numerical Error Code/i` matched both the main numerical lookup choice and the separate “Browse All Numerical Error Codes” button. This was a test-selector ambiguity, not a product or numerical-code failure.
+- Fixed the M527 screen assertions and click to target `.lookup-choice` elements filtered by text. Development commit: `bdf516d8e13bf150e371290bec1f5ed1d8c1f21d`. Copied the updated test file to the temporary validation branch, but no new workflow run was exposed after that app-authored commit.
+- The failed validation-only PRs were closed without merging. Production remains untouched. Build 279 is **not yet browser-suite verified** and has not been deployed to the test site.
+- Next action: obtain a fresh Actions run against the latest `development` HEAD (the previous run does not include the selector fix), then continue through the M527 prefix and exact-code checks. Do not mark fixed or publish until those checks pass.
+
 ## 0K. M527 31-series source comparison and regression cleanup (2026-10-20)
 
 - Compared the stored catalog's concrete 31-series entries against the uploaded M527/E52645-family CPMD material. The catalog currently contains all 14 concrete records found in the M527-family list: `31.01.47`, `31.03.14`, `31.03.20`, `31.03.22`, `31.03.30`, `31.03.31`, `31.03.32`, `31.03.33`, `31.03.34`, `31.13.00`, `31.13.01`, `31.13.02`, `31.13.13`, and `31.13.14`, plus the general `31.*` record.
