@@ -154,7 +154,13 @@ const server = http.createServer((req, res) => {
     await page.getByRole('button', { name: 'Search HP Manual' }).click();
     await page.locator('#m527ManualResults').getByText(/30\.01\.44/).first().waitFor({ state: 'visible' });
     assert.match(await page.locator('#m527ManualResults').innerText(), /Scanner error/i, 'M527 manual search should show the matching HP source entry');
-    assert.equal(await page.locator('#problemCard').isVisible(), false, 'manual reference search must not unlock an unvalidated guided branch');
+    assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 must not unlock the E52645 generic symptom workflow');
+    await page.getByRole('button', { name: 'Start Documented Troubleshooting' }).click();
+    await page.locator('#resultCard').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /Documented Error — 30\.01\.44/i, 'M527c should enter the selected documented error branch');
+    assert.match(await page.locator('#result').innerText(), /Scanner error/i, 'M527c documented branch should identify the scanner error');
+    assert.match(await page.locator('#result').innerText(), /Technician Troubleshooting/i, 'M527c documented branch should show extracted HP troubleshooting steps');
+    assert.doesNotMatch(await page.locator('#result').innerText(), /HP E52645/i, 'M527 diagnostic screen must not identify itself as E52645');
     await page.getByRole('button', { name: 'Change Machine' }).click();
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'Change Machine should leave diagnostics locked');
     assert.equal(await page.locator('#product').inputValue(), '', 'Change Machine should clear the previous product number');
