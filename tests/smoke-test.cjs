@@ -39,6 +39,32 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#productHint').innerText(), /^Enter a product number, or select printer type, family, and model\\.$/,
       'opening screen should use one concise instruction instead of a long explanation');
     console.log('✓ App loads in Chromium with concise opening-screen labels');
+    // Each machine selection should automatically advance to the next meaningful picker.
+    const pickerFlow = await page.evaluate(() => {
+      const original = window.cwFocusAndOpenSelect;
+      const calls = [];
+      window.cwFocusAndOpenSelect = el => { calls.push(el?.id || ''); return true; };
+      const type = document.getElementById('machineType');
+      type.value = 'mono';
+      machineTypeChanged('mono');
+      const family = document.getElementById('machineFamily');
+      family.value = 'm501-family';
+      familySelectionChanged('m501-family');
+      const model = document.getElementById('model');
+      model.value = 'M527';
+      modelSelectionChanged('M527');
+      window.cwFocusAndOpenSelect = original;
+      return { calls, firmwareVisible: !document.getElementById('firmwareSection').classList.contains('hidden') };
+    });
+    assert.equal(pickerFlow.calls[0], 'machineFamily',
+      'choosing printer type should open the Machine Family picker');
+    assert.equal(pickerFlow.calls[1], 'model',
+      'choosing machine family should open the Model picker');
+    if (pickerFlow.firmwareVisible) {
+      assert.ok(pickerFlow.calls.includes('firmwareLevel'),
+        'when multiple FutureSmart levels apply, choosing a model should open that picker');
+    }
+    console.log('✓ Machine selection advances automatically to the next required picker');
     // Decision answers should be derived from the observed condition, not generic true/false wording.
     const decisionLabels = await page.evaluate(() => {
       const sourceCondition = 'error 31.03.20 still returns';
