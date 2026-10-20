@@ -3055,7 +3055,7 @@ function selectErrorLookup(index){
   // substituting the first code in the group.
   const code=aliases.find(alias=>alias===query) || aliases[0] || item.code;
   if(input) input.value=code;
-  beginErrorCodeDiagnosis(code);
+  beginErrorCodeDiagnosis(code,item);
 }
 
 function searchAlphabeticalMessages(value){
@@ -6416,14 +6416,14 @@ document.addEventListener("DOMContentLoaded",function(){
 
 <script id="cw-error-code-final-v170">
 (function(){
-  function run(code){
+  function run(code, preferredItem){
     const input=document.getElementById("errorCodeLookup");
     const value=String(code||input?.value||"").trim();
     if(!value){ input?.focus(); return false; }
     try{ input?.blur(); }catch(e){}
     try{
       if(typeof beginErrorCodeDiagnosis!=="function") throw new Error("Diagnostic engine did not initialize");
-      beginErrorCodeDiagnosis(value);
+      beginErrorCodeDiagnosis(value,preferredItem);
     }catch(err){
       console.error("Copier Wizard error-code routing failed:",err);
       const card=document.getElementById("resultCard");
@@ -6448,9 +6448,11 @@ document.addEventListener("DOMContentLoaded",function(){
       const item=(window._errorLookupMatches||[])[index];
       if(!item)return false;
       const input=document.getElementById("errorCodeLookup");
-      if(input)input.value=item.code;
-      const code=typeof extractErrorCodeAliases==='function' ? (extractErrorCodeAliases(item.code)[0]||item.code) : item.code;
-      return run(code);
+      const query=typeof normalizeErrorCode==='function' ? normalizeErrorCode(input?.value||"") : String(input?.value||"").trim();
+      const aliases=typeof extractErrorCodeAliases==='function' ? extractErrorCodeAliases(item.code) : [item.code];
+      const code=aliases.find(alias=>alias===query)||aliases[0]||item.code;
+      if(input)input.value=code;
+      return run(code,item);
     }catch(err){
       console.error("Copier Wizard error-code selection failed:",err);
       return run();
