@@ -2360,10 +2360,14 @@ function cwM527StartDocumentedError(code){
 }
 
 function cwM527DocumentMatches(item, exactModel){
+  // Prefer explicit source-reviewed applicability metadata when present.
+  // This lets generic CPMD entries (such as toner-supply codes) remain
+  // available for M527 even when the message text does not repeat the model.
+  const explicitModels=Array.isArray(item?.applicableModels)?item.applicableModels:[];
+  if(explicitModels.some(model=>String(model||"").trim().toUpperCase()==="M527")) return true;
   // The shared CPMD documents the entire 31.xx.xx document-feeder family.
   // These codes apply to M527 models with an ADF even when the extracted
-  // record's text or parts table does not repeat the model name. Do not let
-  // the model-name filter hide this documented error family.
+  // record's text or parts table does not repeat the model name.
   const code=String(item?.code||"").trim();
   if(/^31\./.test(code) || code==="31.*") return true;
   // For other error families, require explicit M527 applicability in the
