@@ -91,8 +91,14 @@ const server = http.createServer((req, res) => {
     // The picker-flow unit check above intentionally changes selector state. Reload
     // before end-to-end product-number tests so a leftover M527 selection cannot
     // turn the M776 product test into a legitimate mismatch/dead-end.
-    await page.reload();
+    // Navigate away and back to create a truly fresh document. Chromium can
+    // restore form-control values across reloads, which left the synthetic M527
+    // selection from the picker unit test in place and caused a false product mismatch.
+    await page.goto('about:blank');
+    await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
     await page.locator('#product').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#machineType').inputValue(), '',
+      'end-to-end product-number test must start with blank machine selectors');
 
     // A known product number alone must populate the machine identity and
     // proceed to the verified/app-ready state without requiring other fields.
