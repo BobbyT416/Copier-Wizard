@@ -3018,7 +3018,7 @@ function searchErrorCodes(value){
   box.innerHTML=unique.map((item,i)=>
     `<button class="lookup-result" onclick="event.preventDefault();event.stopPropagation();window.cwSelectErrorLookup(${i})">
       <strong>${escapeHtml(item.code)}</strong>
-      ${item.description?`<br><span>${escapeHtml(item.description)}</span>`:""}
+      ${(item.desc||item.description)?`<br><span>${escapeHtml(item.desc||item.description)}</span>`:""}
     </button>`).join("");
 
   window._errorLookupMatches=unique;
