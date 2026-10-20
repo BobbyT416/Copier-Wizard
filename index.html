@@ -2317,7 +2317,7 @@ function cwM527ManualSearch(){
       ? extractErrorCodeAliases(codeText).some(alias=>alias.toLowerCase()===query) || codeText.toLowerCase().includes(query)
       : fields.some(value=>value.toLowerCase().includes(query));
     // Only show records whose extracted HP text explicitly identifies M527.
-    return /\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(sourceText) && matchesQuery;
+    return cwM527DocumentMatches(item,cwM527ExactModel()) && matchesQuery;
   }).slice(0,8);
   if(!matches.length){
     const labels={code:"error code",message:"control-panel message",symptom:"symptom or keyword"};
