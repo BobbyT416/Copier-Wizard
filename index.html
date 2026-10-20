@@ -3013,7 +3013,9 @@ function searchErrorCodes(value){
     const key=String(item.code);
     if(!seen.has(key)){seen.add(key);unique.push(item);}
   }
-  box.innerHTML=unique.slice(0,8).map((item,i)=>
+  // Do not silently hide valid codes when a family prefix matches more
+  // than eight records (notably the 31-series document-feeder errors).
+  box.innerHTML=unique.map((item,i)=>
     `<button class="lookup-result" onclick="event.preventDefault();event.stopPropagation();window.cwSelectErrorLookup(${i})">
       <strong>${escapeHtml(item.code)}</strong>
       ${item.description?`<br><span>${escapeHtml(item.description)}</span>`:""}
@@ -5834,7 +5836,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '278';
+  const CURRENT = '279';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
@@ -6379,10 +6381,19 @@ document.addEventListener("DOMContentLoaded",function(){
       return run();
     }
   };
+  // Typing or pressing Enter searches the catalog; choosing a result opens
+  // the diagnostic. The explicit "Enter Error Code" button remains the
+  // direct-entry route for a complete code.
+  document.addEventListener("input",function(e){
+    if(e.target && e.target.id==="errorCodeLookup"){
+      searchErrorCodes(e.target.value);
+    }
+  },true);
   document.addEventListener("keydown",function(e){
     if(e.key!=="Enter")return;
     if(e.target && e.target.id==="errorCodeLookup"){
-      e.preventDefault();e.stopImmediatePropagation();window.cwSubmitErrorLookup(e);
+      e.preventDefault();e.stopImmediatePropagation();
+      searchErrorCodes(e.target.value);
     }
   },true);
 })();
