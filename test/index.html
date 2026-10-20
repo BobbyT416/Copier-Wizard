@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js?v=282"></script>
+<script src="cw-manual-data.js?v=283"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -463,7 +463,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 </style>
 </head>
 <body>
-<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=282"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
+<header class="cw-header"><div class="cw-brand"><a class="cw-logo-home" href="#" aria-label="Copier Wizard Home" title="Copier Wizard Home" onclick="startOverDiagnostic();return false;"><img alt="Copier Wizard logo" src="../icon-192.png?v=283"/></a><div><h1>Copier Wizard</h1><p>Intelligent Diagnostics for Copiers &amp; Printers</p></div></div></header>
 <div aria-live="polite" id="cwUpdateBubble" role="status"></div><main>
 <section class="card" id="selectCard">
 <h2>1. Select Equipment</h2>
@@ -3199,10 +3199,10 @@ function getE52645TechnicianOverride(code, item){
     return {
       steps:[
         "Turn the printer off, and then on.",
-        "Verify the cables between scanner and scanner control board (SCB) are connected (connection 6 — ADF (side 2) FFC). Also check the connection from the ADF to the PCA on the scanner.",
-        "Ensure the FFC cable routing from the ADF has been installed correctly and is not bent, torn, or nicked. If this occurred after installing a new ADF, remove the FFC, check for damage, and reroute it.",
+        "Verify that the cable between the scanner and scanner control board (SCB) is connected and securely seated, including connection 6 — ADF (side 2) FFC. Also verify the connection from the ADF to the PCA on the scanner.",
+        "Inspect the ADF FFC cable routing. Confirm it is installed correctly and is not bent, torn, or nicked. If damaged or incorrectly routed, remove the FFC, inspect it, and route it correctly before continuing.",
         "Replace the document feeder assembly.",
-        "If the issue persists, replace the scanner control board (SCB)."
+        "After replacing the document feeder assembly, turn the printer on and retest. If error 31.03.20 remains, replace the scanner control board (SCB)."
       ],
       parts:[]
     };
@@ -3387,16 +3387,19 @@ function renderDocumentedErrorBranch(raw){
     return true;
   }
   let html='<div class="pill">HP '+escapeHtml(activeModel)+'</div><div class="pill">Model verified</div>';
-  html+=`<h2>Documented Error — ${escapeHtml(code)}</h2>
-    <div class="status"><strong>✓ Found in the supplied HP documentation.</strong><br>
-    ${escapeHtml(x.desc||"Documented error condition.")}</div>`;
+  const prominentProblem=(Array.isArray(x.summary) && x.summary.length ? String(x.summary[0]) : String(x.desc||"Documented error condition."))
+    .replace(/\.$/,"");
+  html+=`<h2 style="font-size:1.65rem;line-height:1.2;margin-bottom:8px;">Documented Error — ${escapeHtml(code)}</h2>
+    <div style="font-size:1.65rem;font-weight:800;line-height:1.2;margin:0 0 16px;color:var(--text,#17212b);">${escapeHtml(prominentProblem)}</div>
+    <div class="status"><strong>✓ Found in the supplied HP documentation.</strong></div>`;`;
 
   if(hit.matched==="pattern"){
     html+=`<p class="muted">This code is covered by the documented pattern
       <strong>${escapeHtml(x.code)}</strong>.</p>`;
   }
 
-  if(Array.isArray(x.summary) && x.summary.length){
+  if(Array.isArray(x.summary) && x.summary.length &&
+     String(x.summary[0]).replace(/[.?!]+$/,"").toLowerCase()!==prominentProblem.toLowerCase()){
     html+='<h3>What the manual says</h3><ul>'+
       x.summary.map(v=>`<li>${escapeHtml(v)}</li>`).join("")+
       '</ul>';
@@ -5848,7 +5851,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '282';
+  const CURRENT = '283';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
