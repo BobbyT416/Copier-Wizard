@@ -541,8 +541,10 @@ const server = http.createServer((req, res) => {
     await page.locator('#documentedStepList').waitFor({ state: 'visible' });
     assert.match(await page.locator('#result').innerText(), /Event log only/i,
       '82.73.47 must be clearly labeled as an event-log-only entry');
+    await page.locator('#documentedStepList').getByRole('button', { name: /Step Completed — Continue/i }).click();
+    await page.locator('#documentedStepList').getByRole('button', { name: /Step Completed — Continue/i }).click();
     assert.match(await page.locator('#documentedStepList').innerText(), /Format Disk/i,
-      '82.73.47 must include the documented disk-cleaning recovery steps');
+      '82.73.47 must guide the technician to the documented disk-cleaning recovery step');
     assert.match(await page.locator('#result').innerText(), /Part number withheld pending verification/i,
       'disk-cleaning failure must not guess which HDD option is installed');
     console.log('✓ Variant-gated output-accessory and event-log disk-cleaning procedures');
