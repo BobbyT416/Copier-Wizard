@@ -2132,7 +2132,7 @@ function productNumberInputChanged(value){
   const typed=String(value||"").trim().toUpperCase();
   if(!typed){if(hint)hint.textContent="Enter a product number, or select printer type, family, and model.";return;}
   const found=Object.values(productNumberCatalog||{}).flat().some(x=>String(x.product).toUpperCase()===typed);
-  if(hint)hint.textContent=found?"Product number recognized. Machine identity will be filled in when you leave this field.":"Enter a complete product number from the machine label.";
+  if(hint)hint.textContent=found?"Product number recognized.":"Enter a complete product number from the machine label.";
 }
 function cwClearMachineVerificationState(){
   window.CW_MACHINE_IDENTITY_VERIFIED=null;
@@ -2228,7 +2228,7 @@ function firmwareOptionsForModel(model){const s=String(model||"").toUpperCase();
 function firmwareLabel(v){return v==='FS3'?'FutureSmart 3':v==='FS4'?'FutureSmart 4':v==='FS5'?'FutureSmart 5':v;}
 function configureFirmwareForModel(model){const section=document.getElementById('firmwareSection'),fw=document.getElementById('firmwareLevel');if(!section||!fw)return [];const opts=firmwareOptionsForModel(model);fw.innerHTML='<option value="">Select FutureSmart level...</option>';fw.value='';if(!opts.length){section.classList.add('hidden');return opts;}opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=firmwareLabel(v);fw.appendChild(o);});section.classList.remove('hidden');if(opts.length===1)fw.value=opts[0];return opts;}
 function modelSelectionChanged(model){
-  cwClearMachineVerificationState();const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.innerHTML=family?.docs?'<span class="source-note">Documentation: '+escapeHtml(family.docs)+'.</span>':'';configureProductNumberForModel(model);configureFirmwareForModel(model);}
+  cwClearMachineVerificationState();const hint=document.getElementById('modelHint');if(!hint)return;const type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!model){hint.textContent='';configureFirmwareForModel('');return;}hint.textContent="";configureProductNumberForModel(model);configureFirmwareForModel(model);}
 function firmwareSelectionChanged(fw){}
 function continueToTroubleshooting(){
   const card=document.getElementById('problemCard');
