@@ -2360,12 +2360,13 @@ function cwM527StartDocumentedError(code){
 }
 
 function cwM527DocumentMatches(item, exactModel){
+  // Keep model-family error records in the searchable catalog even when a
+  // parts line names a different M527 variant. Exact-variant filtering belongs
+  // in cwM527PartsForError(), so a feeder kit for M527dn/f cannot hide the
+  // error code itself from an M527c technician.
   const fields=[item?.code,item?.desc,...(item?.summary||[]),...(item?.steps||[]),...(item?.parts||[])];
   const source=fields.map(v=>String(v||"")).join(" ");
-  if(!/\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(source)) return false;
-  const named=[...source.matchAll(/\bM527(c|z|dnm|cm|dn|f)\b/gi)].map(m=>("M527"+m[1]).toUpperCase());
-  const unique=[...new Set(named)];
-  return unique.length===0 || unique.includes(exactModel);
+  return /\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(source);
 }
 
 function cwM527PartsForError(item, exactModel){
