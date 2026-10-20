@@ -13,6 +13,14 @@
 
 
 
+## 0K. M527 31-series source comparison and regression cleanup (2026-10-20)
+
+- Compared the stored catalog's concrete 31-series entries against the uploaded M527/E52645-family CPMD material. The catalog currently contains all 14 concrete records found in the M527-family list: `31.01.47`, `31.03.14`, `31.03.20`, `31.03.22`, `31.03.30`, `31.03.31`, `31.03.32`, `31.03.33`, `31.03.34`, `31.13.00`, `31.13.01`, `31.13.02`, `31.13.13`, and `31.13.14`, plus the general `31.*` record.
+- The separate CPMD passage for `31.03.37` describes an ADF multi-pick ultrasonic-sensor issue and specifically notes that it typically appears on Flow models such as M776z/M776zs. It is not being added as an M527-specific record without M527 applicability evidence.
+- Source-level JavaScript syntax check on Build 279: all 15 inline scripts parsed successfully. This is a static check, not a substitute for Playwright/browser verification.
+- Corrected test regexes to match literal dots in `30.01.44`, `31.01.47`, and `31.03.30`; the relevant commits are `63e7757f2af3471184e73a0f21edebd07a143d1d` and `2ce5982e8a3579f1bcafebcd0143c7bdbf42bca6`.
+- Latest automated browser result is still unverified; the available commit-run lookup does not expose push-triggered runs. Keep Build 279 unreleased until the browser suite has actually passed. Production remains untouched.
+
 ## 0J. Build 279 — numerical error-code search fix (2026-10-20)
 
 - **Root cause found in `index.html`:** the final keyboard handler intercepted Enter and immediately called the diagnostic router, while the existing `searchErrorCodes()` function was not wired to the input event. As a result, the numerical-code result list was not populated through the expected search flow. The renderer also displayed `item.description` although the HP records use `desc`, hiding useful descriptions, and it truncated prefix results to eight entries.
