@@ -1,10 +1,10 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 273 restores the main-site M527 troubleshooting entry screen)  
+**Updated:** 2026-10-20 (Build 273 M527 flow confirmed by user on test site)  
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **273** (`index.html` runtime label/update checker and `version.json` set to 273; test-site `index.html` and `version.json` synchronized. Verified M527 now enters the standard App Ready / What's wrong? screen; numerical error catalog is scoped to M527-referenced records and exact variant. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run and live Pages behavior has not been independently confirmed.)  
+**Current development build:** **273** (`index.html` runtime label/update checker and `version.json` set to 273; test-site `index.html` and `version.json` synchronized. User manually confirmed the test site now enters the expected App Ready / What's wrong? screen for verified M527c. Numerical error catalog is scoped to M527-referenced records and exact variant. Inline JavaScript syntax checks passed; Playwright smoke tests have not been run.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
@@ -18,7 +18,7 @@
 - `cwActiveErrorCatalog()` now scopes M527 numerical-code search/browse results to extracted error records that explicitly mention M527 and match the verified M527 product variant where the source names variants. The existing M527 error renderer continues to suppress E52645-specific overrides and filter M527 parts.
 - Smoke test updated to assert the four expected entry options and that M527c error-code search finds documented 30.01.44 Scanner error.
 - Published only to `main/test/index.html` and `main/test/version.json`. Static validation confirms development and test HTML are identical, all 15 inline script blocks compile, version metadata is Build 273, and production root remains Build 257.
-- Full browser/Playwright smoke tests and live GitHub Pages behavior have not been independently verified in this session.
+- User manually tested the live Build 273 test site and confirmed: “That worked.” This verifies the expected M527 verified-machine screen is now reached. Full browser/Playwright smoke tests remain unrun.
 
 ## 0C. Multiple M527 troubleshooting entry options — Build 272 (2026-10-20)
 
