@@ -2283,7 +2283,7 @@ function cwM527ManualSearch(){
       ? extractErrorCodeAliases(codeText).some(alias=>alias.toLowerCase()===query) || codeText.toLowerCase().includes(query)
       : fields.some(value=>value.toLowerCase().includes(query));
     // Only show records whose extracted HP text explicitly identifies M527.
-    return /\\bM527(?:c|z|dn|f|dnm|cm)?\\b/i.test(sourceText) && matchesQuery;
+    return /\bM527(?:c|z|dn|f|dnm|cm)?\b/i.test(sourceText) && matchesQuery;
   }).slice(0,8);
   if(!matches.length){
     const labels={code:"error code",message:"control-panel message",symptom:"symptom or keyword"};
@@ -2297,7 +2297,7 @@ function cwM527ManualSearch(){
     const parts=(item.parts||[]).filter(p=>/M527/i.test(p)).map(p=>'<li>'+escapeHtml(p)+'</li>').join("");
     const code=extractErrorCodeAliases(item.code||"")[0]||"";
     const identity=window.CW_MACHINE_IDENTITY_VERIFIED,activeProduct=String(document.getElementById("product")?.value||identity?.product||"").toUpperCase(),activeEntry=Object.values(productNumberCatalog||{}).flat().find(x=>String(x.product||"").toUpperCase()===activeProduct),canStart=!!identity&&identity.status==="identity-verified-diagnostics-disabled"&&/^M527/i.test(String(activeEntry?.model||""))&&/^F2A(?:76|77|81|78|79|80)A$/i.test(activeProduct);
-    const startButton=code?(canStart?'<button type="button" class="primary" onclick="cwM527StartDocumentedError(\\''+escapeHtml(code)+'\\')">Start Documented Troubleshooting</button>':'<p class="source-note"><strong>To start troubleshooting:</strong> enter the exact HP product number above and select Verify Machine first. The manual search can be used now, but guided steps will not start until the exact M527 variant is confirmed.</p>'):"";
+    const startButton=code?(canStart?'<button type="button" class="primary" onclick="cwM527StartDocumentedError(&quot;'+escapeHtml(code)+'&quot;)">Start Documented Troubleshooting</button>':'<p class="source-note"><strong>To start troubleshooting:</strong> enter the exact HP product number above and select Verify Machine first. The manual search can be used now, but guided steps will not start until the exact M527 variant is confirmed.</p>'):"";
     return '<article class="manual-index-item" style="text-align:left;cursor:default"><strong>'+escapeHtml(title||"HP manual entry")+'</strong>'+
       (summary?'<p><strong>Documented information</strong></p><ul>'+summary+'</ul>':"")+
       (steps?'<p><strong>Steps in the supplied HP text</strong></p><ol>'+steps+'</ol>':'<p>No extracted steps are available for this entry.</p>')+
