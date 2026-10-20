@@ -304,7 +304,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#product').fill('ZZZZZ');
     await page.locator('#product').press('Tab');
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'unknown product number must not unlock diagnosis');
-    assert.match(await page.locator('#productHint').innerText(), /not in the current product-number catalog/i, 'unknown product number should explain why it was not verified');
+    assert.match(await page.locator('#productHint').innerText(), /not in the catalog/i, 'unknown product number should explain why it was not verified');
     assert.match(await page.locator('#verify').innerText(), /Machine Not Verified/i, 'unknown product must clear the prior machine-verified status');
     console.log('✓ Unknown product number is not falsely verified and manual identification remains available');
 
