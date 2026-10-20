@@ -36,7 +36,7 @@ const server = http.createServer((req, res) => {
       'machine-family label should remain concise');
     assert.equal(await page.locator('#selectCard label').filter({hasText:'Product Number'}).filter({hasText:/^Product Number$/}).innerText(), 'Product Number',
       'product-number label should remain concise');
-    assert.match(await page.locator('#productHint').innerText(), /^Optional — helps verify the exact variant\\.$/,
+    assert.equal(await page.locator('#productHint').innerText(), 'Optional — helps verify the exact variant.',
       'product-number helper should remain concise');
     console.log('✓ App loads in Chromium with concise opening-screen labels');
     // Each machine selection should automatically advance to the next meaningful picker.
