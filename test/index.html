@@ -406,7 +406,7 @@ button:disabled{opacity:.55;cursor:not-allowed;}
 .lookup-choice strong { display:block !important; font-weight:700 !important; }
 .lookup-choice span { display:block !important; }
 </style>
-<script src="cw-manual-data.js"></script>
+<script src="cw-manual-data.js?v=278"></script>
 <script id="cw-parts-authority">
 /* Build 222: the normalized knowledge layer is the single authority for promoted parts. */
 (function(){
@@ -3008,7 +3008,7 @@ function searchErrorCodes(value){
     const key=String(item.code);
     if(!seen.has(key)){seen.add(key);unique.push(item);}
   }
-  box.innerHTML=unique.slice(0,8).map((item,i)=>
+  box.innerHTML=unique.map((item,i)=>
     `<button class="lookup-result" onclick="event.preventDefault();event.stopPropagation();window.cwSelectErrorLookup(${i})">
       <strong>${escapeHtml(item.code)}</strong>
       ${item.description?`<br><span>${escapeHtml(item.description)}</span>`:""}
@@ -5829,7 +5829,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '277';
+  const CURRENT = '278';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
