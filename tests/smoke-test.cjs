@@ -190,6 +190,16 @@ const server = http.createServer((req, res) => {
     await page.locator('#errorCodeLookup').press('Enter');
     await page.locator('#errorCodeResults').getByText(/30\\.01\\.44/).first().waitFor({ state: 'visible' });
     assert.match(await page.locator('#errorCodeResults').innerText(), /Scanner error/i, 'M527 numerical lookup should find the documented scanner error');
+    // Regression: a general M527 error must not be hidden just because its
+    // source's parts list names a different M527 variant's feeder kit.
+    await page.locator('#errorCodeLookup').fill('31.03.30');
+    await page.locator('#errorCodeLookup').press('Enter');
+    await page.locator('#errorCodeResults').getByText(/31\\.03\\.30/).first().waitFor({ state: 'visible' });
+    assert.match(await page.locator('#errorCodeResults').innerText(), /Document feeder pick motor error/i,
+      'M527 numerical lookup must retain the documented 31-series error across variants');
+    await page.locator('#errorCodeLookup').fill('30.01.44');
+    await page.locator('#errorCodeLookup').press('Enter');
+    await page.locator('#errorCodeResults').getByText(/30\\.01\\.44/).first().waitFor({ state: 'visible' });
     await page.locator('#errorCodeResults .lookup-result').first().click();
     await page.locator('#resultCard').waitFor({ state: 'visible' });
     await page.getByRole('button', { name: 'Change Machine' }).click();
