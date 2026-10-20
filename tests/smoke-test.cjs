@@ -203,8 +203,13 @@ const server = http.createServer((req, res) => {
     await page.locator('#errorCodeLookup').fill('31');
     await page.locator('#errorCodeLookup').press('Enter');
     await page.locator('#errorCodeResults .lookup-result').first().waitFor({ state: 'visible' });
-    assert.match(await page.locator('#errorCodeResults').innerText(), /31\./,
-      'M527 numerical lookup must return 31-series codes for a family-prefix search');
+    const m52731Results = await page.locator('#errorCodeResults .lookup-result').allInnerTexts();
+    assert.ok(m52731Results.length >= 10,
+      'M527 prefix search must show the complete matching 31-series list, not truncate it');
+    assert.ok(m52731Results.some(text => /31\\.01\\.47/.test(text)),
+      'M527 prefix search must include 31.01.47');
+    assert.ok(m52731Results.some(text => /31\\.03\\.30/.test(text)),
+      'M527 prefix search must include 31.03.30');
     // Regression: a general M527 error must not be hidden just because its
     // source's parts list names a different M527 variant's feeder kit.
     await page.locator('#errorCodeLookup').fill('31.03.30');
