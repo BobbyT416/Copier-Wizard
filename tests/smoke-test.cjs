@@ -440,6 +440,18 @@ const server = http.createServer((req, res) => {
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 59.00.03' }).waitFor({ state: 'visible' });
     console.log('✓ Full UI flow: M776zs/T3U56A selects 59.00.03, correct parts, M13, correct repair procedure, and returns');
 
+    // Explicit source-reviewed applicability metadata must make generic
+    // M527-family supply codes available even when the description omits "M527".
+    await page.evaluate(() => {
+      currentMachineModel = 'M527';
+      verifiedModel = 'M527';
+      beginErrorCodeDiagnosis('10.00.60');
+    });
+    await page.locator('#documentedStepList').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#documentedStepList').innerText(), /If print quality is no longer acceptable, replace the print cartridge/i,
+      'M527 should expose the CPMD supply-code procedure when applicability is source-verified');
+    console.log('✓ Source-reviewed M527 applicability exposes generic supply-code troubleshooting');
+
     // No-procedure codes remain usable: show a concise terminal state and a clear way back,
     // rather than leaving the technician with a hidden outcome/parts panel.
     await page.evaluate(() => {
