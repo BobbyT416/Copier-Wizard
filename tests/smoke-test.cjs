@@ -140,9 +140,9 @@ const server = http.createServer((req, res) => {
     await page.locator('#problemCard').waitFor({ state: 'visible' });
     assert.match(await page.locator('#verify').innerText(), /Machine Verified — App Ready/i, 'E52645 should remain enabled for its validated manual data');
     await page.evaluate(() => returnToMachineSelection());
-    await page.locator('#product').fill('F2A76A');
+    await page.locator('#product').fill('F2A81A');
     await page.locator('#product').press('Tab');
-    assert.match(await page.locator('#verify').innerText(), /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, 'M527 must not inherit E52645 branching workflow without exact validation');
+    assert.match(await page.locator('#verify').innerText(), /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, 'M527c must not inherit E52645 branching workflow without exact validation');
     assert.equal(await page.locator('#problemCard').isVisible(), false, 'M527 must not unlock E52645 guided diagnostics');
     console.log('✓ Exact-model readiness gate: E52645 guided workflow remains separate from M527');
     // The verified M527 must have a useful source-backed next step without
