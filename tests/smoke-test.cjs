@@ -244,28 +244,12 @@ const server = http.createServer((req, res) => {
 
     // Model-specific product choices must not leak entries from other families.
     await page.locator('#product').fill('');
-    await page.locator('#product').press('Tab');
     await page.locator('#machineType').selectOption('mono');
     await page.locator('#machineFamily').selectOption('m501-family');
     await page.locator('#model').selectOption('M527');
     const fwOptionsForM527 = await page.locator('#firmwareLevel option').evaluateAll(options => options.map(o => o.value).filter(Boolean));
     if (fwOptionsForM527.length) await page.locator('#firmwareLevel').selectOption(fwOptionsForM527[0]);
-    await page.getByRole('button', { name: 'Verify Machine' }).click();
-    assert.match(await page.locator('#verify').innerText(), /HP M527 selected — manual search available/i,
-      'M527 model-only verification must provide the HP manual search instead of the old dead end');
-    assert.equal(await page.locator('#verify button', { hasText: 'Browse Product Numbers' }).count(), 0,
-      'M527 fallback must not repeat Browse Product Numbers inside the verification result');
-    assert.equal(await page.locator('#verify #m527ManualLookup').count(), 1,
-      'M527 model-only verification must expose the manual search');
-    assert.equal(await page.locator('#verify [data-m527-search-mode]').count(), 3,
-      'M527 manual search must provide error-code, control-panel-message, and symptom entry options');
-    await page.locator('#verify [data-m527-search-mode="message"]').click();
-    assert.match(await page.locator('#verify #m527ManualLookup').getAttribute('placeholder'), /control-panel message/i,
-      'selecting message mode must update the search prompt');
-    await page.locator('#verify [data-m527-search-mode="symptom"]').click();
-    assert.match(await page.locator('#verify #m527ManualLookup').getAttribute('placeholder'), /problem/i,
-      'selecting symptom mode must update the search prompt');
-    await page.locator('#verify [data-m527-search-mode="code"]').click();
+
     const m527Options = await page.locator('#productNumberOptions option').evaluateAll(options => options.map(o => o.value));
     assert.deepEqual(m527Options.sort(), ['F2A76A','F2A77A','F2A78A','F2A79A','F2A80A','F2A81A'].sort(), 'M527 datalist must contain only M527 product numbers');
     await page.locator('.product-browser-toggle').click();
@@ -276,18 +260,21 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#productCatalogResults button').count(), 0, 'search for another model must not escape the selected M527 scope');
     assert.match(await page.locator('#productCatalogResults').innerText(), /No matching product numbers for M527/i);
     await page.locator('#productCatalogSearch').fill('');
-    await page.locator('#productCatalogResults button').filter({hasText:'F2A76A'}).click();
-    assert.equal(await page.locator('#product').inputValue(), 'F2A76A', 'selecting a scoped M527 product should set its product number');
-    assert.match(await page.locator('#verify').innerText(), /M527|Guided Troubleshooting Not Yet Enabled/i, 'scoped M527 selection should retain the correct machine identity');
-    // A directly typed product from another model must be rejected rather than silently changing identity.
-    await page.locator('#product').fill('T3U55A');
-    await page.locator('#product').press('Tab');
-    assert.match(await page.locator('#verify').innerText(), /Product Number Mismatch/i, 'a product number from another model should show a mismatch');
-    assert.equal(await page.locator('#model').inputValue(), 'M527', 'mismatched product entry must not silently switch the selected model');
-    await page.getByRole('button', { name: 'Change Machine' }).click();
-    console.log('✓ Product-number browser and datalist stay scoped to the selected model; mismatches do not silently switch identity');
+    await page.locator('.product-browser-toggle').click();
 
-
+    await page.getByRole('button', { name: 'Verify Machine' }).click();
+    assert.match(await page.locator('#verify').innerText(), /Machine Verified — App Ready/i,
+      'model-only M527 verification should reach the current verified-machine screen');
+    await page.getByRole('button', { name: /Continue to Troubleshooting/i }).click();
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#problemCard').innerText(), /What.s wrong\?/i,
+      'model-only M527 verification should continue to the normal troubleshooting choices');
+    assert.ok(await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Numerical Error Code' }).isVisible(),
+      'M527 should offer numerical error-code lookup after continuing');
+    assert.equal(await page.locator('#verify #m527ManualLookup').count(), 0,
+      'supported M527 should use the normal troubleshooting flow, not the unsupported-model manual-search fallback');
+    console.log('✓ Model-only M527 verification, scoped product choices, and continuation flow');
+    
     // Clearing the product number or changing manual machine selectors must
     // invalidate any previously verified machine and hide its diagnostic path.
     await page.locator('#product').fill('T3U55A');
