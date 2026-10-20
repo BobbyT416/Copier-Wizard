@@ -181,6 +181,15 @@ const server = http.createServer((req, res) => {
     await page.locator('#machineType').selectOption('mono');
     await page.locator('#machineFamily').selectOption('m501-family');
     await page.locator('#model').selectOption('M527');
+    const fwOptionsForM527 = await page.locator('#firmwareLevel option').evaluateAll(options => options.map(o => o.value).filter(Boolean));
+    if (fwOptionsForM527.length) await page.locator('#firmwareLevel').selectOption(fwOptionsForM527[0]);
+    await page.getByRole('button', { name: 'Verify Machine' }).click();
+    assert.match(await page.locator('#verify').innerText(), /HP M527 selected — manual search available/i,
+      'M527 model-only verification must provide the HP manual search instead of the old dead end');
+    assert.equal(await page.locator('#verify button', { hasText: 'Browse Product Numbers' }).count(), 0,
+      'M527 fallback must not repeat Browse Product Numbers inside the verification result');
+    assert.equal(await page.locator('#verify #m527ManualLookup').count(), 1,
+      'M527 model-only verification must expose the manual search');
     const m527Options = await page.locator('#productNumberOptions option').evaluateAll(options => options.map(o => o.value));
     assert.deepEqual(m527Options.sort(), ['F2A76A','F2A77A','F2A78A','F2A79A','F2A80A','F2A81A'].sort(), 'M527 datalist must contain only M527 product numbers');
     await page.locator('.product-browser-toggle').click();
