@@ -4163,14 +4163,14 @@ function diagnosticAnswer(answer){
        <div class="doc-verification"><strong>Source:</strong> HP E52645 service documentation, Chapter 7 — Alphabetical control panel messages.</div>`;
      if(actions.length){
        html += `<h3>Technician Troubleshooting</h3>
-         <div class="status">Complete each documented step in order. The next step is shown only after you confirm that you completed the current step.</div>
+         <div class="status">Follow the documented instructions in order. Select “Next Step” when you have completed the current instruction.</div>
          <div id="alphabeticalStepList" class="documented-step-list"></div>
          <div id="alphabeticalStepProgress" class="muted" style="margin-top:10px;"></div>
          <div id="alphabeticalOutcome" class="hidden" style="margin-top:18px;">
            <h3>Documented Checks Completed</h3>
-           <p>What happened after completing the documented procedure?</p>
+           <p>Did the procedure resolve the problem?</p>
            <button type="button" onclick="diagnosticAnswer('alpha-resolved')">Problem resolved</button>
-           <button type="button" class="secondary" onclick="diagnosticAnswer('alpha-persists')">Problem remains</button>
+           <button type="button" class="secondary" onclick="diagnosticAnswer('alpha-persists')">Not resolved — continue</button>
          </div>`;
      }else{
        html += `<div class="status">The manual identifies this as an informational message and does not provide a further technician procedure.</div>
@@ -4213,7 +4213,7 @@ function diagnosticAnswer(answer){
          if(!decision){
            stepHtml+=`<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
              ${index>0?`<button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button>`:""}
-             <button type="button" onclick="cwAlphabeticalStepCompleted()">✓ Step Completed — Continue</button>
+             <button type="button" onclick="cwAlphabeticalStepCompleted()">Next Step →</button>
            </div>`;
          } else if(index>0){
            stepHtml+=`<div style="margin-top:18px;"><button type="button" class="secondary" onclick="cwAlphabeticalStepBack()">← Back</button></div>`;
