@@ -457,7 +457,7 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => {
       currentMachineModel = 'E52645';
       verifiedModel = 'E52645';
-      beginErrorCodeDiagnosis('32.1C.40');
+      beginErrorCodeDiagnosis('13.00.EE');
     });
     await page.locator('#result').getByText(/No step-by-step procedure available/i).waitFor({ state: 'visible' });
     assert.ok(await page.locator('#result').getByRole('button', { name: /Back to Error Code/i }).isVisible(),
@@ -465,6 +465,16 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#documentedOutcome').count(), 0,
       'no-procedure results must not expose a hidden procedure-completion outcome');
     console.log('✓ Codes without procedures remain searchable and show a clear no-procedure result');
+
+    // If the source explicitly says "No action necessary", display that as
+    // an informational outcome rather than calling it a missing procedure.
+    await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.40'));
+    await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /explicitly states that no action is necessary/i,
+      'explicit HP no-action recommendations must be preserved');
+    assert.equal(await page.locator('#documentedStepList').count(), 0,
+      'informational no-action codes must not enter a repair-step flow');
+    console.log('✓ Explicit HP no-action recommendations are preserved as informational outcomes');
 
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
     console.log('✓ No uncaught browser JavaScript errors');
