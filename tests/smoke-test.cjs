@@ -509,7 +509,15 @@ const server = http.createServer((req, res) => {
     await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
     assert.match(await page.locator('#result').innerText(), /No action necessary/i,
       '32.08.A2 must remain available as a no-action event code');
-    console.log('✓ Backup/restore event codes, grouped aliases, and no-action event handling');
+    await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.49'));
+    assert.match(await page.locator('#documentedStepList').innerText(), /encryption PIN.*restrictions/i,
+      '32.1C.49 must show the documented restore-PIN check');
+    await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.61'));
+    assert.match(await page.locator('#documentedStepList').innerText(), /Review the event log/i,
+      '32.1C.61 must direct the technician to the event log');
+    await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.43'));
+    await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
+    console.log('✓ Backup/restore event codes, grouped aliases, no-action entries, and recovered actions');
 
     // Output-accessory codes are valid only for stapler-equipped M527c/f/z
     // variants. Without an exact product number, show a verification gate.
