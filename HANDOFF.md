@@ -391,3 +391,13 @@ For error `59.00.03`:
 - Next: publish Build 268 to `main/test/index.html` and `main/test/version.json` only; verify the Pages deployment; then test M527 error-code search and check that unknown codes produce a safe no-match message. Production root stays untouched.
 
 - Test-only publication: `main/test/index.html` updated in commit `aeb8090eeae13a0b4df13bde53741c87abe80d4c`; `main/test/version.json` updated to Build 268 in commit `3d90f74b7784a6a78b3e9ea03a48c470b5e3a602`. Re-fetched repository files confirm the test folder contains the M527 search code and version 268. Live GitHub Pages deployment and browser test are not independently confirmed; do not claim either passed.
+
+
+## 0J. Build 279 — M527 31-series manual-search filter correction (2026-10-20)
+
+- Re-inspected development source and confirmed the M527-specific manual-search path (cwM527ManualSearch) still used a separate hard-coded condition requiring every extracted source passage to explicitly mention M527. This contradicted cwM527DocumentMatches(), which intentionally allows the shared CPMD 31.xx.xx document-feeder family for M527 models.
+- Changed the manual-search path to use cwM527DocumentMatches(item, cwM527ExactModel()), aligning its applicability rule with the numerical catalog's shared 31-series rule. Variant-specific parts remain independently filtered.
+- Bumped index.html and version.json to Build 279. This is a development-only change; no test-site publication or production change has been made.
+- Important unresolved verification: prior GitHub Actions run 39365402765 failed before the M527-specific tests, timing out on the product-number-only M776 test because the app's current verifyModel() still requires type/family/model before checking the product number. Do not claim the 31-series fix is verified until the browser suite reaches and passes the M527 prefix/exact-code assertions.
+- The uploaded CPMD contains a section titled 31.* errors and discrete entries including 31.01.47, 31.03.14, 31.03.20, 31.03.22, 31.03.31, 31.03.37, 31.13.00, 31.13.01, 31.13.02, 31.13.13, and 31.13.14. Applicability must be checked per ADF type/model; do not assume every code is applicable to every M527 variant solely because it is in the broader CPMD.
+- Next: repair the stale product-number-only behavior or isolate it as a separate failing contract without weakening requirements; run Playwright and ensure it reaches the M527 numerical lookup. Then reconcile the complete CPMD index against the actual searchable M527 catalog, including discrete 31-series codes, and only then publish test files.
