@@ -2267,13 +2267,51 @@ function cwM527ManualSearch(){
     const summary=(item.summary||[]).slice(0,3).map(s=>'<li>'+escapeHtml(s)+'</li>').join("");
     const steps=(item.steps||[]).map(cleanTechnicianStep).filter(Boolean).slice(0,12).map(s=>'<li>'+escapeHtml(s)+'</li>').join("");
     const parts=(item.parts||[]).filter(p=>/M527/i.test(p)).map(p=>'<li>'+escapeHtml(p)+'</li>').join("");
+    const code=extractErrorCodeAliases(item.code||"")[0]||"";
+    const startButton=code?'<button type="button" class="primary" onclick="cwM527StartDocumentedError(\''+escapeHtml(code)+'\')">Start Documented Troubleshooting</button>':'';
     return '<article class="manual-index-item" style="text-align:left;cursor:default"><strong>'+escapeHtml(title||"HP manual entry")+'</strong>'+
       (summary?'<p><strong>Documented information</strong></p><ul>'+summary+'</ul>':'')+
       (steps?'<p><strong>Steps in the supplied HP text</strong></p><ol>'+steps+'</ol>':'<p>No extracted steps are available for this entry.</p>')+
       (parts?'<p><strong>Part references explicitly mentioning M527</strong></p><ul>'+parts+'</ul>':'')+
+      (code&&steps?'<div style="margin-top:12px">'+startButton+'</div>':'')+
       '</article>';
   }).join("");
   return true;
+}
+
+function cwM527StartDocumentedError(code){
+  const identity=window.CW_MACHINE_IDENTITY_VERIFIED;
+  const product=String(document.getElementById("product")?.value||identity?.product||"").toUpperCase();
+  const match=Object.values(productNumberCatalog||{}).flat().find(x=>String(x.product||"").toUpperCase()===product);
+  const exactModel=String(match?.model||"").toUpperCase();
+  if(!identity || identity.status!=="identity-verified-diagnostics-disabled" ||
+     !/^M527/.test(exactModel) || !/^F2A7[6-9A-Z]A$/i.test(product)){
+    const out=document.getElementById("m527ManualResults");
+    if(out) out.insertAdjacentHTML("afterbegin",'<div class="status danger">Verify the exact M527 product number before starting a documented diagnostic.</div>');
+    return false;
+  }
+  verifiedModel=exactModel;
+  currentMachineModel=exactModel;
+  window.verifiedProduct=product;
+  return beginErrorCodeDiagnosis(code);
+}
+
+function cwM527DocumentMatches(item, exactModel){
+  const fields=[item?.code,item?.desc,...(item?.summary||[]),...(item?.steps||[]),...(item?.parts||[])];
+  const source=fields.map(v=>String(v||"")).join(" ");
+  if(!/\\bM527(?:c|z|dn|f|dnm|cm)?\\b/i.test(source)) return false;
+  const named=[...source.matchAll(/\\bM527(c|z|dnm|cm|dn|f)\\b/gi)].map(m=>("M527"+m[1]).toUpperCase());
+  const unique=[...new Set(named)];
+  return unique.length===0 || unique.includes(exactModel);
+}
+
+function cwM527PartsForError(item, exactModel){
+  return [...new Set((item?.parts||[]).filter(p=>{
+    const text=String(p||"");
+    if(!/\\bM527(?:c|z|dn|f|dnm|cm)?\\b/i.test(text)) return false;
+    const variant=[...text.matchAll(/\\bM527(c|z|dnm|cm|dn|f)\\b/gi)].map(m=>("M527"+m[1]).toUpperCase());
+    return variant.length===0 || variant.includes(exactModel);
+  }).map(p=>String(p||"").replace(/\\s+/g," ").trim()).filter(Boolean))];
 }
 
 function verifyModel(){const m=document.getElementById('model').value,productEl=document.getElementById('product'),product=productEl?productEl.value:'',v=document.getElementById('verify'),type=(document.getElementById('machineType')||{}).value||'',familyId=(document.getElementById('machineFamily')||{}).value||'',family=machineSelectionFamilies[type]?.[familyId];if(!type){v.innerHTML='<div class="status danger"><strong>Step 1:</strong> Select Monochrome, Color, or PageWide.</div>';return;}if(!familyId||!family){v.innerHTML='<div class="status danger"><strong>Step 2:</strong> Select the machine family.</div>';return;}if(!m){v.innerHTML='<div class="status danger"><strong>Step 3:</strong> Select the machine model.</div>';return;}const productEntries=productNumberCatalog[productCatalogKey(m)]||[];if(String(m).toUpperCase()==='M776'&&!product){v.innerHTML='<div class="status danger"><strong>M776 Product Number Required</strong><br>Select the exact HP Product Number before continuing. The M776dn, M776z, and M776zs variants use different documented parts and procedures.</div>';if(productEl)productEl.focus();return;}const validProduct=product ? productEntries.some(x=>x.product===product) : true;if(product && !validProduct){v.innerHTML='<div class="status danger"><strong>Product Number Mismatch</strong><br>Selected machine model: <strong>'+escapeHtml(m)+'</strong><br>Entered Product Number: <strong>'+escapeHtml(product)+'</strong><br>This product number is not cataloged for the selected model. Verify the model and product number on the machine before continuing.</div>';return;}const opts=firmwareOptionsForModel(m),fwEl=document.getElementById('firmwareLevel'),fw=fwEl?fwEl.value:'';if(opts.length>1&&!fw&&!product){v.innerHTML='<div class="status warn"><strong>Machine selected.</strong><br>FutureSmart is applicable to this model. Select the installed FutureSmart level if known, or enter a product number to verify the machine without this additional step.</div>';if(fwEl)fwEl.focus();return;}if(opts.length===1&&fwEl)fwEl.value=opts[0];if(!family.supported || (family.supportedModels && !family.supportedModels.includes(m))){cwClearMachineVerificationState();if(product && validProduct){window.CW_MACHINE_IDENTITY_VERIFIED={model:m,product:product,type:type,familyId:familyId,status:'identity-verified-diagnostics-disabled'};v.innerHTML='<div class="status"><strong>✓ Machine Verified — Guided Troubleshooting Not Yet Enabled</strong><br>HP '+escapeHtml(m)+' verified by product number <strong>'+escapeHtml(product)+'</strong>.<br>The machine identity is confirmed, but this family has not yet been enabled for guided troubleshooting. No diagnostic steps or part recommendations will be shown until its HP documentation and workflow are validated.<br><br><strong>Start here:</strong> search the supplied HP manual for an error code or message that explicitly mentions the M527 family. This is a source-reference search, not yet a validated branching workflow.<br><div style="margin-top:12px"><input id="m527ManualLookup" class="lookup-input" placeholder="Error code or keyword (e.g. 30.01.44)" aria-label="Search M527 HP manual"/><button type="button" class="secondary" onclick="cwM527ManualSearch()">Search HP Manual</button><div id="m527ManualResults" class="lookup-results" aria-live="polite"></div></div><button type="button" class="secondary" onclick="returnToMachineSelection()">Change Machine</button></div>';}else{window.CW_MACHINE_IDENTITY_VERIFIED=null;v.innerHTML='<div class="status"><strong>Machine selected — guided workflow not yet enabled</strong><br>HP '+escapeHtml(m)+' is organized under the '+escapeHtml(family.label)+'. Enter a known product number to verify the exact machine. Guided troubleshooting remains unavailable until this family\'s HP documentation and workflow are validated.<br><br><button type="button" class="secondary" onclick="returnToMachineSelection()">Change Machine</button> <button type="button" class="secondary" onclick="toggleProductNumberBrowser(true)">Browse Product Numbers</button></div>';}return;}window.CW_MACHINE_IDENTITY_VERIFIED={model:m,product:product,type:type,familyId:familyId,status:'verified-diagnostics-enabled'};verifiedModel=m;currentMachineModel=m;window.verifiedProduct=product;setServiceReportProblem('');const selectedFw=fwEl?.value||'',fwText=selectedFw?firmwareLabel(selectedFw):'Firmware level not applicable',productText=product?product+' — '+escapeHtml((productNumberCatalog[productCatalogKey(m)]||[]).find(x=>x.product===product)?.model||m):'Product number not selected';v.innerHTML='<div class="status"><strong>✓ Machine Verified — App Ready</strong><br>HP '+escapeHtml(m)+' verified.<br><strong>Product:</strong> '+escapeHtml(productText)+'<br>'+escapeHtml(fwText)+'<br><button type="button" onclick="continueToTroubleshooting()">Continue to Troubleshooting ↓</button></div>';const next=document.getElementById('problemCard');if(next){next.classList.remove('hidden');next.classList.remove('lookup-hidden');next.style.display='';setTimeout(function(){next.scrollIntoView({behavior:'smooth',block:'start'});},120);}}
@@ -2798,9 +2836,9 @@ function beginErrorCodeDiagnosis(code){
   serviceReportContext.errorCode=raw;
   setServiceReportProblem("Error code "+raw);
 
-  // Error-code entry must go through the verified E52645 error catalog.
-  // Do not route it through diagnosticAnswer("error"), because that is not
-  // a diagnostic branch and would leave the technician on the entry screen.
+  // Exact M527 variants may use only extracted error entries that explicitly
+  // reference the M527 family. The renderer suppresses E52645-only overrides
+  // and filters parts by the verified M527 product variant.
   if(renderDocumentedErrorBranch(raw)){
     const resultCard=document.getElementById("resultCard");
     if(resultCard){
@@ -3249,7 +3287,12 @@ function renderDocumentedErrorBranch(raw){
   if(!hit || !r) return false;
 
   const x=hit.item, code=normalizeErrorCode(raw), activeModel=(currentMachineModel||verifiedModel||"E52645");
-  const technicianOverride=activeModel==="M776" ? null : getE52645TechnicianOverride(code,x);
+  const isM527=/^M527/i.test(activeModel);
+  const technicianOverride=(activeModel==="M776" || isM527) ? null : getE52645TechnicianOverride(code,x);
+  if(isM527 && !cwM527DocumentMatches(x,activeModel)){
+    r.innerHTML='<div class="pill">HP '+escapeHtml(activeModel)+'</div><h2>Entry Not Validated for This Model</h2><div class="status warn">The supplied HP text does not clearly establish this error entry for '+escapeHtml(activeModel)+'. No troubleshooting steps or parts are being shown.</div><button type="button" class="secondary" onclick="backToErrorCodeEntry()">← Back to Error Code</button><button type="button" class="secondary" onclick="startOverDiagnostic()">Start Another Diagnosis</button>';
+    return true;
+  }
   let html='<div class="pill">HP '+escapeHtml(activeModel)+'</div><div class="pill">Model verified</div>';
   html+=`<h2>Documented Error — ${escapeHtml(code)}</h2>
     <div class="status"><strong>✓ Found in the supplied HP documentation.</strong><br>
@@ -3298,7 +3341,7 @@ function renderDocumentedErrorBranch(raw){
     </div>`;
   }
 
-  const displayedParts=technicianOverride ? technicianOverride.parts : (cwUseM776Catalog() ? [...new Set(cwM776PartsForError(x).map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : []));
+  const displayedParts=technicianOverride ? technicianOverride.parts : (isM527 ? cwM527PartsForError(x,activeModel) : (cwUseM776Catalog() ? [...new Set(cwM776PartsForError(x).map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : (Array.isArray(x.parts) ? [...new Set(x.parts.map(v=>cleanDocumentedPart(v,activeModel)).filter(Boolean))] : [])));
   if(displayedParts.length){
     html+=`<div id="documentedPartsSection" class="hidden">
       <h3>Parts Specifically Mentioned by the Manual</h3>
@@ -5712,7 +5755,7 @@ document.addEventListener("click",(event)=>{
 </script>
 <script id="cw-update-check-real">
 (function(){
-  const CURRENT = '269';
+  const CURRENT = '270';
   function cwSyncBuildLabels(){
     const label='Build '+CURRENT;
     document.title='Copier Wizard — '+label;
