@@ -3158,9 +3158,18 @@ function findDocumentedError(code, preferredItem){
 
  // A search result can represent one of several documented procedures for
  // the same numerical code. Honor the specific result the technician chose.
- if(preferredItem && catalog.includes(preferredItem)){
-   const aliases=extractErrorCodeAliases(preferredItem.code);
-   if(aliases.includes(c)) return {item:preferredItem,matched:aliases.some(a=>/[XYZ*]/.test(a))?'pattern':'exact'};
+ if(preferredItem){
+   // The active catalog may return cloned records, so validate the chosen
+   // result by its stable code/description rather than object identity.
+   const preferredCode=String(preferredItem.code||"");
+   const preferredDesc=String(preferredItem.desc||preferredItem.description||"");
+   const selected=catalog.find(item=>
+     String(item.code||"")===preferredCode &&
+     String(item.desc||item.description||"")===preferredDesc);
+   if(selected){
+     const aliases=extractErrorCodeAliases(selected.code);
+     if(aliases.includes(c)) return {item:selected,matched:aliases.some(a=>/[XYZ*]/.test(a))?'pattern':'exact'};
+   }
  }
 
  // First check every exact code explicitly represented in a combined
