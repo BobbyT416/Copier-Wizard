@@ -12,6 +12,16 @@
 
 
 
+
+## 0I. Correct M527 31-series regression assertion — 2026-10-20
+
+- Re-inspected the live `development` source and `cw-manual-data.js`. The shared data layer contains individual M527-family 31-series records including `31.01.47` and `31.03.30`; `31.03.37` is not present as a separate record in the stored catalog. Do not invent its detailed diagnostic content or assume applicability to M527 without validating the CPMD passage.
+- `cwM527DocumentMatches()` explicitly permits all `31.xx.xx` records, and `cwActiveErrorCatalog()` applies that filter when the selected model begins with M527. The numerical search uses this active catalog and should match a prefix such as `31`.
+- Found the M527 prefix-search regression assertion used a wrongly escaped regular expression (`/31\\\\./` in the JavaScript source), which would not match a normal code such as `31.03.30`. Corrected it to `/31\\./` so it actually verifies visible 31-series results.
+- Test-file commit: `0e500bc24786eef33b3a5401ac42768e118d4bc1` on `development`.
+- Automated result for this commit: **not yet verified**. Check the resulting GitHub Actions run before claiming success. No test-site release was made and production remains untouched.
+- Next: inspect the CI result; if green, run/review the actual M527 list against the CPMD and identify whether remaining live-site behavior reflects stale test-site files or another runtime issue. Do not call the issue fixed until the displayed list is verified.
+
 ## 0H. Fix browser-test state contamination before M527 verification (2026-10-20)
 
 - Inspected failed Actions run [39365402765](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39365402765). HTML/JavaScript/build/safety checks passed; Playwright failed at the product-number-only T3U55A test because the earlier picker-flow unit check left the machine selector on M527. T3U55A was then correctly rejected as a mismatch, leaving `#problemCard` hidden. This is a test isolation defect, not evidence that the product-number feature itself is broken.
