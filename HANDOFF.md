@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 288 passed GitHub Actions/Playwright; concrete CPMD code inventory reconciled; no-step audit continues)
+**Updated:** 2026-10-20 (Build 288 passed; full-PDF CPMD extraction found body-only codes; 7 concrete codes still uncovered)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -15,6 +15,14 @@
 
 
 
+## 0V. Full-PDF CPMD code scan — correction to TOC-only count (2026-10-20)
+
+- The first inventory counted codes found in the 303-entry table of contents. A later full-text extraction of the complete M527 CPMD PDF found **1,147 code-like occurrences, 550 unique code-like tokens: 403 unique concrete tokens and 147 wildcard/pattern tokens**. Treat this as the initial full-body regex inventory; it still needs validation against message headings and grouped procedures.
+- Current `cw-manual-data.js` has **211 unique concrete code tokens and 62 wildcard/pattern tokens**. When the app's actual wildcard rules are applied, **396 of the 403 concrete tokens are reachable through an exact code or a stored wildcard pattern**. This is better than the TOC-only count but is not complete.
+- **Seven concrete codes are not currently covered by exact or wildcard matching:** `10.22.15`, `10.23.60`, `10.23.70`, `10.99.31`, `13.E1.D3`, `82.00.00`, and `82.73.45`. Add or group them only after reading their exact CPMD entries and verifying the applicable procedure. `82.73.45` appears to belong with the existing `82.73.46/.47` disk-cleaning event group and must be added there.
+- The earlier statement that all 210 concrete codes were covered referred only to the TOC-derived list. Do not repeat it as a full-PDF completeness claim. Full-body extraction is now the authoritative audit path; the TOC list remains useful for heading structure and grouping.
+- Next: resolve the seven uncovered codes; then continue auditing body-only subcodes, wildcard families, and no-step records to ensure each code either reaches its correct documented procedure, an explicit no-action/event-log message, or a clear no-procedure result. Do not use the wildcard match alone as proof that the displayed procedure is appropriate for every subcode.
+
 ## 0U. Build 288 — restore three more documented procedures (2026-10-20)
 
 - **Build 288 passed** GitHub Actions validation and Playwright browser smoke tests in run `39518612420`.
@@ -27,7 +35,7 @@
 ## 0T. Build 287 — all concrete CPMD code tokens present; continued procedure audit (2026-10-20)
 
 - **Build 287 passed** GitHub Actions validation and Playwright smoke tests in run `39518279743`. The branch remains `development`; no production merge or test-site deployment was made.
-- The CPMD inventory contains 303 TOC records and 210 concrete numerical code tokens. A fresh comparison against `cw-manual-data.js` now finds **210/210 concrete tokens represented in stored code fields**. This means the concrete code inventory is reconciled; it does not mean every entry applies to every model or that every procedure is complete.
+- The TOC-derived inventory contains 303 records and 210 concrete numerical code tokens. A comparison against `cw-manual-data.js` found **210/210 TOC concrete tokens represented in stored code fields**. This is TOC-only coverage, not the full PDF body inventory; see the later full-text extraction correction in section 0V.
 - Added source-backed M527-family records for `65.80.A0/A1` output-accessory failure and `82.73.46/.47` disk-cleaning failure. The 65.80 procedure is visible only after product-variant verification for M527c/f/z; the correct accessory part is B5L46-60102. The 82.73 entries are explicitly marked event-log-only, include the documented power-cycle/firmware/Preboot Format Disk sequence and data-loss warning, and withhold any HDD replacement part not established by that CPMD entry.
 - Corrected variant-specific part filtering so an exact verified product variant is used when filtering parts. Generic model label `M527` is not treated as sufficient proof that a variant-specific part applies.
 - Added a visible warning when the source does not establish a single verified part number. This is used for the conflicting Tray 2/4/5 roller-kit references and the unverified HDD configuration instead of guessing.
