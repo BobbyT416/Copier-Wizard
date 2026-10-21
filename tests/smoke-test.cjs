@@ -279,6 +279,26 @@ const server = http.createServer((req, res) => {
       'supported M527 should use the normal troubleshooting flow, not the unsupported-model manual-search fallback');
     await page.evaluate(() => returnToMachineSelection());
     console.log('✓ Model-only M527 verification, scoped product choices, and continuation flow');
+
+    // Any selected model without an exact product number must get the same
+    // shared lookup entry point; it must never fall into an M527-specific screen.
+    await page.locator('#machineType').selectOption('mono');
+    await page.locator('#machineFamily').selectOption('m501-family');
+    await page.locator('#model').selectOption('M528');
+    const fwOptionsForM528 = await page.locator('#firmwareLevel option').evaluateAll(options => options.map(o => o.value).filter(Boolean));
+    if (fwOptionsForM528.length === 1) await page.locator('#firmwareLevel').selectOption(fwOptionsForM528[0]);
+    await page.getByRole('button', { name: 'Verify Machine' }).click();
+    const m528SelectionText = await page.locator('#verify').innerText();
+    assert.match(m528SelectionText, /exact variant not verified/i, 'M528 without product number should clearly remain unverified');
+    assert.match(m528SelectionText, /Continue to Lookup Options/i, 'M528 without product number must offer shared lookup options');
+    assert.doesNotMatch(m528SelectionText, /M527 family|Search M527/i, 'M528 must not receive M527-specific guidance');
+    await page.locator('#verify').getByRole('button', { name: /Continue to Lookup Options/i }).click();
+    await page.locator('#problemCard').waitFor({ state: 'visible' });
+    assert.ok(await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Numerical Error Code' }).isVisible(), 'M528 should reach the shared numerical-code lookup');
+    assert.ok(await page.locator('#problemCard .lookup-choice').filter({ hasText: 'Parts Lookup' }).isVisible(), 'M528 should see the shared parts lookup entry, which still enforces exact product verification');
+    await page.evaluate(() => returnToMachineSelection());
+    console.log('✓ M528 and unverified models use the shared lookup entry point');
+
     
     // Clearing the product number or changing manual machine selectors must
     // invalidate any previously verified machine and hide its diagnostic path.
