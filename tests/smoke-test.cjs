@@ -286,7 +286,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#machineFamily').selectOption('m501-family');
     await page.locator('#model').selectOption('M528');
     const fwOptionsForM528 = await page.locator('#firmwareLevel option').evaluateAll(options => options.map(o => o.value).filter(Boolean));
-    if (fwOptionsForM528.length === 1) await page.locator('#firmwareLevel').selectOption(fwOptionsForM528[0]);
+    if (fwOptionsForM528.length > 0) await page.locator('#firmwareLevel').selectOption(fwOptionsForM528[0]);
     await page.getByRole('button', { name: 'Verify Machine' }).click();
     const m528SelectionText = await page.locator('#verify').innerText();
     assert.match(m528SelectionText, /exact variant not verified/i, 'M528 without product number should clearly remain unverified');
