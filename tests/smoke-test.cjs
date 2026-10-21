@@ -285,6 +285,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#machineType').selectOption('mono');
     await page.locator('#machineFamily').selectOption('m501-family');
     await page.locator('#model').selectOption('M528');
+    await page.waitForFunction(() => [...document.querySelectorAll('#firmwareLevel option')].some(o => o.value));
     const fwOptionsForM528 = await page.locator('#firmwareLevel option').evaluateAll(options => options.map(o => o.value).filter(Boolean));
     if (fwOptionsForM528.length > 0) await page.locator('#firmwareLevel').selectOption(fwOptionsForM528[0]);
     await page.getByRole('button', { name: 'Verify Machine' }).click();
