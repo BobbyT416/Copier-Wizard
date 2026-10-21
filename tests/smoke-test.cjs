@@ -653,6 +653,23 @@ const server = http.createServer((req, res) => {
       'informational no-action codes must not enter a repair-step flow');
     console.log('✓ Explicit HP no-action recommendations are preserved as informational outcomes');
 
+    // 82.00.00 is covered by HP's documented 82.* family procedure.
+    await page.evaluate(() => {
+      currentMachineModel = 'M527';
+      verifiedModel = 'M527';
+      const input = document.getElementById('errorCodeLookup');
+      input.value = '82.00.00';
+      searchErrorCodes(input.value);
+      const index = (window._errorLookupMatches || []).findIndex(item =>
+        extractErrorCodeAliases(item.code).includes('82.*'));
+      if (index < 0) throw new Error('82.00.00 did not resolve to the documented 82.* family guidance');
+      window.cwSelectErrorLookup(index);
+    });
+    await page.locator('#result').getByText(/reconnect the network cable/i).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /Replace the formatter/i,
+      '82.00.00 should retain the documented onsite 82.* escalation step');
+    console.log('✓ 82.00.00 resolves to the documented 82.* family procedure');
+
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
     console.log('✓ No uncaught browser JavaScript errors');
   } finally {
