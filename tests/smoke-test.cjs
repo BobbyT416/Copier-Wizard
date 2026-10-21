@@ -643,15 +643,25 @@ const server = http.createServer((req, res) => {
     await page.locator('#result h2').filter({ hasText: 'Documented Error — 10.00.01' }).waitFor({ state: 'visible' });
     console.log('✓ Recovered supply recommendations and exact grouped-code aliases');
 
-    // If the source explicitly says "No action necessary", display that as
-    // an informational outcome rather than calling it a missing procedure.
-    await page.evaluate(() => beginErrorCodeDiagnosis('32.1C.40'));
-    await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
-    assert.match(await page.locator('#result').innerText(), /explicitly states that no action is necessary/i,
-      'explicit HP no-action recommendations must be preserved');
-    assert.equal(await page.locator('#documentedStepList').count(), 0,
-      'informational no-action codes must not enter a repair-step flow');
-    console.log('✓ Explicit HP no-action recommendations are preserved as informational outcomes');
+    // These CPMD entries explicitly say no action is necessary. Verify that
+    // each remains an informational stop, not a missing-procedure or repair flow.
+    for (const code of [
+      '32.1C.40', '32.1C.41', '32.1C.42', '32.1C.43', '32.1C.44',
+      '32.1C.45', '32.1C.47', '32.1C.56', '32.1C.57', '32.1C.58',
+      '32.1C.60'
+    ]) {
+      await page.evaluate(code => {
+        currentMachineModel = 'M527';
+        verifiedModel = 'M527';
+        beginErrorCodeDiagnosis(code);
+      }, code);
+      await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
+      assert.match(await page.locator('#result').innerText(), /explicitly states that no action is necessary/i,
+        `${code} must preserve the CPMD no-action outcome`);
+      assert.equal(await page.locator('#documentedStepList').count(), 0,
+        `${code} must not enter a repair-step flow`);
+    }
+    console.log('✓ Eleven CPMD informational backup/restore codes preserve their no-action stop state');
 
     // 82.00.00 is covered by HP's documented 82.* family procedure.
     await page.evaluate(() => {
