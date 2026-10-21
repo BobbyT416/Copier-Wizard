@@ -558,19 +558,38 @@ const server = http.createServer((req, res) => {
       'disk-cleaning failure must not guess which HDD option is installed');
     console.log('✓ Variant-gated output-accessory and event-log disk-cleaning procedures');
 
-    // No-procedure codes remain usable: show a concise terminal state and a clear way back,
-    // rather than leaving the technician with a hidden outcome/parts panel.
+    // The audit found a documented door/cover check for 13.00.EE; it must not
+    // remain mislabeled as a missing procedure.
+    await page.evaluate(() => {
+      currentMachineModel = 'M527';
+      verifiedModel = 'M527';
+      beginErrorCodeDiagnosis('13.00.EE');
+    });
+    await page.locator('#documentedStepList').waitFor({ state: 'visible' });
+    assert.match(await page.locator('#documentedStepList').innerText(), /Make sure that all of the doors and covers are closed/i,
+      '13.00.EE must show the CPMD door/cover check');
+
+    // Exercise the generic no-procedure UI with a test-only fixture, not a real
+    // HP code whose CPMD procedure may have been missed by extraction.
     await page.evaluate(() => {
       currentMachineModel = 'E52645';
       verifiedModel = 'E52645';
-      beginErrorCodeDiagnosis('13.00.EE');
+      window.CW_MANUAL_DATABASE.errors.push({
+        code: '88.88.88',
+        desc: 'Test-only no-procedure fixture',
+        summary: ['This test fixture intentionally has no troubleshooting procedure.'],
+        steps: [],
+        parts: []
+      });
+      beginErrorCodeDiagnosis('88.88.88');
     });
     await page.locator('#result').getByText(/No step-by-step procedure available/i).waitFor({ state: 'visible' });
     assert.ok(await page.locator('#result').getByRole('button', { name: /Back to Error Code/i }).isVisible(),
-      'codes without extracted procedures must retain a clear return path');
+      'no-procedure results must retain a clear return path');
     assert.equal(await page.locator('#documentedOutcome').count(), 0,
       'no-procedure results must not expose a hidden procedure-completion outcome');
-    console.log('✓ Codes without procedures remain searchable and show a clear no-procedure result');
+    await page.evaluate(() => window.CW_MANUAL_DATABASE.errors.pop());
+    console.log('✓ Documented 13.00.EE procedure and generic no-procedure fallback');
 
     // CPMD review recovered documented actions that were missing from the
     // extracted data. Ensure the app shows them rather than the no-procedure fallback.
