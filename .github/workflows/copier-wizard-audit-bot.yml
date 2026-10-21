@@ -1,0 +1,111 @@
+name: Copier Wizard Audit Bot
+
+on:
+  schedule:
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: copier-wizard-audit-bot
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Scheduled development audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out development only
+        uses: actions/checkout@v4
+        with:
+          ref: development
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build audit report
+        id: report
+        shell: bash
+        run: |
+          mkdir -p audit-report
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const version = JSON.parse(fs.readFileSync('version.json', 'utf8'));
+          const data = fs.readFileSync('cw-manual-data.js', 'utf8');
+          const test = fs.readFileSync('tests/smoke-test.cjs', 'utf8');
+          const current = html.match(/const CURRENT\s*=\s*['"]([^'"]+)['"]/);
+          const recordCount = (data.match(/\bcode\s*:/g) || []).length;
+          const noStepCount = (data.match(/\bsteps\s*:\s*\[\s*\]/g) || []).length;
+          const testCount = (test.match(/\btest\s*\(/g) || []).length;
+          const build = String(version.build ?? version.version ?? '(missing)');
+          const htmlBuild = current ? current[1] : '(not found)';
+          const lines = [
+            '# Copier Wizard Scheduled Audit',
+            '',
+            '- Branch: development (read-only; this job never commits or deploys)',
+            '- Commit: ' + (process.env.GITHUB_SHA || '(unknown)'),
+            '- Build in version.json: ' + build,
+            '- Build marker in index.html: ' + htmlBuild,
+            '- Build marker matches: ' + String(build === htmlBuild),
+            '- Approximate code-field count (static text scan): ' + recordCount,
+            '- Empty steps-array occurrences (structural count only; not proof of missing procedures): ' + noStepCount,
+            '- Approximate smoke-test declarations (static text scan): ' + testCount,
+            '',
+            '## Interpretation',
+            '',
+            'These are structural indicators, not a source-completeness verdict. Every code and procedure must be checked against the applicable HP CPMD/service documentation. Empty step arrays can represent informational/event-log-only entries or genuinely missing procedures.',
+            '',
+            'The browser regression suite below is the functional check. A failure requires review of the job logs; this scheduled job does not change application code.'
+          ];
+          fs.writeFileSync('audit-report/summary.md', lines.join('\n') + '\n');
+          if (build !== htmlBuild) {
+            console.error('Build mismatch: version.json=' + build + ', index.html=' + htmlBuild);
+            process.exitCode = 1;
+          }
+          console.log(lines.join('\n'));
+          NODE
+
+      - name: Install Playwright
+        if: success()
+        run: npm install --no-save playwright
+
+      - name: Install Chromium
+        if: success()
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser regression suite
+        id: browser-tests
+        if: success()
+        run: node tests/smoke-test.cjs
+
+      - name: Record outcome
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo
+            echo '## Automated result'
+            echo
+            if [ "${{ steps.browser-tests.outcome }}" = "success" ]; then
+              echo 'Browser regression suite: **PASSED**'
+            elif [ "${{ steps.browser-tests.outcome }}" = "failure" ]; then
+              echo 'Browser regression suite: **FAILED** — inspect this workflow run log.'
+            else
+              echo 'Browser regression suite: **NOT RUN** — an earlier step failed or was skipped.'
+            fi
+          } >> audit-report/summary.md
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: copier-wizard-audit-report
+          path: audit-report/summary.md
+          if-no-files-found: warn
+          retention-days: 30
