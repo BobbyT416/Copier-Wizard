@@ -1,6 +1,6 @@
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 287 passed GitHub Actions/Playwright; concrete CPMD code inventory reconciled; no-step audit continues)
+**Updated:** 2026-10-20 (Build 288 passed GitHub Actions/Playwright; concrete CPMD code inventory reconciled; no-step audit continues)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
@@ -14,6 +14,15 @@
 
 
 
+
+## 0U. Build 288 — restore three more documented procedures (2026-10-20)
+
+- **Build 288 passed** GitHub Actions validation and Playwright browser smoke tests in run `39518612420`.
+- CPMD source review showed `13.00.EE` (Unknown door open) does have a documented action: make sure all doors and covers are closed. Added that step and removed it as the no-procedure test case.
+- Restored the `20.00.00` insufficient-memory recommendations (print transferred data with possible data loss, reduce page complexity, add compatible product memory) and the `21.00.00` page-too-complex action (continue with possible data loss). These are now source-backed steps rather than no-procedure results.
+- The generic no-procedure UI is now tested with a test-only fixture instead of an actual HP code whose procedure was missed during extraction. This avoids encoding a false claim about the CPMD.
+- Shared database remains at **274 error records** and **47 records without non-empty `steps` arrays**. The count includes no-action/informational entries and non-M527 patterns, so continue the source-by-source audit rather than treating all 47 as gaps.
+- Next source-audit tranche: mark `32.1C.40-.47` and `.56-.60` informational/no-action where the CPMD explicitly says so; restore the remaining documented actions in the `33.02`, `33.05`, `40.*`, `66.00.50`, and `99.*` records. Keep accessory/firmware/HDD procedures gated to supported models and withhold unverified parts.
 
 ## 0T. Build 287 — all concrete CPMD code tokens present; continued procedure audit (2026-10-20)
 
