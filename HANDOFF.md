@@ -1,3 +1,12 @@
+## 0W. Global verification-to-lookup dead-end fix (2026-10-21)
+
+- Committed only to `development`; production `main` was not changed.
+- Root issue: the shared `verifyModel()` branch for recognized product numbers on models whose guided workflow is not enabled displayed an M527-specific manual search and did not offer the normal shared lookup choices. That made verification a practical dead end for other models in the same or other families.
+- Commit `f49d3636bc81f065101d583a545b81614c3156fb`: replaced the M527-only search instructions with a model-neutral verification result and an explicit **Continue to Lookup Options** action. The verified identity is retained for the shared screen; guided repair procedures remain disabled for models whose workflow is not validated.
+- Commit `ce2562320608e7525521db24580ae5c2b39c3ed8`: added a family-wide browser regression check asserting unsupported catalog products reach the shared lookup options, retain a Change Machine route, and are not shown M527-specific instructions. This test also ensures the shared lookup screen does not imply that unsupported guided repairs are enabled.
+- GitHub Actions run `39586839597` (fix) passed. Run `39586854131` (regression tests) passed, including HTML/JavaScript/safety validation and Playwright browser smoke tests.
+- This resolves the verified-but-unsupported **navigation dead end** in the current shared UI. It does **not** mean every family has validated guided repair branches. Continue the broader audit of supported-model contracts, error-code/message lookups, source applicability, parts filtering, repair instructions, service report and back-navigation across all families. Test the reported adjacent mono-family device specifically when a fresh development deployment is available. Do not deploy or merge to `main` without explicit approval.
+
 # Copier Wizard — Permanent Project Handoff
 
 **Updated:** 2026-10-20 (Build 288 passed; full-PDF CPMD extraction found body-only codes; 7 concrete codes still uncovered)
