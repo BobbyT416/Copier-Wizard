@@ -666,8 +666,13 @@ const server = http.createServer((req, res) => {
       window.cwSelectErrorLookup(index);
     });
     await page.locator('#result').getByText(/reconnect the network cable/i).waitFor({ state: 'visible' });
-    assert.match(await page.locator('#result').innerText(), /Replace the formatter/i,
-      '82.00.00 should retain the documented onsite 82.* escalation step');
+    const familyResult = await page.locator('#result').innerText();
+    assert.match(familyResult, /This code is covered by the documented pattern 82\.\*/i,
+      '82.00.00 must resolve to the documented 82.* family entry');
+    assert.match(familyResult, /Errors in the 82\.\* family indicate a problem with an external I\/O device/i,
+      '82.* family guidance must be shown in the result');
+    assert.match(familyResult, /reconnect the network cable/i,
+      '82.* family result must include its documented initial troubleshooting action');
     console.log('✓ 82.00.00 resolves to the documented 82.* family procedure');
 
     assert.deepEqual(pageErrors, [], 'Browser should not emit uncaught JavaScript errors');
