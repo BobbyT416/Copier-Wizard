@@ -556,6 +556,25 @@ const server = http.createServer((req, res) => {
       '82.73.47 must guide the technician to the documented disk-cleaning recovery step after confirming persistence');
     assert.match(await page.locator('#result').innerText(), /Part number withheld pending verification/i,
       'disk-cleaning failure must not guess which HDD option is installed');
+    // 82.73.45 is a distinct event-log-only success outcome, not the 82.73.46/.47 failure procedure.
+    await page.evaluate(() => {
+      currentMachineModel = 'M527';
+      verifiedModel = 'M527';
+      const input = document.getElementById('errorCodeLookup');
+      input.value = '82.73.45';
+      searchErrorCodes(input.value);
+      const index = (window._errorLookupMatches || []).findIndex(item =>
+        extractErrorCodeAliases(item.code).includes('82.73.45'));
+      if (index < 0) throw new Error('82.73.45 not found as an exact searchable code');
+      window.cwSelectErrorLookup(index);
+    });
+    await page.locator('#result h2').filter({ hasText: 'Documented Error — 82.73.45' }).waitFor({ state: 'visible' });
+    await page.locator('#result').getByText(/No technician action required/i).waitFor({ state: 'visible' });
+    assert.match(await page.locator('#result').innerText(), /explicitly states that no action is necessary/i,
+      '82.73.45 must preserve the CPMD no-action outcome instead of showing the disk-cleaning failure steps');
+    assert.equal(await page.locator('#documentedStepList').count(), 0,
+      '82.73.45 success event must not enter the 82.73.46/.47 failure procedure');
+    console.log('✓ 82.73.45 is searchable and correctly shown as an informational no-action event');
     console.log('✓ Variant-gated output-accessory and event-log disk-cleaning procedures');
 
     // The audit found a documented door/cover check for 13.00.EE; it must not
