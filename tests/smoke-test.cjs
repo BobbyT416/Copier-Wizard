@@ -170,11 +170,15 @@ const server = http.createServer((req, res) => {
         assert.equal(await page.locator('#problemCard').isVisible(), true, item.product + ' should open diagnostics for an enabled family');
       } else {
         assert.match(verifyText, /Machine Verified — Guided Troubleshooting Not Yet Enabled/i, item.product + ' should confirm identity without claiming unsupported diagnostics');
-        assert.equal(await page.locator('#problemCard').isVisible(), false, item.product + ' must not unlock diagnostics for a family that is not enabled');
+        assert.equal(await page.locator('#problemCard').isVisible(), false, item.product + ' must not automatically unlock guided diagnostics for a family that is not enabled');
         const identityOnlyStatus = page.locator('.status').filter({ hasText: 'Machine Verified — Guided Troubleshooting Not Yet Enabled' });
         await identityOnlyStatus.waitFor({ state: 'visible' });
-        assert.equal(await identityOnlyStatus.getByRole('button', { name: 'Browse Product Numbers' }).count(), 0, item.product + ' should not offer product browsing after machine verification');
+        assert.equal(await identityOnlyStatus.getByRole('button', { name: /Continue to Lookup Options/i }).count(), 1, item.product + ' should offer the shared lookup workflow after verification');
         assert.equal(await identityOnlyStatus.getByRole('button', { name: 'Change Machine' }).count(), 1, item.product + ' should retain a clear exit from the verified-but-unsupported state');
+        assert.doesNotMatch(await identityOnlyStatus.innerText(), /M527 family|M527 error codes|Search M527/i, item.product + ' must not show M527-specific instructions for another model');
+        await identityOnlyStatus.getByRole('button', { name: /Continue to Lookup Options/i }).click();
+        await page.locator('#problemCard').waitFor({ state: 'visible' });
+        assert.ok(await page.locator('#problemCard .lookup-choice').count() > 0, item.product + ' should reach shared lookup options without enabling unvalidated repair procedures');
       }
     }
     console.log('✓ Family-wide contract: product-number-only verification passed for ' + catalogProducts.length + ' catalog entries');
