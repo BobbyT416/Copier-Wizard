@@ -1,3 +1,57 @@
+## 0X. Verified repository state and next action (2026-10-23)
+
+This section is the current snapshot and supersedes older summary lines below where their build numbers or open-item lists are stale. Historical sections are retained for traceability.
+
+### Branches, versions, and test evidence
+
+- Repository: `BobbyT416/Copier-Wizard`.
+- Working branch `development` HEAD: `0fbb41a4a83a02e8b6e95dda16803f8982fce92d` — “test: wait for M528 firmware choices before shared lookup check”, committed 2026-10-21 12:04:48 UTC.
+- Current development build is **288**. The `CURRENT` marker in `development/index.html` and `development/version.json` both report 288.
+- Latest development checks: [GitHub Actions run 39596768798](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39596768798) completed **success** on the current development HEAD on 2026-10-21. The validation job passed build-marker consistency, inline JavaScript parsing (15 inline blocks), required safety/navigation checks, and Playwright browser smoke tests.
+- Verified smoke-test evidence from that run:
+  - Product-number-only identification passed for **75 catalog entries**. The app inferred type/family/model and reached the correct verified identity state. Supported workflows displayed “Machine Verified — App Ready”; unsupported workflows were kept identity-only and offered shared lookup rather than being falsely enabled for guided repair.
+  - Unknown product numbers cleared prior verification rather than leaving stale diagnostics enabled.
+  - M528/unverified-machine shared lookup navigation passed after the regression test was corrected to choose the firmware option.
+  - M776dn/T3U55A and M776zs/T3U56A selected the correct distinct parts and repair procedures for 59.00.03, reached the appropriate M13 guidance, and returned to diagnosis.
+  - Service report could be generated before marking the repair resolved and included the recommended part number.
+  - Duplicate CPMD code contexts remained selectable; 82.00.00 reached the documented 82.* guidance; 82.73.45 remained a no-action informational event; 13.00.EE showed its documented door/cover check; backup/restore no-action outcomes remained distinct from repair steps.
+  - The browser reported no uncaught JavaScript errors.
+- Intermediate failures in the M528 shared-lookup test were followed by commits selecting the firmware option and waiting for the choice control; the latest run above passed. Do not treat those earlier failures as the current result.
+- This is automated, headless browser evidence for the development source. It is **not** a manual test by the user and does **not** prove that Build 288 is deployed to a live preview.
+
+### Current main/test-site mismatch — do not silently “fix” on main
+
+The current GitHub file contents show version-marker drift:
+- `main/index.html` has `CURRENT='258'`, while `main/version.json` reports 257.
+- `main/test/index.html` has `CURRENT='290'`, while `main/test/version.json` reports 291.
+- The latest main HEAD is `ea16c5b288cbe5374d9a74ba69a633fe10cddab4` (“Set test site version to build 291”). Its last commit changed only `test/version.json`; it did not change the test HTML to Build 291.
+- The GitHub Pages workflow for that main commit, [run 39516721251](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39516721251), completed successfully. That confirms the deployment job completed, but does not reconcile the HTML/version-marker mismatch or independently prove which assets a browser is serving.
+- This handoff update is being made on `development` only. Do not change `main`, its production root, or its `test/` folder as part of this task.
+
+### Recent development changes after the older handoff notes
+
+- `f49d3636bc81f065101d583a545b81614c3156fb`: replaced a model-specific dead end after verifying unsupported models with a model-neutral “Continue to Lookup Options” path. The verified identity is retained; guided repair remains disabled where not validated. CI run 39586839597 passed.
+- `ce2562320608e7525521db24580ae5c2b39c3ed8`: added browser regression coverage for that shared lookup path. CI run 39586854131 passed.
+- `78ce58f533f305a72503e3d470c066c5beec55ba`: routed selected models into shared lookup options. Follow-up M528 regression test was refined in `b6c9978`, `9431bf2`, and `0fbb41a`; final run 39596768798 passed.
+- `37b5304e8a0e5a904e8de58f7a4110571696b176` and associated data/test commits preserved the explicit no-action outcome for 32.1C.46.
+- Current development data contains entries for 82.00.00, 82.73.45, 10.23.60, 10.23.70, and 10.99.31. The latest smoke suite behaviorally checks 82.00.00 and 82.73.45; mere presence of the three 10-series tokens is only a structural observation, not proof that each procedure/part recommendation has been fully reconciled to the applicable CPMD.
+- The test-site CPMD catalog remains a separate artifact: the older audit counted 336 records, 330 unique tokens, and 6 duplicate records in `test/cw-cpmd-catalog.js`; all imported records had empty `steps` arrays. Those structural counts do not establish 336 actionable procedures or model applicability. Keep nonvalidated codes searchable if intended, but block unsupported diagnostic steps and parts until source applicability is reviewed.
+
+### Known risks / unresolved work
+
+1. **Product-number interaction needs a precise UX check.** The development implementation’s `productNumberSelectionChanged()` finds a known product, fills type/family/model, and calls `verifyModel()`; the automated test proves this after the input's `change` event (the test tabs out of the field). The user's requested behavior is that type/family/model are optional and entering a known product number takes the user straight to “Machine Verified.” This is substantially covered in development and tested across all 75 catalog entries, but the suite does not prove verification happens while the user is still typing before blur/change. It also intentionally retains an explicit Continue button: “Continue to Troubleshooting” for supported models and “Continue to Lookup Options” for identity-only models. On resumption, confirm whether the intended experience is immediate verification on a complete recognized input and/or automatic scrolling; adjust the event behavior only if needed, with unknown/mismatched product safety preserved.
+2. **Guided repair coverage is not universal.** Product-number identity verification for 75 catalog entries is not equivalent to 75 validated guided workflows. Continue gating unsupported models, variants, parts, and removal/replacement procedures.
+3. **CPMD completeness/applicability audit remains open.** Earlier full-PDF extraction found 397 concrete numerical tokens and 96 wildcard/pattern tokens in the scoped Chapter 6 scan, with 395 concrete tokens reachable through exact or wildcard search rules at that point. Later commits added coverage for 82.00.00 and 82.73.45, but search reachability does not prove that each code resolves to the right procedure. Re-run the comparison against the current data and validate model/variant applicability, action text, no-action outcomes, and part references. The old 0V “two uncovered codes” task is superseded for code presence by the later tests; do not continue to list those two as still absent.
+4. **Source conflicts must remain blocked.** Preserve the existing handoff rules for CPMD/catalog disagreements (including the M776 59.00.00 pickup-assembly discrepancy and E52645 part conflicts): flag the conflict and withhold removal/replacement or a definitive part recommendation until the applicable source is reconciled.
+5. **Audit bot schedule is not verified as operational.** `.github/workflows/copier-wizard-audit-bot.yml` exists on `development` and defines a daily schedule, but no run of that workflow was found in the observed Actions history. Because scheduled GitHub workflows run from the default branch and this workflow file is only on `development`, do not claim a daily audit is running unless a real scheduled run is observed. The regular development push-check workflow is verified and passed.
+6. **Preview is not aligned to development.** Build 288 has not been published to the current test path in this task. The main/test mismatch above must be resolved only through a separately authorized preview action; never ask the user to test Build 288 at a URL that still serves a different artifact.
+
+### Next action
+
+1. Continue on `development` only. First perform a focused review of the product-number UX against the user's requirement: a recognized product number alone should infer the other identity fields and reach the verified state without requiring the user to choose type, family, or model. Add/adjust a regression test for the exact intended event timing and scroll/continuation behavior, including unknown and mismatched numbers.
+2. Re-run the full Playwright suite and update the build marker only with the corresponding code/test change; record the resulting CI run SHA and outcome here.
+3. Before requesting hands-on testing, obtain authorization for a preview publication that does not alter production `main`; the existing test artifact and version markers currently disagree. Do not merge/deploy to production without explicit approval.
+
 ## 0W. Global verification-to-lookup dead-end fix (2026-10-21)
 
 - Committed only to `development`; production `main` was not changed.
@@ -9,11 +63,11 @@
 
 # Copier Wizard — Permanent Project Handoff
 
-**Updated:** 2026-10-20 (Build 288 passed; full-PDF CPMD extraction found body-only codes; 7 concrete codes still uncovered)
+**Updated:** 2026-10-23 (verified development snapshot: Build 288; latest CI run 39596768798 passed; see section 0X for current branch/build status)
 **Repository:** https://github.com/BobbyT416/Copier-Wizard  
 **Working branch:** `development`  
 **Production branch:** `main`  
-**Current development build:** **283** (`development/version.json` and `index.html` `CURRENT` marker report 283). **Latest test-site artifact:** **290** (`main/test/version.json` reports 290). These are different branches/artifacts: Build 290's test HTML imports `test/cw-cpmd-catalog.js`; production root remains protected. Do not claim Build 283 or Build 290 passed CI/browser tests or was deployed unless verified. Production `main` must remain untouched unless the user explicitly approves.)  
+**Current development build:** **288** (`development/index.html` `CURRENT` and `development/version.json` both report 288). **Test-site HTML marker:** **290** (`main/test/index.html`); **test-site version marker:** **291** (`main/test/version.json`). **Production-root HTML marker:** **258** (`main/index.html`); **production-root version marker:** **257** (`main/version.json`). These GitHub file contents disagree; see section 0X. Do not modify `main` or production as part of this handoff update. Do not claim that the development build is live at the test URL without independently verifying the served artifact.)  
 **Purpose:** A durable checkpoint for continuing Copier Wizard work across chats. Keep this file current after meaningful milestones and before a chat ends when possible.
 
 > Accuracy rule: distinguish proposed, committed, automated-tested, deployed, and manually tested work. Do not claim tests or deployment passed without checking evidence. User prefers concrete progress over repeated plans. Continue independently until a genuine user decision or hands-on test is required.
