@@ -5,9 +5,9 @@ This section is the current snapshot and supersedes older summary lines below wh
 ### Branches, versions, and test evidence
 
 - Repository: `BobbyT416/Copier-Wizard`.
-- Working branch `development` HEAD: `0fbb41a4a83a02e8b6e95dda16803f8982fce92d` — “test: wait for M528 firmware choices before shared lookup check”, committed 2026-10-21 12:04:48 UTC.
+- Latest application-code commit before this handoff-only update: `0fbb41a4a83a02e8b6e95dda16803f8982fce92d` — “test: wait for M528 firmware choices before shared lookup check”, committed 2026-10-21 12:04:48 UTC. The handoff documentation is updated separately on `development`; no application source was changed by the handoff update.
 - Current development build is **288**. The `CURRENT` marker in `development/index.html` and `development/version.json` both report 288.
-- Latest development checks: [GitHub Actions run 39596768798](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39596768798) completed **success** on the current development HEAD on 2026-10-21. The validation job passed build-marker consistency, inline JavaScript parsing (15 inline blocks), required safety/navigation checks, and Playwright browser smoke tests.
+- Latest passing application-code checks: [GitHub Actions run 39596768798](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39596768798) completed **success** for application-code commit `0fbb41a4a83a02e8b6e95dda16803f8982fce92d` on 2026-10-21. The validation job passed build-marker consistency, inline JavaScript parsing (15 inline blocks), required safety/navigation checks, and Playwright browser smoke tests. A separate check run is triggered by each handoff-only commit; consult Actions before claiming that the newest documentation commit itself has passed.
 - Verified smoke-test evidence from that run:
   - Product-number-only identification passed for **75 catalog entries**. The app inferred type/family/model and reached the correct verified identity state. Supported workflows displayed “Machine Verified — App Ready”; unsupported workflows were kept identity-only and offered shared lookup rather than being falsely enabled for guided repair.
   - Unknown product numbers cleared prior verification rather than leaving stale diagnostics enabled.
