@@ -1,3 +1,30 @@
+## 0Z. Weekly verified state review — 2026-11-06 (development only)
+
+**Review scope:** Direct GitHub reads of the `development` branch HEAD, recent development commits, Actions workflow runs and the most recent successful job steps, `index.html`, `version.json`, `HANDOFF.md`, and the `main`/test-site HTML and version markers. This update is documentation-only on `development`; no `main`, production, test-site, or application-code change is authorized or performed.
+
+### Verified facts (as of 2026-11-06)
+
+- Repository: `BobbyT416/Copier-Wizard`. Pre-review `development` HEAD: `f710cc39917d8712ff0973c90435aed8dac369d2`, committed 2026-10-30 19:57:41 UTC, a handoff-only update. The preceding two commits (`9ae2551`, `98c3414`, 2026-10-23) are also documentation updates. **No newer application or test-code commit** was found in the inspected history; the latest such commit remains `0fbb41a4a83a02e8b6e95dda16803f8982fce92d` (2026-10-21, M528 test wait refinement).
+- `development/index.html` still reports **Build 288** (`const CURRENT = '288'`), and `development/version.json` reports `build=288`, `version=288`. These two source markers agree; this does **not** demonstrate a deployed Build 288 browser preview.
+- Latest completed `development` CI run before this review: [41119467615](https://github.com/BobbyT416/Copier-Wizard/actions/runs/41119467615), created 2026-10-30 for `f710cc3`, **success**. Its `validate` job reports successful build/JS/safety checks and Playwright Chromium browser smoke tests. This is a rerun of checks on unchanged application source after a documentation commit, **not** new functionality. Last application/test-code commit CI: [39596768798](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39596768798), 2026-10-21, **success**.
+- Prior passing smoke-test evidence (see section 0Y and run 39596768798) covers recognized product-number identity for **75 catalog entries**, invalid/changed identity safeguards, shared lookup for unverified models, tested M776dn/M776zs variant-specific 59.00.03 paths, report before resolution with part number, and selected no-action CPMD entries. These are **automated tests only**; no new hands-on browser validation or exhaustive manual/CPMD coverage audit was performed in this review.
+- Repository markers on `main` still disagree: production `index.html` **258** versus `version.json` **257**; `test/index.html` **290** versus `test/version.json` **291**. This is verified **repository content**, not independent verification of live GitHub Pages assets or user browser cache. Neither location was modified.
+- `.github/workflows/copier-wizard-checks.yml` on `development` triggers on push/PR to `development` and manual dispatch; the observed successful run confirms the push workflow. Prior handoff describes a separate scheduled audit-bot workflow, but no independently verified scheduled audit execution is established in this review.
+
+### Unverified reports and open risks
+
+1. **Exact product-number-first UX remains unproven.** The earlier code inspection identified hint updates on `input`, while automatic machine verification is triggered by `change`/blur or catalog selection. Passing 75-entry tests exercises the latter, not immediate verification upon the final keystroke. The requested behavior is that a known product number alone immediately establishes type/family/model and presents “Machine Verified,” without required selectors. Preserve unknown-product rejection and unsupported-model readiness gating.
+2. **Identity does not equal repair readiness.** Seventy-five recognized products are not seventy-five validated guided repair workflows. Do not offer unverified parts, steps, or removal/replacement instructions for unsupported variants.
+3. **CPMD completeness and applicability are still open.** Previously reported missing 31-series codes and cross-family dead ends have not been freshly audited against every relevant manual; token counts and search reachability alone do not establish actionable, source-matched procedures. Preserve no-action outcomes.
+4. **Source conflicts remain unresolved** unless reconciled with the exact source manuals: M776 `59.00.00` pickup assembly (CPMD `RM2-1393-000CN` vs Repair Manual `RM2-3908-000CN`) and E52645 `30.01.46` SCB (`B5L47-67903` vs `B5L47-67901`). Continue withholding mismatched R&R/part guidance.
+5. **Preview and production build-marker drift** remains unresolved, and no authorized live preview of Build 288 has been established. A successful Pages job by itself would not prove the intended code/version is in the browser.
+
+### Next action
+
+**On `development` only:** implement and test immediate product-number verification on complete, recognized input without blur or extra selectors; show the verified identity and route to the correct supported-troubleshooting or identity-only lookup action. Add browser regression tests for final-character input, unknown/partial numbers, identity changes, and readiness gating. Bump `index.html` and `version.json` together for the code change and require a passing development CI run. Then resume the model/variant CPMD applicability and source-conflict audit. Do **not** edit `main`, production, or the test-site folder without separate approval.
+
+---
+
 ## 0Y. Weekly verified state review — 2026-10-30 (development only)
 
 **Scope and evidence:** Read GitHub branch heads, the 12 most recent development commits and workflow runs, the current development HTML/version/test/workflow files, the previous handoff, and the latest successful CI job's steps and log. This review changes only this `development/HANDOFF.md`; it does not edit application code, `main`, or the deployed production/test-site assets. Section 0X remains the detailed source/diagnostic risk register; this section is the newer status checkpoint.
