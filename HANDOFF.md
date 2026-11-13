@@ -1,3 +1,30 @@
+## 10A. Weekly verified state review — 2026-11-13 (development only)
+
+**Scope:** Fresh GitHub reads of `development/HANDOFF.md`, `index.html`, `version.json`, `tests/smoke-test.cjs`, the 12 newest development commits and Actions runs, the latest CI job steps, and the repository copies of root and `test/` HTML/version files on `main`. This review updates **documentation only** on `development`; no application code, `main`, production, or preview files were changed.
+
+### Verified current state
+
+- Repository: `BobbyT416/Copier-Wizard`. Pre-review `development` HEAD: `177c4ba1f5d9608e88f3b3e321fdf8de9518558a` (2026-11-06, handoff documentation). The preceding 2026-10-30 and 2026-10-23 commits are also documentation-only. No newer application/test-code commit appears in the inspected history; latest application/test-code commit remains `0fbb41a4a83a02e8b6e95dda16803f8982fce92d` (2026-10-21, M528 browser-test wait refinement).
+- **Development Build 288**: `index.html` contains `const CURRENT='288'` and `version.json` contains `build=288` and `version=288`. These source markers agree; this is **not** evidence of a live Build 288 preview.
+- Latest completed development CI **before this handoff update**: [run 42292594726](https://github.com/BobbyT416/Copier-Wizard/actions/runs/42292594726), 2026-11-06, for the previous documentation-only commit, completed **success**. The `validate` job shows successful source/build/safety validation and Playwright Chromium browser smoke tests. Last successful CI for an application/test-code change: [run 39596768798](https://github.com/BobbyT416/Copier-Wizard/actions/runs/39596768798), 2026-10-21, **success**. No new app code or new manual validation was performed in this review.
+- The current smoke-test source includes catalog-wide product-number identity checks (previous successful log reported **75 catalog entries**), unknown/changed identity safeguards, M527 numerical/31-series lookup assertions, M528 shared-lookup navigation, M776dn/M776zs variant-specific diagnostic/R&R paths, and service-report-before-resolution checks. The passing runs establish **automated coverage of these selected cases**, not exhaustive correctness of every HP manual, variant, or code.
+- The repository copies of `main` files still show production `index.html` **258** versus root `version.json` **257**, and `test/index.html` **290** versus `test/version.json` **291**. These are **verified repository-file mismatches**, not a live Pages or browser-cache inspection. Nothing on `main` was modified.
+
+### Unverified reports / unresolved risks
+
+1. **Immediate product-number-first UX:** Source and previous review indicate hint updates on input but verification on change/blur or explicit catalog selection. Existing 75-product checks do not prove immediate verification at the final typed character. The user wants the product number alone to infer type/family/model and jump to “Machine Verified,” with selectors optional. Preserve unknown/partial/mismatch safeguards and ensure the visible continuation is obvious.
+2. **Identity versus readiness:** Catalog recognition does not establish that guided troubleshooting, parts, or R&R are validated for each model. Maintain model/variant gating and source-based procedures; the M527 and M528 tests cover selected entry/lookup behavior, not all diagnostic branches.
+3. **CPMD coverage/applicability:** Reported missing 31-series entries and cross-family gaps have not been exhaustively reconciled against the relevant CPMD and Repair Manuals. Indexed tokens, shared-code matches, and smoke tests are insufficient to certify every model's applicability or that a detailed procedure exists. Preserve distinct no-action, not-extracted, and not-applicable states.
+4. **Known source conflicts remain open:** M776 `59.00.00` pickup assembly CPMD `RM2-1393-000CN` vs Repair Manual `RM2-3908-000CN`; E52645 `30.01.46` SCB `B5L47-67903` vs `B5L47-67901`. Withhold disputed part/R&R guidance until the exact source/variant is reconciled.
+5. **Deployment drift:** Build 288 has not been independently verified on a current browser preview. Root and test version-marker mismatches remain unresolved. Do not modify `main` as part of a handoff review.
+6. **User manual testing:** No new hands-on confirmation of the current development build is available. The green CI runs are automated test evidence only.
+
+### Next action
+
+**On `development` only:** implement immediate verification when a complete recognized product number is typed (without blur, manual type/family/model selection, or extra verify action), show “Machine Verified” and a clear next troubleshooting/lookup action, and preserve identity/readiness gates. Add Playwright regressions for last-character input, partial/unknown products, changed/cleared products, mismatch with selected model, and supported vs unsupported readiness. Bump `index.html` and `version.json` together for any application change, run the full CI suite, and record commit/test evidence. Then audit CPMD applicability and source conflicts model-by-model. A live preview or production update requires separate authorization; do not touch `main` or production here.
+
+---
+
 ## 0Z. Weekly verified state review — 2026-11-06 (development only)
 
 **Review scope:** Direct GitHub reads of the `development` branch HEAD, recent development commits, Actions workflow runs and the most recent successful job steps, `index.html`, `version.json`, `HANDOFF.md`, and the `main`/test-site HTML and version markers. This update is documentation-only on `development`; no `main`, production, test-site, or application-code change is authorized or performed.
